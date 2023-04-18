@@ -30,11 +30,13 @@ export function main(core) {
 
   const base = new Mesh(core, {geometory: plane, material: basicMta5, position: [0, -8, 0], rotation: [-Math.PI / 2, [1, 0, 0]], scale: [15, 15, 15]})
 
-  let light = new PointLight()
+  let light1 = new PointLight()
+  let light2 = new PointLight()
 
   mesh2.add(mesh1)
   mesh1.add(mesh3)
-  mesh1.add(light)
+  mesh1.add(light1)
+  mesh2.add(light2)
 
   const preRenderer = new Renderer(core, {
     frameBuffer    : {texture: [rgba16f, rgba16f, rgba16f]},
@@ -52,7 +54,8 @@ export function main(core) {
 
   const postRendererResult = new Mesh(core, {geometory: screen, material: defferedMta})
 
-  const scene = [base, mesh1, mesh3, mesh2]
+  const meshs = [base, mesh1, mesh3, mesh2]
+  const lights = [light1, light2]
 
   const animation = new Animation({callback: ({delta}) => {
 
@@ -60,7 +63,7 @@ export function main(core) {
     mesh2.mutate((v) => v.rotation[0] -= 0.001 * delta)
     mesh3.mutate((v) => v.rotation[0] -= 0.005 * delta)
 
-    preRenderer.render({meshs: scene, camera: camera, lights: [light]})
+    preRenderer.render({meshs, camera, lights})
     postRenderer.render({meshs: [postRendererResult]})
   }, interval: 0})
 

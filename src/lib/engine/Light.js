@@ -13,9 +13,7 @@ export class PointLight {
     m    : mat.create()
   }
 
-  uniform = {
-    u_pointLightPotion: mat.createVec()
-  }
+  worldPosition = mat.createVec()
 
   parent = null
 
@@ -72,7 +70,7 @@ export class PointLight {
 
   setWorldVec() {
     let {m} = this.matrix
-    mat.mulVec(m, [0, 0, 0, 1], this.uniform.u_pointLightPotion)
+    mat.mulVec(m, [0, 0, 0, 1], this.worldPosition)
   }
 
 }

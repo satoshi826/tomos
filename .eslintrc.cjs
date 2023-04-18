@@ -9,8 +9,8 @@ module.exports = {
     sourceType : 'module'
   },
   globals: {
-    html         : 'readonly',
-    scheduler    : 'readonly',
+    html     : 'readonly',
+    scheduler: 'readonly',
   },
   rules: {
     indent                       : [2, 2],

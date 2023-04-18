@@ -27,7 +27,7 @@ export const style = (selector, css) => {
 }
 
 style.responsive = (device) => (selector, obj) => {
-  const raw = `@media (width < ${breakpoints[device]}){${selector}{${toCss(obj)}}}`
+  const raw = `@media (max-width : ${breakpoints[device]}){${selector}{${toCss(obj)}}}`
   style(`${selector}&${device}`, raw)
 }
 

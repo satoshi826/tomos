@@ -84,7 +84,7 @@ export class Renderer {
     const {geometory, material} = mesh
     material.useProgram()
     if (camera) this.setMVP(mesh, camera)
-    this.bindVao(geometory)
+    this.useVao(geometory)
     this.setUniform(mesh, camera)
     material.render(geometory)
   }
@@ -95,8 +95,8 @@ export class Renderer {
     mat.mul(camera.matrix.vp, mesh.matrix.m, this.matrix.mvp)
   }
 
-  bindVao(geometory) {
-    this.core.bindVao(geometory.id)
+  useVao(geometory) {
+    this.core.useVao(geometory.id)
   }
 
   setUniform(mesh, camera, light) {

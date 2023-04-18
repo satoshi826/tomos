@@ -14,18 +14,18 @@ const attLocMap = {
 }
 
 const uniTypeMap = {
-  u_mvpMatrix       : [true, 'uniformMatrix4fv'],
-  u_mMatrix         : [true, 'uniformMatrix4fv'],
-  u_normalMatrix    : [true, 'uniformMatrix4fv'],
-  u_invMatrix       : [true, 'uniformMatrix4fv'],
-  u_color           : [false, 'uniform4fv'],
-  u_pointLightNum   : [false, 'uniform1i'],
-  u_pointLightPotion: [false, 'uniform3fv'],
-  u_texture         : [false, 'uniform1i'],
-  u_texture0        : [false, 'uniform1i'],
-  u_texture1        : [false, 'uniform1i'],
-  u_texture2        : [false, 'uniform1i'],
-  u_texture3        : [false, 'uniform1i'],
+  u_mvpMatrix         : [true, 'uniformMatrix4fv'],
+  u_mMatrix           : [true, 'uniformMatrix4fv'],
+  u_normalMatrix      : [true, 'uniformMatrix4fv'],
+  u_invMatrix         : [true, 'uniformMatrix4fv'],
+  u_color             : [false, 'uniform4fv'],
+  u_pointLightNum     : [false, 'uniform1i'],
+  u_pointLightPosition: [false, 'uniform3fv'],
+  u_texture           : [false, 'uniform1i'],
+  u_texture0          : [false, 'uniform1i'],
+  u_texture1          : [false, 'uniform1i'],
+  u_texture2          : [false, 'uniform1i'],
+  u_texture3          : [false, 'uniform1i'],
   // lgtMatrix     : [true, 'uniformMatrix4fv'],
   // tMatrix       : [true, 'uniformMatrix4fv'],
   // lightPosition : [false, 'uniform3fv'],
@@ -132,7 +132,7 @@ export class Core {
     this.vao[id] = vao
   }
 
-  bindVao(geoId) {
+  useVao(geoId) {
     if (geoId !== this.currentVao) {
       // console.log('set Vao', geoId)
       this.gl.bindVertexArray(this.vao[geoId])

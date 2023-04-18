@@ -1,0 +1,90 @@
+import {mat} from './function/matrix'
+let uid = 0
+
+export class Mesh {
+
+  ver = 0
+  preVer = -1
+  preParentVer = -1
+
+  matrix = {
+    local  : mat.create(),
+    m      : mat.create(),
+    inverse: mat.create(),
+    normal : mat.create()
+  }
+  parent = null
+  children = []
+
+  constructor(core, {geometory, material, position, rotation, scale}) {
+
+    this.core = core
+    this.id = geometory.id + '-' + material.id
+    this.uid = uid++
+    this.geometory = geometory
+    this.material = material
+    this.attributes = {
+      position: position ?? [0, 0, 0],
+      rotation: rotation ?? [0, [0, 1, 0]],
+      scale   : scale ?? [1, 1, 1]
+    }
+    this.setLocal()
+  }
+
+  mutate(func) {
+    func(this.attributes)
+    this.ver++
+  }
+
+  add(child) {
+    this.children.push(child)
+    child.parent = this
+  }
+
+  update() {
+
+    const isUpdateLocal = this.preVer < this.ver
+    const isParent = this.parent
+    const isUpdateParent = isParent && (this.preParentVer < this.parent.ver)
+
+    if(isUpdateLocal) {
+      this.setLocal()
+      this.preVer = this.ver
+      if(!isParent) {
+        this.setLocalToWorld()
+      }
+    }
+    if(isUpdateParent || (isUpdateLocal && isParent)) {
+      this.setWorld()
+      this.preParentVer = this.parent.ver
+    }
+  }
+
+  setLocal() {
+    const {position, rotation, scale} = this.attributes
+    let {local} = this.matrix
+    mat.reset(local)
+    mat.move(local, position, local)
+    mat.rot(local, rotation[0], rotation[1], local)
+    mat.scale(local, scale, local)
+  }
+
+  setWorld() {
+    let {m, local} = this.matrix
+    mat.mul(this.parent.matrix.m, local, m)
+    this.setNormal()
+  }
+
+  setLocalToWorld() {
+    let {local, m} = this.matrix
+    mat.copy(local, m)
+    this.setNormal()
+  }
+
+  setNormal() {
+    let {m, inverse, normal} = this.matrix
+    mat.inv(m, inverse)
+    mat.trans(inverse, normal)
+  }
+
+}

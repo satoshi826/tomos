@@ -106,9 +106,9 @@ export class Core {
     }
   }
 
-  setUniLoc(mName, uniform) {
+  setUniLoc(mName, uniforms) {
     this.uniLoc[mName] = {}
-    uniform.forEach(uni => this.uniLoc[mName][uni] = this.gl.getUniformLocation(this.program[mName], uni))
+    uniforms.forEach(uni => this.uniLoc[mName][uni] = this.gl.getUniformLocation(this.program[mName], uni))
   }
 
   setVao({id, index, attributes}) {
@@ -142,7 +142,7 @@ export class Core {
 
   setUniform(uniMap) {
     oForEach(uniMap, ([k, v]) => {
-      if(v === undefined) throw {k, v}
+      if(v === undefined) throw {error: ' uniformValue is undefined', k, v}
       const uniType = uniTypeMap[k]
       if (!uniType) throw {error: ' uniform type is not defined', k, v}
       const [isMat, method] = uniTypeMap[k]

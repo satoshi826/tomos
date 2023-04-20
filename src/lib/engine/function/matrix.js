@@ -24,7 +24,7 @@ export const mat = {
   },
 
   createVec() {
-    let dest = new Float32Array(4)
+    let dest = new Array(4)
     dest[0] = 0
     dest[1] = 0
     dest[2] = 0

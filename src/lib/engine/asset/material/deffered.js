@@ -5,10 +5,12 @@ export const deffered = () => ({
     'a_position',
     'a_textureCoord'
   ],
-  uniform: [
+  uniforms: [
     'u_texture0',
     'u_texture1',
-    'u_texture2'
+    'u_texture2',
+    'u_pointLightNum',
+    'u_pointLightPosition'
   ],
   vert: /* glsl */`#version 300 es
 
@@ -25,6 +27,8 @@ export const deffered = () => ({
 
   frag: /* glsl */`#version 300 es
 
+    #define MAX_LIGHTS 500
+
     precision highp float;
 
     in vec2 v_textureCoord;
@@ -33,13 +37,18 @@ export const deffered = () => ({
     uniform sampler2D u_texture1;
     uniform sampler2D u_texture2;
 
+    uniform vec3 u_pointLightPosition[MAX_LIGHTS];
+    uniform int  u_pointLightNum;
+
     out vec4 outColor;
 
     void main(void){
+
       vec4 smpColor0 = texture(u_texture0, v_textureCoord);
       vec4 smpColor1 = texture(u_texture1, v_textureCoord);
       vec4 smpColor2 = texture(u_texture2, v_textureCoord);
-      outColor  = smpColor0;
+
+      outColor  = vec4(smpColor0.r, smpColor0.g, smpColor0.b,  1.0);
     }`
 
 })

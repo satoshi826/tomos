@@ -5,7 +5,7 @@ export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
     'a_position',
     'a_normal'
   ],
-  uniform: [
+  uniforms: [
     'u_mvpMatrix',
     'u_color',
     'u_normalMatrix'
@@ -33,7 +33,6 @@ export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
   `,
 
   frag: /* glsl */`#version 300 es
-  #define MAX_LIGHTS 200
   precision highp float;
 
   in vec3 v_position;
@@ -44,8 +43,6 @@ export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
   layout (location = 2) out vec4 outColor2;
 
   uniform   vec4 u_color;
-  uniform   vec4 u_pointLightPosition[MAX_LIGHTS];
-  uniform   int  u_pointLightNum;
 
   void main(void){
       outColor0 = u_color;

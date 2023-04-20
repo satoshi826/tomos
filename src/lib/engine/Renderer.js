@@ -9,10 +9,12 @@ export const rgba16f = ['RGBA16F', 'RGBA', 'HALF_FLOAT']
 export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT']
 
 const getDefaultUniformValue = {
-  u_mvpMatrix     : ({self}) => self.matrix.mvp,
-  u_mMatrix       : ({mesh}) => mesh.matrix.m,
-  u_normalMatrix  : ({mesh}) => mesh.matrix.normal,
-  u_cameraPosition: ({camera}) => camera.attributes.position,
+  u_mvpMatrix         : ({self}) => self.matrix.mvp,
+  u_mMatrix           : ({mesh}) => mesh.matrix.m,
+  u_normalMatrix      : ({mesh}) => mesh.matrix.normal,
+  u_cameraPosition    : ({camera}) => camera.attributes.position,
+  u_pointLightNum     : ({self}) => self.lightUniforms.u_pointLightNum,
+  u_pointLightPosition: ({self}) => self.lightUniforms.u_pointLightPosition,
 }
 
 export class Renderer {
@@ -34,9 +36,11 @@ export class Renderer {
     this.depthRenderBuffer = null
     this.renderTexture = []
     this.drawBuffers = [this.core.gl.BACK]
+    this.lightUniforms = {}
 
     if (frameBuffer) this.setFrameBuffer(frameBuffer)
     if (isScreen) setHandler('resize', this.resize.bind(this))
+
   }
 
   resize({width = this.width, height = this.height, pixelRatio = this.pixelRatio} = {}) {
@@ -67,17 +71,30 @@ export class Renderer {
   }
 
   render({meshs, camera, lights = []} = {}) {
-
     this.core.useRenderer(this)
     this.clear()
-
-    lights.forEach(light => {
-      light.update()
-    })
-
+    this.setLight(lights)
     meshs.forEach(mesh => {
       this.draw(mesh, camera)
     })
+  }
+
+  setLight(lights) {
+    const lightUniformsInit = {
+      u_pointLightNum     : 0,
+      u_pointLightPosition: []
+    }
+    this.lightUniforms = lightUniformsInit
+    lights.forEach((light) => {
+      light.update()
+      if(light.isPoint) {
+        this.lightUniforms.u_pointLightNum++
+        this.lightUniforms.u_pointLightPosition.push(...light.worldPosition.slice(0, 3))
+      }
+    })
+    this.lightUniforms.u_pointLightPosition = Float32Array.from(
+      this.lightUniforms.u_pointLightPosition
+    )
   }
 
   draw(mesh, camera) {
@@ -99,15 +116,16 @@ export class Renderer {
     this.core.useVao(geometory.id)
   }
 
-  setUniform(mesh, camera, light) {
-    const uniMap = this.getUniMap(mesh, camera, light)
+  setUniform(mesh, camera) {
+    const uniMap = this.getUniMap(mesh, camera)
     this.core.setUniform(uniMap)
   }
 
-  getUniMap(mesh, camera, light) {
+  getUniMap(mesh, camera) {
     return mesh.material.uniforms.reduce((obj, key) => {
-      const getUniformValue = getDefaultUniformValue[key] ?? (({mesh}) => mesh.material.uniformValue[key])
-      const uniformValue = getUniformValue({mesh, camera, light, self: this})
+      const getUniformValue =
+        getDefaultUniformValue[key] ?? (({mesh}) => mesh.material.uniformValue[key])
+      const uniformValue = getUniformValue({mesh, camera, self: this})
       if (uniformValue === undefined) throw {error: `uniformValue ${key} is undefined`}
       obj[key] = uniformValue
       return obj

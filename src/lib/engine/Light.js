@@ -6,7 +6,7 @@ export class PointLight {
   ver = 0
   preVer = -1
   preParentVer = -1
-  type = 'pointLight'
+  isPoint = true
 
   matrix = {
     local: mat.create(),
@@ -17,9 +17,8 @@ export class PointLight {
 
   parent = null
 
-  constructor(core, {position} = {}) {
+  constructor({position} = {}) {
 
-    this.core = core
     this.uid = id++
     this.attributes = {
       position: position ?? [0, 0, 0],

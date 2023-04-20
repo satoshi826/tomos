@@ -27,14 +27,13 @@ export const style = (selector, css) => {
 }
 
 style.responsive = (device) => (selector, obj) => {
-  const raw = `@media (max-width : ${breakpoints[device]}){${selector}{${toCss(obj)}}}`
-  style(`${selector}&${device}`, raw)
+  style(`${selector}&${device}`, `@media (max-width : ${breakpoints[device]}){${selector}{${toCss(obj)}}}`)
 }
 
 style.hover = (selector, obj) => {
-  const raw = `@media (hover: hover){${selector}:hover{${toCss(obj)}}}`
-            + `@media (hover: none) {${selector}:active{${toCss(obj)}}}`
-  style(`${selector}&hover`, raw)
+  style(`${selector}&hover`,
+    `@media (hover: hover){${selector}:hover{${toCss(obj)}}}`
+  + `@media (hover: none) {${selector}:active{${toCss(obj)}}}`)
 }
 
 //----------------------------------------------------------------

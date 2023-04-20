@@ -1,12 +1,12 @@
 import {oForEach} from '../util/util'
 
 export class Material {
-  constructor(core, {id, attributes, uniform, vert, frag, uniformValue}, texture) {
+  constructor(core, {id, attributes, uniforms, vert, frag, uniformValue}, texture) {
 
     this.core = core
     this.id = id
     this.attributes = attributes
-    this.uniforms = uniform
+    this.uniforms = uniforms
     this.uniformValue = uniformValue ?? {}
     this.texture = []
     this.vert = vert
@@ -14,7 +14,7 @@ export class Material {
 
     if (!core.program[id]) {
       core.setProgram(id, vert, frag)
-      core.setUniLoc(id, uniform)
+      core.setUniLoc(id, uniforms)
     }
 
     if(texture) {

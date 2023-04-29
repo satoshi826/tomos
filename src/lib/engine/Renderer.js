@@ -10,7 +10,7 @@ export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT']
 
 const getDefaultUniformValue = {
   u_mvpMatrix         : ({self}) => self.matrix.mvp,
-  u_mMatrix           : ({mesh}) => mesh.matrix.m,
+  u_modelMatrix       : ({mesh}) => mesh.matrix.model,
   u_normalMatrix      : ({mesh}) => mesh.matrix.normal,
   u_cameraPosition    : ({camera}) => camera.attributes.position,
   u_pointLightNum     : ({self}) => self.lightUniforms.u_pointLightNum,
@@ -109,7 +109,7 @@ export class Renderer {
   setMVP(mesh, camera) {
     mesh.update()
     camera.update()
-    mat.mul(camera.matrix.vp, mesh.matrix.m, this.matrix.mvp)
+    mat.mul(camera.matrix.vp, mesh.matrix.model, this.matrix.mvp)
   }
 
   useVao(geometory) {

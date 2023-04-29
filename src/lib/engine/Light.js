@@ -10,7 +10,7 @@ export class PointLight {
 
   matrix = {
     local: mat.create(),
-    m    : mat.create()
+    model: mat.create()
   }
 
   worldPosition = mat.createVec()
@@ -56,20 +56,20 @@ export class PointLight {
   }
 
   setWorld() {
-    let {m, local} = this.matrix
-    mat.mul(this.parent.matrix.m, local, m)
+    let {model, local} = this.matrix
+    mat.mul(this.parent.matrix.model, local, model)
     this.setWorldVec()
   }
 
   setLocalToWorld() {
-    let {local, m} = this.matrix
-    mat.copy(local, m)
+    let {local, model} = this.matrix
+    mat.copy(local, model)
     this.setWorldVec()
   }
 
   setWorldVec() {
-    let {m} = this.matrix
-    mat.mulVec(m, [0, 0, 0, 1], this.worldPosition)
+    let {model} = this.matrix
+    mat.mulVec(model, [0, 0, 0, 1], this.worldPosition)
   }
 
 }

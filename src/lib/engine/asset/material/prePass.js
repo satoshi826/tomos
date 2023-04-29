@@ -1,5 +1,5 @@
 
-export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
+export const prePass = ({color = [0.5, 0.5, 0.5]} = {}) => ({
   id        : 'prePass',
   attributes: [
     'a_position',
@@ -7,8 +7,9 @@ export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
   ],
   uniforms: [
     'u_mvpMatrix',
+    'u_modelMatrix',
+    'u_normalMatrix',
     'u_color',
-    'u_normalMatrix'
   ],
   uniformValue: {
     u_color: color
@@ -20,14 +21,16 @@ export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
   layout(location = 1) in vec3 a_normal;
 
   uniform mat4 u_mvpMatrix;
+  uniform mat4 u_modelMatrix;
+  uniform mat4 u_normalMatrix;
 
   out vec3 v_position;
   out vec3 v_normal;
 
   void main(void){
     vec4 position = vec4(a_position, 1.0);
-    v_position = a_position;
-    v_normal = a_normal;
+    v_position = (u_modelMatrix * position).xyz;
+    v_normal = (u_normalMatrix * vec4(a_normal, 0.0)).xyz;
     gl_Position = u_mvpMatrix * position;
   }
   `,
@@ -38,16 +41,16 @@ export const prePass = ({color = [0.5, 0.5, 0.5, 1.0]} = {}) => ({
   in vec3 v_position;
   in vec3 v_normal;
 
-  layout (location = 0) out vec4 outColor0;
-  layout (location = 1) out vec4 outColor1;
-  layout (location = 2) out vec4 outColor2;
+  layout (location = 0) out vec3 o_position;
+  layout (location = 1) out vec3 o_normal;
+  layout (location = 2) out vec4 o_color;
 
-  uniform   vec4 u_color;
+  uniform vec3 u_color;
 
   void main(void){
-      outColor0 = u_color;
-      outColor1 = vec4(v_position, 1.0);
-      outColor2 = vec4(v_normal, 1.0);
+      o_position = v_position;
+      o_color = vec4(u_color, 1.0);
+      o_normal = normalize(v_normal);
   }`
 
 })

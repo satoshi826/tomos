@@ -15,13 +15,18 @@ const attLocMap = {
 
 const uniTypeMap = {
   u_mvpMatrix         : [true, 'uniformMatrix4fv'],
-  u_mMatrix           : [true, 'uniformMatrix4fv'],
+  u_modelMatrix       : [true, 'uniformMatrix4fv'],
   u_normalMatrix      : [true, 'uniformMatrix4fv'],
   u_invMatrix         : [true, 'uniformMatrix4fv'],
-  u_color             : [false, 'uniform4fv'],
+  u_cameraPosition    : [false, 'uniform3fv'],
+  u_color             : [false, 'uniform3fv'],
   u_pointLightNum     : [false, 'uniform1i'],
   u_pointLightPosition: [false, 'uniform3fv'],
   u_texture           : [false, 'uniform1i'],
+  u_positionTexture   : [false, 'uniform1i'],
+  u_normalTexture     : [false, 'uniform1i'],
+  u_colorTexture      : [false, 'uniform1i'],
+  u_depthTexture      : [false, 'uniform1i'],
   u_texture0          : [false, 'uniform1i'],
   u_texture1          : [false, 'uniform1i'],
   u_texture2          : [false, 'uniform1i'],
@@ -67,9 +72,14 @@ export class Core {
     this.gl.depthFunc(this.gl.LEQUAL)
     this.gl.enable(this.gl.BLEND)
 
+    // this.gl.cullFace(this.gl.BACK)
+
     this.gl.getExtension('EXT_color_buffer_float')
     this.gl.getExtension('EXT_float_blend')
-
+    this.gl.getExtension('OES_texture_half_float')
+    this.gl.getExtension('OES_texture_half_float_linear')
+    this.gl.getExtension('OES_texture_float')
+    this.gl.getExtension('OES_texture_float_linear')
   }
 
   _compile(txt, type) {

@@ -1,0 +1,78 @@
+Date : 2023-04-22 00:50:12
+Directory : c:\git\tomos\src
+Total : 37 files,  1967 codes, 38 comments, 377 blanks, all 2382 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         37 |      1,967 |         38 |        377 |      2,382 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                     | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                        |         37 |      1,967 |         38 |        377 |      2,382 |
+| . (Files)                                                |          1 |         24 |          0 |          5 |         29 |
+| dom                                                      |          8 |        349 |         13 |         80 |        442 |
+| dom (Files)                                              |          1 |         72 |          1 |         19 |         92 |
+| dom\atom                                                 |          3 |         73 |         10 |         21 |        104 |
+| dom\frame                                                |          4 |        204 |          2 |         40 |        246 |
+| gl                                                       |          2 |         71 |          0 |         21 |         92 |
+| lib                                                      |         26 |      1,523 |         25 |        271 |      1,819 |
+| lib\engine                                               |         19 |      1,264 |         14 |        212 |      1,490 |
+| lib\engine (Files)                                       |          8 |        554 |         14 |        111 |        679 |
+| lib\engine\asset                                         |          5 |        258 |          0 |         50 |        308 |
+| lib\engine\asset\geometory                               |          1 |        123 |          0 |         12 |        135 |
+| lib\engine\asset\material                                |          4 |        135 |          0 |         38 |        173 |
+| lib\engine\extend                                        |          1 |         43 |          0 |         13 |         56 |
+| lib\engine\extend\deferred                               |          1 |         43 |          0 |         13 |         56 |
+| lib\engine\function                                      |          5 |        409 |          0 |         38 |        447 |
+| lib\theme                                                |          6 |        177 |          4 |         25 |        206 |
+| lib\util                                                 |          1 |         82 |          7 |         34 |        123 |
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                 | language   | code       | comment    | blank      | total      |
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\git\tomos\src\dom\atom\range.js                       | JavaScript |          9 |          5 |          4 |         18 |
+| c:\git\tomos\src\dom\atom\toggle.js                      | JavaScript |         51 |          5 |         13 |         69 |
+| c:\git\tomos\src\dom\atom\viewState.js                   | JavaScript |         13 |          0 |          4 |         17 |
+| c:\git\tomos\src\dom\canvas.js                           | JavaScript |         72 |          1 |         19 |         92 |
+| c:\git\tomos\src\dom\frame\frame.js                      | JavaScript |         54 |          0 |         10 |         64 |
+| c:\git\tomos\src\dom\frame\nav.js                        | JavaScript |         18 |          0 |          4 |         22 |
+| c:\git\tomos\src\dom\frame\side.js                       | JavaScript |         90 |          2 |         17 |        109 |
+| c:\git\tomos\src\dom\frame\tool.js                       | JavaScript |         42 |          0 |          9 |         51 |
+| c:\git\tomos\src\gl\main.js                              | JavaScript |         52 |          0 |         17 |         69 |
+| c:\git\tomos\src\gl\worker.js                            | JavaScript |         19 |          0 |          4 |         23 |
+| c:\git\tomos\src\index.js                                | JavaScript |         24 |          0 |          5 |         29 |
+| c:\git\tomos\src\lib\engine\Animation.js                 | JavaScript |         28 |          0 |          6 |         34 |
+| c:\git\tomos\src\lib\engine\Camera.js                    | JavaScript |         55 |          0 |         12 |         67 |
+| c:\git\tomos\src\lib\engine\Core.js                      | JavaScript |        153 |         14 |         26 |        193 |
+| c:\git\tomos\src\lib\engine\Geometory.js                 | JavaScript |         15 |          0 |          3 |         18 |
+| c:\git\tomos\src\lib\engine\Light.js                     | JavaScript |         60 |          0 |         15 |         75 |
+| c:\git\tomos\src\lib\engine\Material.js                  | JavaScript |         33 |          0 |          9 |         42 |
+| c:\git\tomos\src\lib\engine\Mesh.js                      | JavaScript |         75 |          0 |         15 |         90 |
+| c:\git\tomos\src\lib\engine\Renderer.js                  | JavaScript |        135 |          0 |         25 |        160 |
+| c:\git\tomos\src\lib\engine\asset\geometory\geometory.js | JavaScript |        123 |          0 |         12 |        135 |
+| c:\git\tomos\src\lib\engine\asset\material\basic.js      | JavaScript |         27 |          0 |          6 |         33 |
+| c:\git\tomos\src\lib\engine\asset\material\blur.js       | JavaScript |         28 |          0 |          5 |         33 |
+| c:\git\tomos\src\lib\engine\asset\material\deffered.js   | JavaScript |         39 |          0 |         15 |         54 |
+| c:\git\tomos\src\lib\engine\asset\material\prePass.js    | JavaScript |         41 |          0 |         12 |         53 |
+| c:\git\tomos\src\lib\engine\extend\deferred\index.js     | JavaScript |         43 |          0 |         13 |         56 |
+| c:\git\tomos\src\lib\engine\function\matrix.js           | JavaScript |        246 |          0 |         18 |        264 |
+| c:\git\tomos\src\lib\engine\function\mouse.js            | JavaScript |         20 |          0 |          1 |         21 |
+| c:\git\tomos\src\lib\engine\function\peformance.js       | JavaScript |          0 |          0 |          1 |          1 |
+| c:\git\tomos\src\lib\engine\function\quaternion.js       | JavaScript |        122 |          0 |         12 |        134 |
+| c:\git\tomos\src\lib\engine\function\state.js            | JavaScript |         21 |          0 |          6 |         27 |
+| c:\git\tomos\src\lib\theme\breakpoints.js                | JavaScript |          4 |          0 |          0 |          4 |
+| c:\git\tomos\src\lib\theme\index.js                      | JavaScript |         68 |          4 |         24 |         96 |
+| c:\git\tomos\src\lib\theme\palette.js                    | JavaScript |         26 |          0 |          0 |         26 |
+| c:\git\tomos\src\lib\theme\resetCss.js                   | JavaScript |          8 |          0 |          0 |          8 |
+| c:\git\tomos\src\lib\theme\shape.js                      | JavaScript |         14 |          0 |          0 |         14 |
+| c:\git\tomos\src\lib\theme\snippets.js                   | JavaScript |         57 |          0 |          1 |         58 |
+| c:\git\tomos\src\lib\util\util.js                        | JavaScript |         82 |          7 |         34 |        123 |
+| Total                                                    |            |      1,967 |         38 |        377 |      2,382 |
++----------------------------------------------------------+------------+------------+------------+------------+------------+

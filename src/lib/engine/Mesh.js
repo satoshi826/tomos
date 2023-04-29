@@ -9,7 +9,7 @@ export class Mesh {
 
   matrix = {
     local  : mat.create(),
-    m      : mat.create(),
+    model  : mat.create(),
     inverse: mat.create(),
     normal : mat.create()
   }
@@ -70,20 +70,20 @@ export class Mesh {
   }
 
   setWorld() {
-    let {m, local} = this.matrix
-    mat.mul(this.parent.matrix.m, local, m)
+    let {model, local} = this.matrix
+    mat.mul(this.parent.matrix.model, local, model)
     this.setNormal()
   }
 
   setLocalToWorld() {
-    let {local, m} = this.matrix
-    mat.copy(local, m)
+    let {local, model} = this.matrix
+    mat.copy(local, model)
     this.setNormal()
   }
 
   setNormal() {
-    let {m, inverse, normal} = this.matrix
-    mat.inv(m, inverse)
+    let {model, inverse, normal} = this.matrix
+    mat.inv(model, inverse)
     mat.trans(inverse, normal)
   }
 

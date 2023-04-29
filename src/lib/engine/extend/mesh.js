@@ -1,4 +1,4 @@
-import {mat} from '../../function/matrix'
+import {mat} from '@engine/function/matrix'
 
 export const insideOut = (mesh) => {
   mesh.setNormal = function() {

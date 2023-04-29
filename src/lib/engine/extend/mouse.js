@@ -1,5 +1,5 @@
-import {setHandler} from './state'
-import {qtn} from './quaternion'
+import {setHandler} from '@engine/function/state'
+import {qtn} from '@engine/function/quaternion'
 
 export const cameraControl = (camera) => {
   let qtnCam = qtn.create()

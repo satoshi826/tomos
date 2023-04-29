@@ -5,9 +5,9 @@ import {PointLight} from '../lib/engine/Light'
 import {Animation} from '../lib/engine/animation'
 import {geo} from '../lib/engine/asset/geometory/geometory'
 import {sendState} from '../lib/engine/function/state'
-import {cameraControl} from '../lib/engine/function/mouse'
-import {insideOut} from '../lib/engine/extend/mesh'
+import {cameraControl} from '../lib/engine/extend/mouse'
 
+import {insideOut} from '../lib/engine/extend/mesh'
 import {deferredMta, getDeferredRenderer} from '../lib/engine/extend/deferred'
 
 export function main(core) {

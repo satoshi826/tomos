@@ -1,11 +1,11 @@
-import {Material} from '../../material'
-import {Renderer, rgba8, rgba16f} from '../../renderer'
-import {Geometory} from '../../geometory'
-import {Mesh} from '../../mesh'
-import {deferred} from '../../asset/material/deferred'
-import {prePass} from '../../asset/material/prePass'
-import {blur} from '../../asset/material/blur'
-import {geo} from '../../asset/geometory/geometory'
+import {Material} from '@engine/material'
+import {Renderer, rgba8, rgba16f} from '@engine/renderer'
+import {Geometory} from '@engine/geometory'
+import {Mesh} from '@engine/mesh'
+import {deferred} from '@engine/asset/material/deferred'
+import {prePass} from '@engine/asset/material/prePass'
+import {blur} from '@engine/asset/material/blur'
+import {geo} from '@engine/asset/geometory/geometory'
 
 export const deferredMta = (core, {color}) => new Material(core, prePass({color}))
 

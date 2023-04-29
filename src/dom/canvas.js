@@ -11,6 +11,7 @@ export function canvas() {
     const canvasWrapperE = id('canvasWrapper')
 
     const canvasWorker = new CanvasWorker()
+
     canvasE.width = canvasE.clientWidth
     canvasE.height = canvasE.clientHeight
     const offscreenCanvas = canvasE.transferControlToOffscreen()

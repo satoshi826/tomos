@@ -7,7 +7,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src',
+      '@'      : '/src',
+      '@engine': '/src/lib/engine',
     },
   },
 })

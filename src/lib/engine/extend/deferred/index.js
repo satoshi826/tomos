@@ -7,7 +7,6 @@ import {prePass} from '../../asset/material/prePass'
 import {blur} from '../../asset/material/blur'
 import {geo} from '../../asset/geometory/geometory'
 
-
 export const deferredMta = (core, {color}) => new Material(core, prePass({color}))
 
 export const getDeferredRenderer = (core) => {
@@ -35,7 +34,7 @@ export const getDeferredRenderer = (core) => {
     pixelRatio : 1,
   })
 
-  const effectMta = new Material(core, blur(), {
+  const effectMta = new Material(core, blur({pixelRatio: 0.5}), {
     u_texture: postRenderer1.renderTexture[0],
   })
   const postEffectResult = new Mesh(core, {geometory: screen, material: effectMta})

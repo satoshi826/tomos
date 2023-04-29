@@ -1,11 +1,8 @@
 import {Camera} from '../lib/engine/camera'
-import {Material} from '../lib/engine/material'
 import {Geometory} from '../lib/engine/geometory'
 import {Mesh} from '../lib/engine/mesh'
 import {PointLight} from '../lib/engine/Light'
-import {Renderer, rgba16f} from '../lib/engine/renderer'
 import {Animation} from '../lib/engine/animation'
-import {deferred} from '../lib/engine/asset/material/deferred'
 import {geo} from '../lib/engine/asset/geometory/geometory'
 import {sendState} from '../lib/engine/function/state'
 import {cameraControl} from '../lib/engine/function/mouse'
@@ -44,22 +41,7 @@ export function main(core) {
   mesh2.add(light2)
   mesh3.add(light3)
 
-  const renderer = getDeferredRenderer(core)
-
-  const preRenderer = new Renderer(core, {
-    frameBuffer: {texture: [rgba16f, rgba16f, rgba16f]},
-  })
-
-  const postRenderer = new Renderer(core)
-
-  const screen = new Geometory(core, geo.plane())
-  const defferedMta = new Material(core, deferred(), {
-    u_positionTexture: preRenderer.renderTexture[0],
-    u_normalTexture  : preRenderer.renderTexture[1],
-    u_colorTexture   : preRenderer.renderTexture[2]
-  })
-
-  const postRendererResult = new Mesh(core, {geometory: screen, material: defferedMta})
+  const render = getDeferredRenderer(core)
 
   const meshs = [base, mesh1, mesh3, mesh2]
   const lights = [light1, light2, light3]
@@ -70,9 +52,7 @@ export function main(core) {
     mesh2.mutate((v) => v.rotation[0] -= 0.001 * delta)
     mesh3.mutate((v) => v.rotation[0] -= 0.005 * delta)
 
-
-    preRenderer.render({meshs, camera})
-    postRenderer.render({meshs: [postRendererResult], lights, camera})
+    render({meshs, camera, lights})
   }, interval: 0})
 
   setInterval(() => sendState({drawTime: animation.drawTime}), 200)

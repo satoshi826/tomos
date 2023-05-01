@@ -6,7 +6,7 @@ export const cameraControl = (camera) => {
   const initPos = Array.from(camera.attributes.position)
   setHandler('mouse', (mouse) => {
     if(!mouse) return
-    const {x, y} = mouse
+    let {x, y} = mouse
     let sq = Math.sqrt(x * x + y * y)
     if (sq === 0) {
       camera.mutate((v) => v.position = Array.from(initPos))

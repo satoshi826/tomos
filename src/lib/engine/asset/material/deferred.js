@@ -45,7 +45,8 @@ export const deferred = () => ({
 
     in vec2 v_uv;
 
-    out vec4 o_color;
+    layout (location = 0) out vec4 o_deferred;
+    layout (location = 1) out vec4 o_highlight;
 
     void main(void){
       float specIntensity = 20.0;
@@ -61,7 +62,7 @@ export const deferred = () => ({
       float lightDis;
       float lightDecay;
       float lightPower;
-      vec3 reflectDir;
+      vec3  reflectDir;
 
       vec3 diffuse = vec3(0.0);
       vec3 specular = vec3(0.0);
@@ -81,7 +82,26 @@ export const deferred = () => ({
         specular += lightPower * albedo * pow(max(0.0, dot(viewDir, reflectDir)), specIntensity);
       }
 
-      o_color = vec4(diffuse + specular, 1.0);
+      vec3 raw = diffuse + 8.0 * specular;
+
+      vec3 toneMap = raw / (1.0 + raw);
+
+      float gammaFactor = 1.2;
+      vec3 gammaCorrection = vec3(
+        pow(toneMap.r, 1.0/gammaFactor),
+        pow(toneMap.g, 1.0/gammaFactor),
+        pow(toneMap.b, 1.0/gammaFactor)
+      );
+
+      float luminance = (raw.r + raw.g + raw.b)/3.0;
+      float luminancePow = pow(luminance, 2.5);
+      float luminanceNormal = luminancePow / (1.0 + luminancePow);
+
+      vec3 highlight = (luminancePow > 0.01) ? luminanceNormal * albedo : vec3(0.0);
+
+      o_deferred = vec4(gammaCorrection, 1.0);
+      o_highlight = vec4(highlight, 1.0);
+
     }`
 
 })

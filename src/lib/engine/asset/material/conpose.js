@@ -1,5 +1,5 @@
 
-export const composer = () => ({
+export const compose = () => ({
   id        : 'composer',
   attributes: [
     'a_position',
@@ -27,26 +27,18 @@ export const composer = () => ({
   precision highp float;
 
   in vec2 v_uv;
+
   uniform sampler2D u_preEffectTexture;
+  uniform sampler2D u_blurTexture;
 
   out vec4 o_color;
 
   void main(void){
 
-    float gammaFactor = 1.2;
-
     vec3 preEffect = texture(u_preEffectTexture, v_uv).rgb;
+    vec3 blur = texture(u_blurTexture, v_uv).rgb;
 
-    vec3 toneMap = preEffect / (1.0 + preEffect);
-    vec3 gammaCorrection = vec3(
-      pow(toneMap.r, 1.0/gammaFactor),
-      pow(toneMap.g, 1.0/gammaFactor),
-      pow(toneMap.b, 1.0/gammaFactor)
-    );
-
-    float luminance = ( 0.298912 * preEffect.r + 0.586611 * preEffect.g + 0.114478 * preEffect.b );
-    vec3 test = (luminance > 0.25) ? toneMap : vec3(0.0);
-    o_color = vec4(test, 1.0);
+    o_color = vec4(preEffect + blur, 1.0);
     // o_color = vec4(gammaCorrection, 1.0);
 
   }`

@@ -5,7 +5,7 @@ import {Mesh} from '@engine/mesh'
 import {deferred} from '@engine/asset/material/deferred'
 import {prePass} from '@engine/asset/material/prePass'
 import {blur} from '@engine/asset/material/blur'
-import {composer} from '../asset/material/composer'
+import {composer} from '../asset/material/toneMapping'
 import {geo} from '@engine/asset/geometory/geometory'
 
 export const deferredMta = (core, {color}) => new Material(core, prePass({color}))

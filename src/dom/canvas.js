@@ -30,11 +30,15 @@ export function canvas() {
     canvasWrapperE.onmousemove = (e) => {
       const x = 2 * (e.offsetX / canvasWrapperE.clientWidth) - 1
       const y = - (2 * (e.offsetY / canvasWrapperE.clientHeight) - 1)
-      canvasWorker.postMessage({mouse: {x, y}})
+      canvasWorker.postMessage({mouse: {x, y, click: false}})
     }
 
     canvasWrapperE.onmouseleave = () => {
-      canvasWorker.postMessage({mouse: {x: 0.0, y: 0.0}})
+      canvasWorker.postMessage({mouse: {x: null, y: null}})
+    }
+
+    canvasWrapperE.onclick = (e) => {
+      console.log(e)
     }
 
     let start

@@ -14,38 +14,33 @@ const attLocMap = {
 }
 
 const uniTypeMap = {
-  u_mvpMatrix         : [true, 'uniformMatrix4fv'],
-  u_modelMatrix       : [true, 'uniformMatrix4fv'],
-  u_normalMatrix      : [true, 'uniformMatrix4fv'],
-  u_invMatrix         : [true, 'uniformMatrix4fv'],
-  u_cameraPosition    : [false, 'uniform3fv'],
-  u_color             : [false, 'uniform3fv'],
-  u_pointLightNum     : [false, 'uniform1i'],
-  u_pointLightPosition: [false, 'uniform3fv'],
-  u_texture           : [false, 'uniform1i'],
-  u_positionTexture   : [false, 'uniform1i'],
-  u_normalTexture     : [false, 'uniform1i'],
-  u_colorTexture      : [false, 'uniform1i'],
-  u_depthTexture      : [false, 'uniform1i'],
-  u_texture0          : [false, 'uniform1i'],
-  u_texture1          : [false, 'uniform1i'],
-  u_texture2          : [false, 'uniform1i'],
-  u_texture3          : [false, 'uniform1i'],
-  // lgtMatrix     : [true, 'uniformMatrix4fv'],
-  // tMatrix       : [true, 'uniformMatrix4fv'],
-  // lightPosition : [false, 'uniform3fv'],
-  // lightDirection: [false, 'uniform3fv'],
-  // cameraPosition: [false, 'uniform3fv'],
-  // eyeDirection  : [false, 'uniform3fv'],
-  // ambientColor  : [false, 'uniform4fv'],
-  // color         : [false, 'uniform4fv'],
-  // pointSize     : [false, 'uniform1f'],
-  // near          : [false, 'uniform1f'],
-  // far           : [false, 'uniform1f'],
-  // vertexAlpha   : [false, 'uniform1f'],
-  // texture       : [false, 'uniform1i'],
-}
+  u_mvpMatrix     : [true, 'uniformMatrix4fv'],
+  u_modelMatrix   : [true, 'uniformMatrix4fv'],
+  u_normalMatrix  : [true, 'uniformMatrix4fv'],
+  u_invMatrix     : [true, 'uniformMatrix4fv'],
+  u_cameraPosition: [false, 'uniform3fv'],
 
+  u_color              : [false, 'uniform3fv'],
+  u_pointLightNum      : [false, 'uniform1i'],
+  u_pointLightPosition : [false, 'uniform3fv'],
+  u_pointLightIntensity: [false, 'uniform1fv'],
+  u_pointLightExponent : [false, 'uniform1fv'],
+
+  u_positionTexture: [false, 'uniform1i'],
+  u_normalTexture  : [false, 'uniform1i'],
+  u_colorTexture   : [false, 'uniform1i'],
+  u_depthTexture   : [false, 'uniform1i'],
+
+  u_preEffectTexture : [false, 'uniform1i'],
+  u_postEffectTexture: [false, 'uniform1i'],
+  u_blurTexture      : [false, 'uniform1i'],
+
+  u_isHorizontal : [false, 'uniform1i'],
+  u_invPixelRatio: [false, 'uniform1i'],
+
+  u_near: [false, 'uniform1f'],
+  u_far : [false, 'uniform1f'],
+}
 
 export class Core {
 
@@ -174,8 +169,8 @@ export class Core {
     const texture = this.gl.createTexture()
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture)
     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl[internalFormat], width, height, 0, this.gl[format], this.gl[type], null)
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST)
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST)
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR)
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR)
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE)
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
     this.gl.bindTexture(this.gl.TEXTURE_2D, null)

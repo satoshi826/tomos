@@ -1,18 +1,15 @@
 
-export const blur = ({pixelRatio}) => ({
+export const blur = () => ({
   id        : 'blur',
   attributes: [
     'a_position',
     'a_textureCoord'
   ],
   uniforms: [
-    'u_texture',
+    'u_preEffectTexture',
     'u_isHorizontal',
     'u_invPixelRatio',
   ],
-  uniformValue: {
-    u_invPixelRatio: 1 / pixelRatio
-  },
 
   vert: /* glsl */`#version 300 es
 
@@ -32,7 +29,7 @@ export const blur = ({pixelRatio}) => ({
 
   in vec2 v_textureCoord;
 
-  uniform sampler2D u_texture;
+  uniform sampler2D u_preEffectTexture;
   uniform bool u_isHorizontal; // ブラーを掛ける方向
   uniform int u_invPixelRatio;
 
@@ -42,17 +39,35 @@ export const blur = ({pixelRatio}) => ({
 
   ivec2 clampCoord(ivec2 coord, ivec2 size) {
     return max(min(coord, size - 1), 0);
-}
+  }
 
   void main(void){
-    ivec2 coord = u_invPixelRatio * ivec2(gl_FragCoord.xy);
-    ivec2 size = textureSize(u_texture, 0);
-    vec3 sum = weights[0] * texelFetch(u_texture, coord, 0).rgb;
-    for (int i = 1; i < 5; i++) {
-      ivec2 offset = (u_isHorizontal ? ivec2(i, 0) : ivec2(0, i)) * 10;
-      sum += weights[i] * texelFetch(u_texture, clampCoord(coord + offset, size), 0).rgb;
-      sum += weights[i] * texelFetch(u_texture, clampCoord(coord - offset, size), 0).rgb;
-    }
+
+    int u_sampleStep = 1;
+
+    ivec2 coord =  u_invPixelRatio * ivec2(gl_FragCoord.xy);
+    ivec2 size = textureSize(u_preEffectTexture, 0);
+    vec3 sum = weights[0] * texelFetch(u_preEffectTexture, coord, 0).rgb;
+    ivec2 offset;
+
+    ivec2 offsetUnit = u_isHorizontal ? ivec2(1, 0) : ivec2(0, 1) * u_invPixelRatio;
+
+    offset = offsetUnit * u_sampleStep * 1;
+    sum += weights[1] * texelFetch(u_preEffectTexture, clampCoord(coord + offset, size), 0).rgb;
+    sum += weights[1] * texelFetch(u_preEffectTexture, clampCoord(coord - offset, size), 0).rgb;
+
+    offset = offsetUnit * u_sampleStep * 2;
+    sum += weights[2] * texelFetch(u_preEffectTexture, clampCoord(coord + offset, size), 0).rgb;
+    sum += weights[2] * texelFetch(u_preEffectTexture, clampCoord(coord - offset, size), 0).rgb;
+
+    offset = offsetUnit * u_sampleStep * 3;
+    sum += weights[3] * texelFetch(u_preEffectTexture, clampCoord(coord + offset, size), 0).rgb;
+    sum += weights[3] * texelFetch(u_preEffectTexture, clampCoord(coord - offset, size), 0).rgb;
+
+    offset = offsetUnit * u_sampleStep * 4;
+    sum += weights[4] * texelFetch(u_preEffectTexture, clampCoord(coord + offset, size), 0).rgb;
+    sum += weights[4] * texelFetch(u_preEffectTexture, clampCoord(coord - offset, size), 0).rgb;
+
     o_color = vec4(sum, 1.0);
   }`
 

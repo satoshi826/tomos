@@ -17,11 +17,13 @@ export class PointLight {
 
   parent = null
 
-  constructor({position} = {}) {
+  constructor({position, intensity, exponent} = {}) {
 
     this.uid = id++
     this.attributes = {
-      position: position ?? [0, 0, 0],
+      position : position ?? [0, 0, 0],
+      intensity: intensity ?? 1.0,
+      exponent : exponent ?? 0.0,
     }
   }
 
@@ -70,6 +72,7 @@ export class PointLight {
   setWorldVec() {
     let {model} = this.matrix
     mat.mulVec(model, [0, 0, 0, 1], this.worldPosition)
+    this.worldPosition = this.worldPosition.slice(0, 3)
   }
 
 }

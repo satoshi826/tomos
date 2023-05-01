@@ -10,29 +10,67 @@ import {cameraControl} from '../lib/engine/extend/mouse'
 import {insideOut} from '../lib/engine/extend/mesh'
 import {deferredMta, getDeferredRenderer} from '../lib/engine/extend/deferred'
 
+import {range} from '../lib/util/util'
+
 export function main(core) {
 
-  const camera = new Camera({position: [0, 5, 15], fovy: 70, controller: {cameraControl}})
+  const camera = new Camera({position: [0, 5, 15], near: 0.1, far: 300, fovy: 70, controller: {cameraControl}})
   camera.control('cameraControl')
 
   const basicMta1 = deferredMta(core, {color: [0.3, 0.3, 1]})
   const basicMta2 = deferredMta(core, {color: [1, 0.3, 0.3]})
   const basicMta3 = deferredMta(core, {color: [0.3, 1, 0.3]})
-  const basicMta5 = deferredMta(core, {color: [0.1, 0.1, 0.1]})
+  const basicMta5 = deferredMta(core, {color: [0.8, 0.8, 0.8]})
+  const basicMta6 = deferredMta(core, {color: [0.9, 0.9, 0.9]})
 
   const torus = new Geometory(core, geo.torus(48, 48, 1, 2))
   const box = new Geometory(core, geo.cube())
+  const plane = new Geometory(core, geo.plane())
 
   const mesh1 = new Mesh(core, {geometory: torus, material: basicMta1, position: [-8, 0, 0], rotation: [0, [1, 0, 0]]})
   const mesh2 = new Mesh(core, {geometory: torus, material: basicMta2, position: [0, 0, 0]})
   const mesh3 = new Mesh(core, {geometory: torus, material: basicMta3, position: [0, 8, 0], rotation: [0, [0, 0, 1]]})
 
-  const base = new Mesh(core, {geometory: box, material: basicMta5, position: [0, 0, 0], scale: [30, 11, 30]})
-  insideOut(base)
+  const base = new Mesh(core, {geometory: plane, material: basicMta5, position: [0, -11, 0], scale: [300, 300, 30], rotation: [-Math.PI / 2, [1, 0, 0]]})
 
-  let light1 = new PointLight()
-  let light2 = new PointLight()
-  let light3 = new PointLight()
+  const getlightPillars = () => {
+
+    const num = 40
+    const width = 300
+    const unitWidth = width / (num - 1)
+
+    const meshs = range(num).flatMap((i) => {
+      return [
+        new Mesh(core, {geometory: box, material: basicMta6, position: [15, -6, width / 2 - i * unitWidth], scale: [2, 5, 2]}),
+        new Mesh(core, {geometory: box, material: basicMta6, position: [-15, -6, width / 2 - i * unitWidth], scale: [2, 5, 2]}),
+        new Mesh(core, {geometory: box, material: basicMta6, position: [15, 8, width / 2 - i * unitWidth], scale: [2, 5, 2]}),
+        new Mesh(core, {geometory: box, material: basicMta6, position: [-15, 8, width / 2 - i * unitWidth], scale: [2, 5, 2]})
+      ]
+    })
+
+    const lights = range(num).flatMap(() => {
+      return [
+        new PointLight({intensity: 8, exponent: 2.5}),
+        new PointLight({intensity: 8, exponent: 2.5}),
+        new PointLight({intensity: 8, exponent: 2.5}),
+        new PointLight({intensity: 8, exponent: 2.5})
+      ]
+    })
+
+    meshs.forEach((mesh, i) => {
+      insideOut(mesh)
+      mesh.add(lights[i])
+    })
+
+    return {
+      lights,
+      meshs
+    }
+  }
+
+  let light1 = new PointLight({intensity: 6, exponent: 2})
+  let light2 = new PointLight({intensity: 6, exponent: 2})
+  let light3 = new PointLight({intensity: 6, exponent: 2})
 
   mesh2.add(mesh1)
   mesh1.add(mesh3)
@@ -41,10 +79,12 @@ export function main(core) {
   mesh2.add(light2)
   mesh3.add(light3)
 
+  const lightPillars = getlightPillars()
+
   const render = getDeferredRenderer(core)
 
-  const meshs = [base, mesh1, mesh3, mesh2]
-  const lights = [light1, light2, light3]
+  const meshs = [base, mesh1, mesh3, mesh2, ...lightPillars.meshs]
+  const lights = [light1, light2, light3, ...lightPillars.lights]
 
   const animation = new Animation({callback: ({delta}) => {
 

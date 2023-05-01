@@ -11,7 +11,9 @@ export const deferred = () => ({
     'u_colorTexture',
     'u_cameraPosition',
     'u_pointLightNum',
-    'u_pointLightPosition'
+    'u_pointLightPosition',
+    'u_pointLightIntensity',
+    'u_pointLightExponent'
   ],
   vert: /* glsl */`#version 300 es
 
@@ -36,6 +38,9 @@ export const deferred = () => ({
 
     uniform vec3 u_cameraPosition;
     uniform vec3 u_pointLightPosition[MAX_LIGHTS];
+    uniform float u_pointLightIntensity[MAX_LIGHTS];
+    uniform float u_pointLightExponent[MAX_LIGHTS];
+
     uniform int  u_pointLightNum;
 
     in vec2 v_uv;
@@ -43,7 +48,7 @@ export const deferred = () => ({
     out vec4 o_color;
 
     void main(void){
-      float specIntensity = 50.0;
+      float specIntensity = 20.0;
 
       vec3 albedo = texture(u_colorTexture, v_uv).xyz;
       vec3 position = texture(u_positionTexture, v_uv).xyz;
@@ -51,23 +56,32 @@ export const deferred = () => ({
 
       vec3 viewDir = normalize(u_cameraPosition - position);
 
+      vec3 lightVec;
       vec3 lightDir;
+      float lightDis;
+      float lightDecay;
+      float lightPower;
       vec3 reflectDir;
 
       vec3 diffuse = vec3(0.0);
       vec3 specular = vec3(0.0);
 
       for(int i = 0; i < u_pointLightNum+1; i++){
-        lightDir = normalize(u_pointLightPosition[i] - position);
+
+        lightVec = u_pointLightPosition[i] - position;
+        lightDir = normalize(lightVec);
+        lightDis = distance(u_pointLightPosition[i], position);
+
         reflectDir = reflect(-lightDir, normal);
-        diffuse += albedo * max(0.0, dot(lightDir, normal));
-        specular +=  albedo * pow(max(0.0, dot(viewDir, reflectDir)), specIntensity);
+
+        lightDecay = (u_pointLightExponent[i] > 0.00001) ? pow(lightDis, u_pointLightExponent[i]) : 1.0;
+        lightPower = u_pointLightIntensity[i] / lightDecay;
+
+        diffuse += lightPower * albedo * max(0.0, dot(lightDir, normal));
+        specular += lightPower * albedo * pow(max(0.0, dot(viewDir, reflectDir)), specIntensity);
       }
 
-      // o_color = vec4(diffuse + specular, 1.0);
       o_color = vec4(diffuse + specular, 1.0);
-      // o_color = vec4(diffuse + specular, 1.0);
-      // o_color = vec4(albedo, 1.0);
     }`
 
 })

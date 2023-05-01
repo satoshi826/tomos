@@ -1,6 +1,7 @@
 
 import {mat} from './function/matrix'
 import {setHandler} from './function/state'
+import {oMapO, oForEach} from '../util/util'
 
 let id = 0
 
@@ -8,13 +9,19 @@ export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE']
 export const rgba16f = ['RGBA16F', 'RGBA', 'HALF_FLOAT']
 export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT']
 
+const pointLightUniforms = {
+  u_pointLightPosition : (light) => light.worldPosition,
+  u_pointLightIntensity: (light) => light.attributes.intensity,
+  u_pointLightExponent : (light) => light.attributes.exponent,
+}
+
 const getDefaultUniformValue = {
-  u_mvpMatrix         : ({self}) => self.matrix.mvp,
-  u_modelMatrix       : ({mesh}) => mesh.matrix.model,
-  u_normalMatrix      : ({mesh}) => mesh.matrix.normal,
-  u_cameraPosition    : ({camera}) => camera.attributes.position,
-  u_pointLightNum     : ({self}) => self.lightUniforms.u_pointLightNum,
-  u_pointLightPosition: ({self}) => self.lightUniforms.u_pointLightPosition,
+  u_mvpMatrix     : ({self}) => self.matrix.mvp,
+  u_modelMatrix   : ({mesh}) => mesh.matrix.model,
+  u_normalMatrix  : ({mesh}) => mesh.matrix.normal,
+  u_cameraPosition: ({camera}) => camera.attributes.position,
+  u_pointLightNum : ({self}) => self.lightUniforms.u_pointLightNum,
+  ...oMapO(pointLightUniforms, ([k]) => ({self}) => self.lightUniforms[k])
 }
 
 export class Renderer {
@@ -73,28 +80,34 @@ export class Renderer {
   render({meshs, camera, lights = []} = {}) {
     this.core.useRenderer(this)
     this.clear()
-    this.setLight(lights)
+    lights.length && this.setLight(lights)
     meshs.forEach(mesh => {
       this.draw(mesh, camera)
     })
   }
 
   setLight(lights) {
+
     const lightUniformsInit = {
-      u_pointLightNum     : 0,
-      u_pointLightPosition: []
+      u_pointLightNum: 0,
+      ...oMapO(pointLightUniforms, () => [])
     }
+
     this.lightUniforms = lightUniformsInit
     lights.forEach((light) => {
       light.update()
       if(light.isPoint) {
         this.lightUniforms.u_pointLightNum++
-        this.lightUniforms.u_pointLightPosition.push(...light.worldPosition.slice(0, 3))
+        oForEach(pointLightUniforms, ([k, v]) => {
+          this.lightUniforms[k].push(v(light))
+        })
       }
     })
-    this.lightUniforms.u_pointLightPosition = Float32Array.from(
-      this.lightUniforms.u_pointLightPosition
-    )
+
+    oForEach(pointLightUniforms, ([k]) => {
+      this.lightUniforms[k] = Float32Array.from(this.lightUniforms[k].flat())
+    })
+
   }
 
   draw(mesh, camera) {

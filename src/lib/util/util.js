@@ -19,6 +19,12 @@ export const oMapO = (object, f) => Object.entries(object).reduce((obj, [k, v]) 
   return obj
 }, {})
 
+export const oReduceO = (object, f) => Object.entries(object).reduce((obj, [k, v]) => {
+  const [newK, newV] = f([k, v])
+  obj[newK] = newV
+  return obj
+}, {})
+
 export const shake = (object) => Object?.keys(object).reduce((obj, cur) => {
   if(!(this[cur] === undefined || this[cur] === null)) obj[cur] = this[cur]
   return obj

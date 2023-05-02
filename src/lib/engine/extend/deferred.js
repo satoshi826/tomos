@@ -45,7 +45,7 @@ export const getDeferredRenderer = (core) => {
 
   const getBlurPass = (core, {targetName, targetTex}) => {
 
-    const raitos = [0.25, 0.125, 0.0625]
+    const raitos = [0.25, 0.125]
 
     const blurMta = new Material(core, blur())
     const blurResult = screenMesh(blurMta)
@@ -90,7 +90,6 @@ export const getDeferredRenderer = (core) => {
   const composedMta = new Material(core, compose(), {
     u_blurTexture1: blurPass.texture[0],
     u_blurTexture2: blurPass.texture[1],
-    u_blurTexture3: blurPass.texture[2],
     u_depthTexture: preRenderer.renderTexture[3],
   })
   const composedResult = screenMesh(composedMta)

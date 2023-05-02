@@ -7,6 +7,7 @@ onmessage = ({data}) => {
   data.init && init(data.init)
   data.resize && resize(data.resize)
   data.mouse && mouse(data.mouse)
+  data.state && state(data.state)
 }
 
 function init(init) {
@@ -20,4 +21,8 @@ function resize(resize) {
 
 function mouse(mouse) {
   setState({mouse})
+}
+
+function state(state) {
+  setState(state)
 }

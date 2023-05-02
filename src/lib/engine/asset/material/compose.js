@@ -9,7 +9,6 @@ export const compose = () => ({
     'u_preEffectTexture',
     'u_blurTexture1',
     'u_blurTexture2',
-    'u_blurTexture3',
     'u_depthTexture',
     'u_near',
     'u_far'
@@ -36,7 +35,6 @@ export const compose = () => ({
   uniform sampler2D u_preEffectTexture;
   uniform sampler2D u_blurTexture1;
   uniform sampler2D u_blurTexture2;
-  uniform sampler2D u_blurTexture3;
   uniform sampler2D u_depthTexture;
   uniform float u_near;
   uniform float u_far;
@@ -52,7 +50,6 @@ export const compose = () => ({
     vec3 preEffect = texture(u_preEffectTexture, v_uv).rgb;
     vec3 blur1 = texture(u_blurTexture1, v_uv).rgb;
     vec3 blur2 = texture(u_blurTexture2, v_uv).rgb;
-    vec3 blur3 = texture(u_blurTexture3, v_uv).rgb;
     float depth = texture(u_depthTexture, v_uv).x;
 
     float depthLinear = convertToLinearDepth(depth, u_near, u_far);
@@ -61,19 +58,19 @@ export const compose = () => ({
     float target = 0.12;
 
     float dofPower = depthLinear-target;
-    dofPower = (dofPower < 0.0) ? 100.0 * -dofPower : 4.0 * dofPower;
+    dofPower = (dofPower < 0.0) ? 800.0 * -dofPower : 5.0 * dofPower;
     float dofPowerNormal =  dofPower / (1.0 + dofPower);
 
     vec3 toneMapBlur = blur1 / (1.0 + blur1);
 
     vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);
-    vec3 bloom = 0.055 * (1.0 * blur1 + 1.5 * blur2 + 0.25 * blur3);
-    vec3 toneMapPreBloom = bloom / (1.0 + bloom);
-    vec3 outputBase = (toneMapPreEffect + toneMapPreBloom) + 0.02;
-    vec3 outputDof = dofPowerNormal * toneMapBlur + (1.0 - dofPowerNormal) * outputBase;
+    vec3 bloom = 0.08 * (1.0 * blur1 + 0.5 * blur2);
+    vec3 toneMapBloom = bloom / (1.0 + bloom);
+    vec3 outputBase = (toneMapPreEffect + toneMapBloom) + 0.02;
     vec3 outputC = mix(outputBase, toneMapBlur, dofPowerNormal);
-    vec3 outputFog = mix(outputC, fog, depthLinear * 0.5);
+    vec3 outputFog = mix(outputC, fog, depthLinear * 0.05);
 
+    // o_color = vec4(vec3(dofPowerNormal), 1.0);
     o_color = vec4(outputFog, 1.0);
     // o_color = vec4(vec3(depthLinear), 1.0);
     // o_color = vec4(depthLinear*(toneMapPreEffect + toneMapPreBloom) + 0.01, 1.0);

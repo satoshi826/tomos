@@ -7,94 +7,81 @@ import {geo} from '../lib/engine/asset/geometory/geometory'
 import {sendState} from '../lib/engine/function/state'
 import {cameraControl} from '../lib/engine/extend/mouse'
 
+import {setHandler} from '../lib/engine/function/state'
+
+import {qtn} from '../lib/engine/function/quaternion'
+
 import {insideOut} from '../lib/engine/extend/mesh'
 import {deferredMta, getDeferredRenderer} from '../lib/engine/extend/deferred'
 
-import {range} from '../lib/util/util'
+import {range, random, fill} from '../lib/util/util'
 
 export function main(core) {
 
-  const camera = new Camera({position: [0, 5, 15], near: 0.1, far: 200, fovy: 70, controller: {cameraControl}})
+  const camera = new Camera({position: [0, 5, 30], near: 0.1, far: 300, fovy: 70, controller: {cameraControl}})
   camera.control('cameraControl')
 
-  const basicMta1 = deferredMta(core, {color: [0.3, 0.3, 1]})
-  const basicMta2 = deferredMta(core, {color: [1, 0.3, 0.3]})
-  const basicMta3 = deferredMta(core, {color: [0.3, 1, 0.3]})
-  const basicMta5 = deferredMta(core, {color: [0.2, 0.2, 0.2]})
+  const black = deferredMta(core, {color: [0.05, 0.05, 0.05]})
 
-  const torus = new Geometory(core, geo.torus(48, 48, 1, 2))
   const box = new Geometory(core, geo.cube())
-  const plane = new Geometory(core, geo.plane())
+  const sphere = new Geometory(core, geo.sphere(24, 24, 2))
 
-  const mesh1 = new Mesh(core, {geometory: torus, material: basicMta1, position: [-8, 0, 0], rotation: [0, [1, 0, 0]]})
-  const mesh2 = new Mesh(core, {geometory: torus, material: basicMta2, position: [0, 0, 0]})
-  const mesh3 = new Mesh(core, {geometory: torus, material: basicMta3, position: [0, 8, 0], rotation: [0, [0, 0, 1]]})
-
-  const base = new Mesh(core, {geometory: plane, material: basicMta5, position: [0, -11, 0], scale: [50, 200, 30], rotation: [-Math.PI / 2, [1, 0, 0]]})
-
-  const room = new Mesh(core, {geometory: plane, material: basicMta5, scale: [100, 100, 100]})
+  const center = new Mesh(core, {geometory: sphere, material: black})
+  const room = new Mesh(core, {geometory: box, material: black, scale: [100, 100, 100]})
   insideOut(room)
 
-  const getlightPillars = () => {
-
-    const num = 10
-    const width = 200
-    const intensity = 80
-    const unitWidth = width / (num - 1)
-
-    const meshs = range(num).flatMap((i) => {
-      return [
-        new Mesh(core, {geometory: box, material: basicMta5, position: [15, -6, width / 2 - i * unitWidth], scale: [2, 5, 2]}),
-        new Mesh(core, {geometory: box, material: basicMta5, position: [-15, -6, width / 2 - i * unitWidth], scale: [2, 5, 2]}),
-        new Mesh(core, {geometory: box, material: basicMta5, position: [15, 8, width / 2 - i * unitWidth], scale: [2, 5, 2]}),
-        new Mesh(core, {geometory: box, material: basicMta5, position: [-15, 8, width / 2 - i * unitWidth], scale: [2, 5, 2]})
-      ]
-    })
-
-    const lights = range(num).flatMap(() => {
-      return [
-        new PointLight({intensity, exponent: 2.8}),
-        new PointLight({intensity, exponent: 2.8}),
-        new PointLight({intensity, exponent: 2.8}),
-        new PointLight({intensity, exponent: 2.8})
-      ]
-    })
+  const getlightSphere = (num) => {
+    console.log(num)
+    const meshs = range(num).flatMap(() => new Mesh(core, {
+      geometory: sphere, material: deferredMta(core, {color: [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)]}), scale: fill(3, random(0.3, 5))
+    }))
+    const lights = range(num).flatMap((_, i) => new PointLight({intensity: meshs[i].attributes.scale[0] * 1200, exponent: 2.4}))
 
     meshs.forEach((mesh, i) => {
-      insideOut(mesh)
       mesh.add(lights[i])
+      mesh.qt = qtn.create()
+      mesh.initPos = [random(-80, 80), random(-80, 80), random(-80, 80)]
+      mesh.axis = [random(), random(), random()]
+      mesh.speed = (1 / mesh.attributes.scale[0])
     })
+
+
+    let counter = 0
+    const mutate = () => {
+      counter++
+      meshs.forEach((mesh) => {
+        qtn.rot((counter / 100) * mesh.speed, mesh.axis, mesh.qt)
+        mesh.mutate((v) => qtn.toVec(mesh.initPos, mesh.qt, v.position))
+      })
+    }
 
     return {
       lights,
-      meshs
+      meshs,
+      mutate
     }
   }
 
-  let light1 = new PointLight({intensity: 60, exponent: 2})
-  let light2 = new PointLight({intensity: 60, exponent: 2})
-  let light3 = new PointLight({intensity: 60, exponent: 2})
-
-  mesh2.add(mesh1)
-  mesh1.add(mesh3)
-
-  mesh1.add(light1)
-  mesh2.add(light2)
-  mesh3.add(light3)
-
-  const lightPillars = getlightPillars()
-
   const render = getDeferredRenderer(core)
 
-  const meshs = [base, mesh1, mesh3, mesh2, ...lightPillars.meshs,]
-  const lights = [light1, light2, light3, ...lightPillars.lights,]
 
-  const animation = new Animation({callback: ({delta}) => {
 
-    mesh1.mutate((v) => v.rotation[0] += 0.003 * delta)
-    mesh2.mutate((v) => v.rotation[0] -= 0.001 * delta)
-    mesh3.mutate((v) => v.rotation[0] -= 0.005 * delta)
 
+  let spheres = getlightSphere(40)
+
+  let meshs = [room, center, ...spheres.meshs]
+  let lights = [...spheres.lights]
+
+  setHandler('rangelights', (lightsNum) => {
+    if(lightsNum) {
+      spheres = getlightSphere(Number(lightsNum))
+      meshs = [room, center, ...spheres.meshs]
+      lights = [...spheres.lights]
+    }
+  })
+
+  const animation = new Animation({callback: () => {
+    spheres.mutate()
     render({meshs, camera, lights})
   }, interval: 0})
 

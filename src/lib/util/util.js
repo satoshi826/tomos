@@ -32,6 +32,10 @@ export const shake = (object) => Object?.keys(object).reduce((obj, cur) => {
 
 export const range = (num) => [...Array(num).keys()]
 
+export const fill = (num, val) => [...Array(num).fill(val)]
+
+export const random = (min = 0, max = 1) => Math.random() * (max - min) + min
+
 //------------------------------------------------------------------
 
 export const qs = (selector) => document.querySelector(selector)

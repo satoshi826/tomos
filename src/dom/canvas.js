@@ -2,16 +2,18 @@ import {idle, id, state, oForEach} from '../lib/util/util'
 import {style, _} from '../lib/theme'
 import CanvasWorker from '../gl/worker?worker'
 
-export function canvas() {
+const canvasWorker = new CanvasWorker()
 
+export const sendState = (object) => {
+  canvasWorker.postMessage({state: object})
+}
+
+export function canvas() {
 
   idle(0, () => {
 
     const canvasE = id('canvas')
     const canvasWrapperE = id('canvasWrapper')
-
-    const canvasWorker = new CanvasWorker()
-
     canvasE.width = canvasE.clientWidth
     canvasE.height = canvasE.clientHeight
     const offscreenCanvas = canvasE.transferControlToOffscreen()

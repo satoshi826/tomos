@@ -1,17 +1,19 @@
 import {toCss, _} from '../../lib/theme'
+import {idle, id} from '../../lib/util/util'
+import {sendState} from '../canvas'
 
-export function range({id, info}) {
+export function range({key, info, min = 0, max = 100, init = 50}) {
 
-  // (() => {
-  //   // const rangeE = _id(`range${id}`)
-  //   // _gl.sendState({key: `range${id}`, value: rangeE.value})
-  //   // rangeE._onInput((e) => _gl.sendState({key: `range${id}`, value: e.target.value}))
-  // })._task(0)()
+  idle(0, () => {
+    const rangeE = id(`range${key}`)
+    sendState({key: `range${key}`, value: rangeE.value})
+    rangeE.oninput = (e) => sendState({[`range${key}`]: e.target.value})
+  })()
 
   return /* html */`
   <div style="${toCss(_.flex())}">
-    <div style="${toCss({width: '50%'})}">${info}</div>
-    <input id="range${id}" style="${toCss({width: '50%'})}" type="range" min="0" max="400" value="200"/>
+    <div style="${toCss({width: '40%'})}">${info}</div>
+    <input id="range${key}" style="${toCss({width: '60%'})}" type="range" min="${min}" max="${max}" value="${init}"/>
   </div>
   `
 }

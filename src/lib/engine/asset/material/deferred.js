@@ -48,7 +48,7 @@ export const deferred = () => ({
     layout (location = 0) out vec4 o_deferred;
 
     void main(void){
-      float specIntensity = 20.0;
+      float specIntensity = 40.0;
 
       vec3 albedo = texture(u_colorTexture, v_uv).xyz;
       vec3 position = texture(u_positionTexture, v_uv).xyz;

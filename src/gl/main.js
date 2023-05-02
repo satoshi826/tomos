@@ -32,6 +32,9 @@ export function main(core) {
 
   const base = new Mesh(core, {geometory: plane, material: basicMta5, position: [0, -11, 0], scale: [50, 200, 30], rotation: [-Math.PI / 2, [1, 0, 0]]})
 
+  const room = new Mesh(core, {geometory: plane, material: basicMta5, scale: [100, 100, 100]})
+  insideOut(room)
+
   const getlightPillars = () => {
 
     const num = 10

@@ -4,11 +4,10 @@ import {setHandler} from './function/state'
 import {oMapO, oForEach} from '../util/util'
 
 let id = 0
-
-export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE']
-export const rgba16f = ['RGBA16F', 'RGBA', 'HALF_FLOAT']
-export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT']
-export const depth = ['DEPTH_COMPONENT32F', 'DEPTH_COMPONENT', 'FLOAT']
+export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE', 'LINEAR']
+export const rgba16f = ['RGBA16F', 'RGBA', 'HALF_FLOAT', 'LINEAR']
+export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT', 'LINEAR']
+export const depth = ['DEPTH_COMPONENT32F', 'DEPTH_COMPONENT', 'FLOAT', 'NEAREST']
 
 const pointLightUniforms = {
   u_pointLightPosition : (light) => light.worldPosition,
@@ -21,6 +20,8 @@ const getDefaultUniformValue = {
   u_modelMatrix   : ({mesh}) => mesh.matrix.model,
   u_normalMatrix  : ({mesh}) => mesh.matrix.normal,
   u_cameraPosition: ({camera}) => camera.attributes.position,
+  u_near          : ({camera}) => camera.attributes.near,
+  u_far           : ({camera}) => camera.attributes.far,
   u_pointLightNum : ({self}) => self.lightUniforms.u_pointLightNum,
   ...oMapO(pointLightUniforms, ([k]) => ({self}) => self.lightUniforms[k])
 }
@@ -41,8 +42,10 @@ export class Renderer {
     this.backgroundColor = backgroundColor ?? [0, 0, 0, 1]
     this.isCanvas = !frameBuffer
     this.frameBuffer = null
-    this.depthRenderBuffer = null
     this.renderTexture = []
+    this.depthTextureNum = null
+    this.hasDepthTexture = null
+    this.depthRenderBuffer = null
     this.drawBuffers = [this.core.gl.BACK]
     this.lightUniforms = {}
 
@@ -60,13 +63,13 @@ export class Renderer {
       gl.canvas.width = width * pixelRatio
       gl.canvas.height = height * pixelRatio
     }else {
-      gl.bindRenderbuffer(gl.RENDERBUFFER, this.depthRenderBuffer)
+      if(!this.hasDepthTexture) gl.bindRenderbuffer(gl.RENDERBUFFER, this.depthRenderBuffer)
       this.renderTexture.forEach((renderTexture) => {
         const {internalFormat, format, type} = renderTexture
         gl.bindTexture(gl.TEXTURE_2D, renderTexture)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl[internalFormat], width * pixelRatio, height * pixelRatio, 0, gl[format], gl[type], null)
         gl.bindTexture(gl.TEXTURE_2D, null)
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width * pixelRatio, height * pixelRatio)
+        if(!this.hasDepthTexture) gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width * pixelRatio, height * pixelRatio)
       })
       gl.bindRenderbuffer(gl.RENDERBUFFER, null)
     }
@@ -78,10 +81,10 @@ export class Renderer {
     this.core.gl.clear(this.core.gl.COLOR_BUFFER_BIT | this.core.gl.DEPTH_BUFFER_BIT)
   }
 
-  render({meshs, camera, lights = []} = {}) {
+  render({meshs, camera, lights} = {}) {
     this.core.useRenderer(this)
     this.clear()
-    lights.length && this.setLight(lights)
+    lights && this.setLight(lights)
     meshs.forEach(mesh => {
       this.draw(mesh, camera)
     })
@@ -153,20 +156,31 @@ export class Renderer {
     this.frameBuffer = gl.createFramebuffer()
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer)
 
+    this.depthTextureNum = texture.findIndex(([, format]) => format === 'DEPTH_COMPONENT')
+    if (this.depthTextureNum === -1) this.depthTextureNum = null
+    this.hasDepthTexture = this.depthTextureNum !== null
+
     this.renderTexture = []
-    texture.forEach(([internalFormat, format, type], i) => {
-      this.renderTexture[i] = this.core.createTexture(this.width, this.height, internalFormat, format, type)
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, this.renderTexture[i], 0)
+    texture.forEach(([internalFormat, format, type, filter], i) => {
+
+      const isDepth = i === this.depthTextureNum
+      const attachment = isDepth ? gl.DEPTH_ATTACHMENT : gl.COLOR_ATTACHMENT0 + i
+
+      this.renderTexture[i] = this.core.createTexture(this.width, this.height, internalFormat, format, type, filter)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, this.renderTexture[i], 0)
       this.renderTexture[i].internalFormat = internalFormat
       this.renderTexture[i].format = format
       this.renderTexture[i].type = type
-      this.drawBuffers[i] = gl.COLOR_ATTACHMENT0 + i
+      if (!isDepth) this.drawBuffers[i] = attachment
     })
 
-    this.depthRenderBuffer = this.core.gl.createRenderbuffer()
-    gl.bindRenderbuffer(gl.RENDERBUFFER, this.depthRenderBuffer)
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.width, this.height)
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.depthRenderBuffer)
+    if(!this.hasDepthTexture) {
+      this.depthRenderBuffer = this.core.gl.createRenderbuffer()
+      gl.bindRenderbuffer(gl.RENDERBUFFER, this.depthRenderBuffer)
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.width, this.height)
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.depthRenderBuffer)
+    }
+
     gl.bindRenderbuffer(gl.RENDERBUFFER, null)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   }

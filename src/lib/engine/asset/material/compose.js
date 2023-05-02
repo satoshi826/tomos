@@ -10,6 +10,9 @@ export const compose = () => ({
     'u_blurTexture1',
     'u_blurTexture2',
     'u_blurTexture3',
+    'u_depthTexture',
+    'u_near',
+    'u_far'
   ],
 
   vert: /* glsl */`#version 300 es
@@ -34,8 +37,15 @@ export const compose = () => ({
   uniform sampler2D u_blurTexture1;
   uniform sampler2D u_blurTexture2;
   uniform sampler2D u_blurTexture3;
+  uniform sampler2D u_depthTexture;
+  uniform float u_near;
+  uniform float u_far;
 
   out vec4 o_color;
+
+  float convertToLinearDepth(float d, float near, float far){
+    return (2.0 * near) / (far + near - d * (far - near));
+  }
 
   void main(void){
 
@@ -43,13 +53,25 @@ export const compose = () => ({
     vec3 blur1 = texture(u_blurTexture1, v_uv).rgb;
     vec3 blur2 = texture(u_blurTexture2, v_uv).rgb;
     vec3 blur3 = texture(u_blurTexture3, v_uv).rgb;
+    float depth = texture(u_depthTexture, v_uv).x;
+  
+    float depthLinear = convertToLinearDepth(depth, u_near, u_far);
+    vec3 fog = vec3(0.2, 0.2, 0.2);
+
+    // if (depth > 0.99999999999999) {
+    //   discard;
+    // }
 
     vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);
-
-    vec3 bloom =  (1.0 * blur1 + 2.0 * blur2 + 0.25 * blur3);
+    vec3 bloom = (1.0 * blur1 + 1.5 * blur2 + 0.25 * blur3);
     vec3 toneMapPreBloom = bloom / (1.0 + bloom);
 
-    o_color = vec4(toneMapPreEffect + toneMapPreBloom + 0.01, 1.0);
+    vec3 outputBase = (toneMapPreEffect + toneMapPreBloom) + 0.01;
+    vec3 outputC = depthLinear * fog + (1.0 - depthLinear) * outputBase;
+
+    o_color = vec4(outputC, 1.0);
+    // o_color = vec4(depthLinear*(toneMapPreEffect + toneMapPreBloom) + 0.01, 1.0);
+    // o_color = vec4(vec3(depthLinear), 1.0);
   }`
 
 })

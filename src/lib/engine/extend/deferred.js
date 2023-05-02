@@ -5,7 +5,7 @@ import {Mesh} from '@engine/mesh'
 import {deferred} from '@engine/asset/material/deferred'
 import {prePass} from '@engine/asset/material/prePass'
 import {blur} from '@engine/asset/material/blur'
-import {compose} from '../asset/material/conpose'
+import {compose} from '../asset/material/compose'
 import {geo} from '@engine/asset/geometory/geometory'
 
 export const deferredMta = (core, {color, emission}) => new Material(core, prePass({color, emission}))
@@ -72,9 +72,9 @@ export const getDeferredRenderer = (core) => {
           blurMta.uniformValue.u_invPixelRatio = pixelRatioBase / ratio
           renderVertical.render({meshs: [blurResult]})
 
+          blurMta.uniformValue.u_preEffectTexture = postBlurTex
           blurMta.uniformValue.u_isHorizontal = true
           blurMta.uniformValue.u_invPixelRatio = pixelRatioBase
-          blurMta.uniformValue.u_preEffectTexture = postBlurTex
           blurMta.texture[0] = `blur${i}`
           renderHorizontal.render({meshs: [blurResult]})
         })
@@ -90,11 +90,12 @@ export const getDeferredRenderer = (core) => {
   const composedMta = new Material(core, compose(), {
     u_blurTexture1: blurPass.texture[0],
     u_blurTexture2: blurPass.texture[1],
-    u_blurTexture3: blurPass.texture[2]
+    u_blurTexture3: blurPass.texture[2],
+    u_depthTexture: preRenderer.renderTexture[3],
   })
   const composedResult = screenMesh(composedMta)
 
-  composedMta.texture[1] = 'deferred'
+  composedMta.texture[4] = 'deferred'
   composedMta.uniformValue.u_preEffectTexture = deferredTex
 
   const composedRenderer = new Renderer(core, {
@@ -108,21 +109,7 @@ export const getDeferredRenderer = (core) => {
     preRenderer.render({meshs, camera})
     deferredRenderer.render({meshs: [deferredRendererResult], camera, lights})
     blurPass.render()
-    composedRenderer.render({meshs: [composedResult]})
-
-    // effectMta.uniformValue.u_isHorizontal = false
-    // effectMta.uniformValue.u_invPixelRatio = pixelRatioBase / blurRatio
-    // effectMta.uniformValue.u_preEffectTexture = deferredRendererTexture
-    // effectMta.texture[0] = 'deferred'
-    // postEffectRenderer.render({meshs: [postEffectResult]})
-
-    // effectMta.uniformValue.u_isHorizontal = true
-    // effectMta.uniformValue.u_invPixelRatio = pixelRatioBase
-    // effectMta.uniformValue.u_preEffectTexture = postBlurTexture
-    // effectMta.texture[0] = 'blur1'
-    // postEffectRenderer2.render({meshs: [postEffectResult]})
-
-    // composedMta.uniformValue.u_preEffectTexture = deferredRendererTexture
+    composedRenderer.render({meshs: [composedResult], camera})
   }
 
 }

@@ -44,7 +44,7 @@ export const blur = () => ({
   void main(void){
 
     int u_sampleStep = 1;
-    float highlightCoff = 0.3;
+    float highlightCoff = 0.25;
 
     ivec2 coord =  u_invPixelRatio * ivec2(gl_FragCoord.xy);
     ivec2 size = textureSize(u_preEffectTexture, 0);

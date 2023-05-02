@@ -14,7 +14,7 @@ import {range} from '../lib/util/util'
 
 export function main(core) {
 
-  const camera = new Camera({position: [0, 5, 15], near: 0.1, far: 600, fovy: 70, controller: {cameraControl}})
+  const camera = new Camera({position: [0, 5, 15], near: 0.1, far: 200, fovy: 70, controller: {cameraControl}})
   camera.control('cameraControl')
 
   const basicMta1 = deferredMta(core, {color: [0.3, 0.3, 1]})
@@ -34,8 +34,8 @@ export function main(core) {
 
   const getlightPillars = () => {
 
-    const num = 10
-    const width = 200
+    const num = 8
+    const width = 400
     const unitWidth = width / (num - 1)
 
     const meshs = range(num).flatMap((i) => {
@@ -49,10 +49,10 @@ export function main(core) {
 
     const lights = range(num).flatMap(() => {
       return [
-        new PointLight({intensity: 100, exponent: 2.5}),
-        new PointLight({intensity: 100, exponent: 2.5}),
-        new PointLight({intensity: 100, exponent: 2.5}),
-        new PointLight({intensity: 100, exponent: 2.5})
+        new PointLight({intensity: 400, exponent: 2.8}),
+        new PointLight({intensity: 400, exponent: 2.8}),
+        new PointLight({intensity: 400, exponent: 2.8}),
+        new PointLight({intensity: 400, exponent: 2.8})
       ]
     })
 
@@ -66,12 +66,6 @@ export function main(core) {
       meshs
     }
   }
-
-  // const big = new Mesh(core, {geometory: box, material: basicMta6, position: [0, 150, -180], scale: [150, 300, 15]})
-  // const bigLight = new PointLight({intensity: 8, exponent: 0.5})
-  // big.add(bigLight)
-  // insideOut(big)
-
 
   let light1 = new PointLight({intensity: 100, exponent: 2})
   let light2 = new PointLight({intensity: 100, exponent: 2})

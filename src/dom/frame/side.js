@@ -22,8 +22,9 @@ export function side() {
     <div id="sidebar">
       <div></div>
       ${viewState({key: 'drawTime'})}
+      ${viewState({key: 'fps'})}
       <div></div>
-      ${setToggle('shadowMap', 1)}
+      <!-- ${setToggle('shadowMap', 1)} -->
     </div>
   `
 }

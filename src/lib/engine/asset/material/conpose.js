@@ -7,7 +7,9 @@ export const compose = () => ({
   ],
   uniforms: [
     'u_preEffectTexture',
-    'u_blurTexture'
+    'u_blurTexture1',
+    'u_blurTexture2',
+    'u_blurTexture3',
   ],
 
   vert: /* glsl */`#version 300 es
@@ -29,18 +31,25 @@ export const compose = () => ({
   in vec2 v_uv;
 
   uniform sampler2D u_preEffectTexture;
-  uniform sampler2D u_blurTexture;
+  uniform sampler2D u_blurTexture1;
+  uniform sampler2D u_blurTexture2;
+  uniform sampler2D u_blurTexture3;
 
   out vec4 o_color;
 
   void main(void){
 
     vec3 preEffect = texture(u_preEffectTexture, v_uv).rgb;
-    vec3 blur = texture(u_blurTexture, v_uv).rgb;
+    vec3 blur1 = texture(u_blurTexture1, v_uv).rgb;
+    vec3 blur2 = texture(u_blurTexture2, v_uv).rgb;
+    vec3 blur3 = texture(u_blurTexture3, v_uv).rgb;
 
-    o_color = vec4(preEffect + blur, 1.0);
-    // o_color = vec4(gammaCorrection, 1.0);
+    vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);
 
+    vec3 bloom =  (1.0 * blur1 + 2.0 * blur2 + 0.25 * blur3);
+    vec3 toneMapPreBloom = bloom / (1.0 + bloom);
+
+    o_color = vec4(toneMapPreEffect + toneMapPreBloom + 0.01, 1.0);
   }`
 
 })

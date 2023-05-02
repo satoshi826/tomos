@@ -8,6 +8,7 @@ let id = 0
 export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE']
 export const rgba16f = ['RGBA16F', 'RGBA', 'HALF_FLOAT']
 export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT']
+export const depth = ['DEPTH_COMPONENT32F', 'DEPTH_COMPONENT', 'FLOAT']
 
 const pointLightUniforms = {
   u_pointLightPosition : (light) => light.worldPosition,

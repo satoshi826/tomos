@@ -33,7 +33,9 @@ const uniTypeMap = {
 
   u_preEffectTexture : [false, 'uniform1i'],
   u_postEffectTexture: [false, 'uniform1i'],
-  u_blurTexture      : [false, 'uniform1i'],
+  u_blurTexture1     : [false, 'uniform1i'],
+  u_blurTexture2     : [false, 'uniform1i'],
+  u_blurTexture3     : [false, 'uniform1i'],
 
   u_isHorizontal : [false, 'uniform1i'],
   u_invPixelRatio: [false, 'uniform1i'],

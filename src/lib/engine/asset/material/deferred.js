@@ -46,14 +46,17 @@ export const deferred = () => ({
     in vec2 v_uv;
 
     layout (location = 0) out vec4 o_deferred;
-    layout (location = 1) out vec4 o_highlight;
 
     void main(void){
-      float specIntensity = 20.0;
+      float specIntensity = 50.0;
 
       vec3 albedo = texture(u_colorTexture, v_uv).xyz;
       vec3 position = texture(u_positionTexture, v_uv).xyz;
       vec3 normal = texture(u_normalTexture, v_uv).xyz;
+
+      if (albedo == vec3(0.0)) {
+        discard;
+      }
 
       vec3 viewDir = normalize(u_cameraPosition - position);
 
@@ -75,7 +78,7 @@ export const deferred = () => ({
 
         reflectDir = reflect(-lightDir, normal);
 
-        lightDecay = (u_pointLightExponent[i] > 0.00001) ? pow(lightDis, u_pointLightExponent[i]) : 1.0;
+        lightDecay = (u_pointLightExponent[i] > 0.001) ? pow(lightDis, u_pointLightExponent[i]) : 1.0;
         lightPower = u_pointLightIntensity[i] / lightDecay;
 
         diffuse += lightPower * albedo * max(0.0, dot(lightDir, normal));
@@ -83,25 +86,7 @@ export const deferred = () => ({
       }
 
       vec3 raw = diffuse + 8.0 * specular;
-
-      vec3 toneMap = raw / (1.0 + raw);
-
-      float gammaFactor = 1.2;
-      vec3 gammaCorrection = vec3(
-        pow(toneMap.r, 1.0/gammaFactor),
-        pow(toneMap.g, 1.0/gammaFactor),
-        pow(toneMap.b, 1.0/gammaFactor)
-      );
-
-      float luminance = (raw.r + raw.g + raw.b)/3.0;
-      float luminancePow = pow(luminance, 2.5);
-      float luminanceNormal = luminancePow / (1.0 + luminancePow);
-
-      vec3 highlight = (luminancePow > 0.01) ? luminanceNormal * albedo : vec3(0.0);
-
-      o_deferred = vec4(gammaCorrection, 1.0);
-      o_highlight = vec4(highlight, 1.0);
-
+      o_deferred = vec4(raw, 1.0);
     }`
 
 })

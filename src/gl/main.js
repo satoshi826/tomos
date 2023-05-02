@@ -20,8 +20,7 @@ export function main(core) {
   const basicMta1 = deferredMta(core, {color: [0.3, 0.3, 1]})
   const basicMta2 = deferredMta(core, {color: [1, 0.3, 0.3]})
   const basicMta3 = deferredMta(core, {color: [0.3, 1, 0.3]})
-  const basicMta5 = deferredMta(core, {color: [0.8, 0.8, 0.8]})
-  const basicMta6 = deferredMta(core, {color: [0.9, 0.9, 0.9]})
+  const basicMta5 = deferredMta(core, {color: [0.2, 0.2, 0.2]})
 
   const torus = new Geometory(core, geo.torus(48, 48, 1, 2))
   const box = new Geometory(core, geo.cube())
@@ -31,12 +30,12 @@ export function main(core) {
   const mesh2 = new Mesh(core, {geometory: torus, material: basicMta2, position: [0, 0, 0]})
   const mesh3 = new Mesh(core, {geometory: torus, material: basicMta3, position: [0, 8, 0], rotation: [0, [0, 0, 1]]})
 
-  const base = new Mesh(core, {geometory: plane, material: basicMta6, position: [0, -11, 0], scale: [300, 300, 30], rotation: [-Math.PI / 2, [1, 0, 0]]})
+  const base = new Mesh(core, {geometory: plane, material: basicMta5, position: [0, -11, 0], scale: [50, 200, 30], rotation: [-Math.PI / 2, [1, 0, 0]]})
 
   const getlightPillars = () => {
 
-    const num = 18
-    const width = 300
+    const num = 10
+    const width = 200
     const unitWidth = width / (num - 1)
 
     const meshs = range(num).flatMap((i) => {
@@ -50,10 +49,10 @@ export function main(core) {
 
     const lights = range(num).flatMap(() => {
       return [
-        new PointLight({intensity: 4, exponent: 2}),
-        new PointLight({intensity: 4, exponent: 2}),
-        new PointLight({intensity: 4, exponent: 2}),
-        new PointLight({intensity: 4, exponent: 2})
+        new PointLight({intensity: 100, exponent: 2.5}),
+        new PointLight({intensity: 100, exponent: 2.5}),
+        new PointLight({intensity: 100, exponent: 2.5}),
+        new PointLight({intensity: 100, exponent: 2.5})
       ]
     })
 
@@ -74,9 +73,9 @@ export function main(core) {
   // insideOut(big)
 
 
-  let light1 = new PointLight({intensity: 6, exponent: 1.5})
-  let light2 = new PointLight({intensity: 6, exponent: 1.5})
-  let light3 = new PointLight({intensity: 6, exponent: 1.5})
+  let light1 = new PointLight({intensity: 100, exponent: 2})
+  let light2 = new PointLight({intensity: 100, exponent: 2})
+  let light3 = new PointLight({intensity: 100, exponent: 2})
 
   mesh2.add(mesh1)
   mesh1.add(mesh3)
@@ -101,6 +100,6 @@ export function main(core) {
     render({meshs, camera, lights})
   }, interval: 0})
 
-  setInterval(() => sendState({drawTime: animation.drawTime}), 200)
+  setInterval(() => sendState({drawTime: animation.drawTime, fps: 1000 / animation.delta}), 200)
   animation.start()
 }

@@ -48,7 +48,7 @@ export const deferred = () => ({
     layout (location = 0) out vec4 o_deferred;
 
     void main(void){
-      float specIntensity = 50.0;
+      float specIntensity = 20.0;
 
       vec3 albedo = texture(u_colorTexture, v_uv).xyz;
       vec3 position = texture(u_positionTexture, v_uv).xyz;
@@ -60,7 +60,6 @@ export const deferred = () => ({
 
       vec3 viewDir = normalize(u_cameraPosition - position);
 
-      vec3 lightVec;
       vec3 lightDir;
       float lightDis;
       float lightDecay;
@@ -71,9 +70,7 @@ export const deferred = () => ({
       vec3 specular = vec3(0.0);
 
       for(int i = 0; i < u_pointLightNum+1; i++){
-
-        lightVec = u_pointLightPosition[i] - position;
-        lightDir = normalize(lightVec);
+        lightDir = normalize(u_pointLightPosition[i] - position);
         lightDis = distance(u_pointLightPosition[i], position);
 
         reflectDir = reflect(-lightDir, normal);

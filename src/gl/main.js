@@ -34,8 +34,9 @@ export function main(core) {
 
   const getlightPillars = () => {
 
-    const num = 8
-    const width = 400
+    const num = 10
+    const width = 200
+    const intensity = 80
     const unitWidth = width / (num - 1)
 
     const meshs = range(num).flatMap((i) => {
@@ -49,10 +50,10 @@ export function main(core) {
 
     const lights = range(num).flatMap(() => {
       return [
-        new PointLight({intensity: 400, exponent: 2.8}),
-        new PointLight({intensity: 400, exponent: 2.8}),
-        new PointLight({intensity: 400, exponent: 2.8}),
-        new PointLight({intensity: 400, exponent: 2.8})
+        new PointLight({intensity, exponent: 2.8}),
+        new PointLight({intensity, exponent: 2.8}),
+        new PointLight({intensity, exponent: 2.8}),
+        new PointLight({intensity, exponent: 2.8})
       ]
     })
 
@@ -67,9 +68,9 @@ export function main(core) {
     }
   }
 
-  let light1 = new PointLight({intensity: 100, exponent: 2})
-  let light2 = new PointLight({intensity: 100, exponent: 2})
-  let light3 = new PointLight({intensity: 100, exponent: 2})
+  let light1 = new PointLight({intensity: 60, exponent: 2})
+  let light2 = new PointLight({intensity: 60, exponent: 2})
+  let light3 = new PointLight({intensity: 60, exponent: 2})
 
   mesh2.add(mesh1)
   mesh1.add(mesh3)

@@ -2,9 +2,9 @@ import {mat} from '@engine/function/matrix'
 
 export const insideOut = (mesh) => {
   mesh.setNormal = function() {
-    let {model, inverse, normal} = this.matrix
-    mat.inv(model, inverse)
-    mat.trans(inverse, normal)
+    let {model, normal} = this.matrix
+    mat.inv(model, normal)
+    mat.trans(normal, normal)
     normal.forEach((val, i) => normal[i] = -val)
   }
   mesh.material.render = function({idxLen}) {

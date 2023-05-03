@@ -82,7 +82,7 @@ export const deferred = () => ({
         specular += lightPower * albedo * pow(max(0.0, dot(viewDir, reflectDir)), specIntensity);
       }
 
-      vec3 raw = diffuse + 10.0 * specular;
+      vec3 raw = diffuse + 12.0 * specular;
       o_deferred = vec4(raw, 1.0);
     }`
 

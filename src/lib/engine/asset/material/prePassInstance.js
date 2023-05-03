@@ -1,10 +1,9 @@
 
 export const prePass = ({color = [0.5, 0.5, 0.5]} = {}) => ({
-  id        : 'prePass',
+  id        : 'prePassInstance',
   attributes: [
     'a_position',
-    'a_normal',
-    'a_position_offset'
+    'a_normal'
   ],
   uniforms: [
     'u_mvpMatrix',

@@ -8,10 +8,9 @@ export class Mesh {
   preParentVer = -1
 
   matrix = {
-    local  : mat.create(),
-    model  : mat.create(),
-    inverse: mat.create(),
-    normal : mat.create()
+    local : mat.create(),
+    model : mat.create(),
+    normal: mat.create()
   }
   parent = null
   children = []
@@ -82,9 +81,9 @@ export class Mesh {
   }
 
   setNormal() {
-    let {model, inverse, normal} = this.matrix
-    mat.inv(model, inverse)
-    mat.trans(inverse, normal)
+    let {model, normal} = this.matrix
+    mat.inv(model, normal)
+    mat.trans(normal, normal)
   }
 
 }

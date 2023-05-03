@@ -1,55 +1,10 @@
 import {oForEach, keys} from '../util/util'
-
-const strideMap = {
-  a_position    : 3,
-  a_normal      : 3,
-  a_textureCoord: 2
-}
-
-const attLocMap = {
-  a_position    : 0,
-  a_normal      : 1,
-  a_color       : 2,
-  a_textureCoord: 3
-}
-
-const uniTypeMap = {
-  u_mvpMatrix     : [true, 'uniformMatrix4fv'],
-  u_modelMatrix   : [true, 'uniformMatrix4fv'],
-  u_normalMatrix  : [true, 'uniformMatrix4fv'],
-  u_invMatrix     : [true, 'uniformMatrix4fv'],
-  u_cameraPosition: [false, 'uniform3fv'],
-
-  u_color              : [false, 'uniform3fv'],
-  u_pointLightNum      : [false, 'uniform1i'],
-  u_pointLightPosition : [false, 'uniform3fv'],
-  u_pointLightIntensity: [false, 'uniform1fv'],
-  u_pointLightExponent : [false, 'uniform1fv'],
-
-  u_positionTexture: [false, 'uniform1i'],
-  u_normalTexture  : [false, 'uniform1i'],
-  u_colorTexture   : [false, 'uniform1i'],
-  u_depthTexture   : [false, 'uniform1i'],
-
-  u_preEffectTexture : [false, 'uniform1i'],
-  u_postEffectTexture: [false, 'uniform1i'],
-  u_blurTexture1     : [false, 'uniform1i'],
-  u_blurTexture2     : [false, 'uniform1i'],
-  u_blurTexture3     : [false, 'uniform1i'],
-
-  u_isHorizontal : [false, 'uniform1i'],
-  u_invPixelRatio: [false, 'uniform1i'],
-
-  u_near: [false, 'uniform1f'],
-  u_far : [false, 'uniform1f'],
-}
-
 export class Core {
 
   program = {} // {id : program}
   vao = {} // {id : vao}
-  uniLoc = {}
-  texture = {}
+  uniLoc = {} // {programName : {uniformName : location}}
+  texture = {} // {name : {data, number}}
 
   currentRenderer = null
   currentProgram = null
@@ -68,7 +23,6 @@ export class Core {
     this.gl.enable(this.gl.BLEND)
 
     // this.gl.cullFace(this.gl.BACK)
-
     this.gl.getExtension('EXT_color_buffer_float')
     this.gl.getExtension('EXT_float_blend')
     this.gl.getExtension('OES_texture_half_float')
@@ -193,5 +147,51 @@ export class Core {
       this.gl.bindTexture(this.gl.TEXTURE_2D, data)
     }
   }
+}
 
+//------------------------------------------------------------------------------
+
+const strideMap = {
+  a_position    : 3,
+  a_normal      : 3,
+  a_color       : 4,
+  a_textureCoord: 2
+}
+
+const attLocMap = {
+  a_position    : 0,
+  a_normal      : 1,
+  a_color       : 2,
+  a_textureCoord: 3
+}
+
+const uniTypeMap = {
+  u_mvpMatrix     : [true, 'uniformMatrix4fv'],
+  u_modelMatrix   : [true, 'uniformMatrix4fv'],
+  u_normalMatrix  : [true, 'uniformMatrix4fv'],
+  u_invMatrix     : [true, 'uniformMatrix4fv'],
+  u_cameraPosition: [false, 'uniform3fv'],
+
+  u_color              : [false, 'uniform3fv'],
+  u_pointLightNum      : [false, 'uniform1i'],
+  u_pointLightPosition : [false, 'uniform3fv'],
+  u_pointLightIntensity: [false, 'uniform1fv'],
+  u_pointLightExponent : [false, 'uniform1fv'],
+
+  u_positionTexture: [false, 'uniform1i'],
+  u_normalTexture  : [false, 'uniform1i'],
+  u_colorTexture   : [false, 'uniform1i'],
+  u_depthTexture   : [false, 'uniform1i'],
+
+  u_preEffectTexture : [false, 'uniform1i'],
+  u_postEffectTexture: [false, 'uniform1i'],
+  u_blurTexture1     : [false, 'uniform1i'],
+  u_blurTexture2     : [false, 'uniform1i'],
+  u_blurTexture3     : [false, 'uniform1i'],
+
+  u_isHorizontal : [false, 'uniform1i'],
+  u_invPixelRatio: [false, 'uniform1i'],
+
+  u_near: [false, 'uniform1f'],
+  u_far : [false, 'uniform1f'],
 }

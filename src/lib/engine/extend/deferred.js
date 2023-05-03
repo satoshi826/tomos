@@ -1,5 +1,5 @@
 import {Material} from '@engine/material'
-import {Renderer, depth, rgba16f} from '@engine/renderer'
+import {Renderer, depth, rgba16f, rgba8} from '@engine/renderer'
 import {Geometory} from '@engine/geometory'
 import {Mesh} from '@engine/mesh'
 import {deferred} from '@engine/asset/material/deferred'
@@ -19,7 +19,7 @@ export const getDeferredRenderer = (core) => {
   //----------------------------------------------------------
 
   const preRenderer = new Renderer(core, {
-    frameBuffer: {texture: [rgba16f, rgba16f, rgba16f, depth]}, // pos nor col
+    frameBuffer: {texture: [rgba16f, rgba16f, rgba8, depth]}, // pos nor col
     pixelRatio : pixelRatioBase,
   })
 
@@ -94,14 +94,17 @@ export const getDeferredRenderer = (core) => {
   })
   const composedResult = screenMesh(composedMta)
 
-  composedMta.texture[4] = 'deferred'
   composedMta.uniformValue.u_preEffectTexture = deferredTex
+
+  console.log(composedMta)
 
   const composedRenderer = new Renderer(core, {
     pixelRatio: pixelRatioBase
   })
 
   //----------------------------------------------------------
+
+  console.log(core)
 
   return ({meshs, camera, lights}) => {
 

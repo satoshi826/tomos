@@ -1,7 +1,7 @@
 import {id, state, idle} from '../../lib/util/util'
 import {style, _, toCss, is} from '../../lib/theme'
 import {viewState} from '../atom/viewState'
-import {toggle} from '../atom/toggle'
+// import {toggle} from '../atom/toggle'
 import {range} from '../atom/range'
 
 export function side() {

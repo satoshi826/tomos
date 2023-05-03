@@ -18,10 +18,10 @@ import {range, random, fill} from '../lib/util/util'
 
 export function main(core) {
 
-  const camera = new Camera({position: [0, 5, 30], near: 0.1, far: 300, fovy: 70, controller: {cameraControl}})
+  const camera = new Camera({position: [0, 5, 30], near: 0.1, far: 300, fovy: 80, controller: {cameraControl}})
   camera.control('cameraControl')
 
-  const black = deferredMta(core, {color: [0.05, 0.05, 0.05]})
+  const black = deferredMta(core, {color: [0.02, 0.02, 0.02]})
 
   const box = new Geometory(core, geo.cube())
   const sphere = new Geometory(core, geo.sphere(24, 24, 2))
@@ -35,7 +35,7 @@ export function main(core) {
     const meshs = range(num).flatMap(() => new Mesh(core, {
       geometory: sphere, material: deferredMta(core, {color: [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)]}), scale: fill(3, random(0.3, 5))
     }))
-    const lights = range(num).flatMap((_, i) => new PointLight({intensity: meshs[i].attributes.scale[0] * 1200, exponent: 2.4}))
+    const lights = range(num).flatMap((_, i) => new PointLight({intensity: meshs[i].attributes.scale[0] * 1600, exponent: 2.4}))
 
     meshs.forEach((mesh, i) => {
       mesh.add(lights[i])
@@ -63,10 +63,6 @@ export function main(core) {
   }
 
   const render = getDeferredRenderer(core)
-
-
-
-
   let spheres = getlightSphere(40)
 
   let meshs = [room, center, ...spheres.meshs]

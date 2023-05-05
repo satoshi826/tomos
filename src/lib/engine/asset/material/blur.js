@@ -30,7 +30,7 @@ export const blur = () => ({
   in vec2 v_textureCoord;
 
   uniform sampler2D u_preEffectTexture;
-  uniform bool u_isHorizontal; // ブラーを掛ける方向
+  uniform bool u_isHorizontal;
   uniform int u_invPixelRatio;
 
   out vec4 o_color;
@@ -43,14 +43,13 @@ export const blur = () => ({
 
   void main(void){
 
-    int u_sampleStep = 1;
-    // float highlightCoff = 0.25;
+    int u_sampleStep = 1 * u_invPixelRatio;
 
     ivec2 coord =  u_invPixelRatio * ivec2(gl_FragCoord.xy);
     ivec2 size = textureSize(u_preEffectTexture, 0);
     vec3 sum = weights[0] * texelFetch(u_preEffectTexture, coord, 0).rgb;
 
-    ivec2 offsetUnit = u_isHorizontal ? ivec2(1, 0) : ivec2(0, 1) * u_invPixelRatio;
+    ivec2 offsetUnit = u_isHorizontal ? ivec2(1, 0) : ivec2(0, 1);
     ivec2 offset;
 
     offset = offsetUnit * u_sampleStep * 1;

@@ -1,6 +1,6 @@
 
-export const deferred = () => ({
-  id        : 'deferred',
+export const lightning = () => ({
+  id        : 'lightning',
   attributes: [
     'a_position',
     'a_textureCoord'
@@ -54,9 +54,9 @@ export const deferred = () => ({
       vec3 position = texture(u_positionTexture, v_uv).xyz;
       vec3 normal = texture(u_normalTexture, v_uv).xyz;
 
-      if (albedo == vec3(0.0)) {
-        discard;
-      }
+      // if (albedo == vec3(0.0)) {
+      //   discard;
+      // }
 
       vec3 viewDir = normalize(u_cameraPosition - position);
 
@@ -72,18 +72,17 @@ export const deferred = () => ({
       for(int i = 0; i < u_pointLightNum+1; i++){
         lightDir = normalize(u_pointLightPosition[i] - position);
         lightDis = distance(u_pointLightPosition[i], position);
-
         reflectDir = reflect(-lightDir, normal);
-
-        lightDecay = (u_pointLightExponent[i] > 0.001) ? pow(lightDis, u_pointLightExponent[i]) : 1.0;
-        lightPower = u_pointLightIntensity[i] / lightDecay;
-
+        lightDecay = (u_pointLightExponent[i] > 0.001) ? pow(lightDis, -u_pointLightExponent[i]) : 1.0;
+        lightPower = u_pointLightIntensity[i] * lightDecay;
         diffuse += lightPower * albedo * max(0.0, dot(lightDir, normal));
         specular += lightPower * albedo * pow(max(0.0, dot(viewDir, reflectDir)), specIntensity);
       }
 
-      vec3 raw = diffuse + 12.0 * specular;
+      vec3 raw = diffuse + 10.0 * specular;
       o_deferred = vec4(raw, 1.0);
+      // o_deferred = vec4(position, 1.0);
+      // o_deferred = vec4(0.7);
     }`
 
 })

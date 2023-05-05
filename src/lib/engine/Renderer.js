@@ -15,8 +15,9 @@ const pointLightUniforms = {
   u_pointLightExponent : (light) => light.attributes.exponent,
 }
 
-const getDefaultUniformValue = {
+const getDefaultUniform = {
   u_mvpMatrix     : ({self}) => self.matrix.mvp,
+  u_vpMatrix      : ({camera}) => camera.matrix.vp,
   u_modelMatrix   : ({mesh}) => mesh.matrix.model,
   u_normalMatrix  : ({mesh}) => mesh.matrix.normal,
   u_cameraPosition: ({camera}) => camera.attributes.position,
@@ -24,6 +25,11 @@ const getDefaultUniformValue = {
   u_far           : ({camera}) => camera.attributes.far,
   u_pointLightNum : ({self}) => self.lightUniforms.u_pointLightNum,
   ...oMapO(pointLightUniforms, ([k]) => ({self}) => self.lightUniforms[k])
+}
+
+const getDefaultInstancedAttributes = {
+  a_instance_modelMatrix : ({mesh}) => mesh.matrix.model,
+  a_instance_normalMatrix: ({mesh}) => mesh.matrix.normal
 }
 
 export class Renderer {
@@ -40,6 +46,7 @@ export class Renderer {
     this.width = width ?? core.canvasWidth
     this.height = height ?? core.canvasHeight
     this.backgroundColor = backgroundColor ?? [0, 0, 0, 1]
+
     this.isCanvas = !frameBuffer
     this.frameBuffer = null
     this.renderTexture = []
@@ -47,11 +54,14 @@ export class Renderer {
     this.hasDepthTexture = null
     this.depthRenderBuffer = null
     this.drawBuffers = [this.core.gl.BACK]
+
     this.lightUniforms = {}
+
+    this.instancedValues = null // {meshId : values}
+    this.instancedVBO = {} // {meshId : vbo}
 
     if (frameBuffer) this.setFrameBuffer(frameBuffer)
     if (isScreen) setHandler('resize', this.resize.bind(this))
-
   }
 
   resize({width = this.width, height = this.height, pixelRatio = this.pixelRatio} = {}) {
@@ -84,19 +94,24 @@ export class Renderer {
   render({meshs, camera, lights} = {}) {
     this.core.useRenderer(this)
     this.clear()
+    this.instancedValues = null
     lights && this.setLight(lights)
+    camera && camera.update()
     meshs.forEach(mesh => {
-      this.draw(mesh, camera)
+      if (mesh.material.instancedAttributes) {
+        this.setInstancedAttributes(mesh)
+      }else{
+        this.draw(mesh, camera)
+      }
     })
+    this.instancedValues && this.drawInstanced(meshs, camera)
   }
 
   setLight(lights) {
-
     const lightUniformsInit = {
       u_pointLightNum: 0,
       ...oMapO(pointLightUniforms, () => [])
     }
-
     this.lightUniforms = lightUniformsInit
     lights.forEach((light) => {
       light.update()
@@ -107,25 +122,48 @@ export class Renderer {
         })
       }
     })
-
     oForEach(pointLightUniforms, ([k]) => {
       this.lightUniforms[k] = Float32Array.from(this.lightUniforms[k].flat())
     })
-
   }
 
   draw(mesh, camera) {
     const {geometory, material} = mesh
     material.useProgram()
+    mesh.update()
     if (camera) this.setMVP(mesh, camera)
     this.useVao(geometory)
-    this.setUniform(mesh, camera)
+    this.setUniform({mesh, camera})
     material.render(geometory)
   }
 
-  setMVP(mesh, camera) {
+  setInstancedAttributes(mesh) {
+    this.instancedValues ??= {}
     mesh.update()
-    camera.update()
+    this.instancedValues[mesh.id] ??= {}
+    mesh.material.instancedAttributes.forEach((key) => {
+      this.instancedValues[mesh.id][key] ??= []
+      const getAttributeValue = getDefaultInstancedAttributes[key] ?? (({mesh}) => mesh.material.instancedValue[key])
+      getAttributeValue && this.instancedValues[mesh.id][key].push(getAttributeValue({mesh}))
+    })
+  }
+
+  drawInstanced(meshs, camera) {
+    oForEach(this.instancedValues, ([meshId, attributes]) => {
+      const instancedMesh = meshs.filter(({id}) => id === meshId)
+      const instancedNum = instancedMesh.length
+      const instancedMeshSample = instancedMesh[0]
+      const {material, geometory} = instancedMeshSample
+      this.useVao(geometory)
+      this.instancedVBO[meshId] ??= this.core.createInstancedVbo(attributes, geometory.id)
+      material.useProgram()
+      this.core.updateInstancedVbo(this.instancedVBO[meshId], attributes)
+      this.setUniform({mesh: instancedMeshSample, camera})
+      material.render(geometory, instancedNum)
+    })
+  }
+
+  setMVP(mesh, camera) {
     mat.mul(camera.matrix.vp, mesh.matrix.model, this.matrix.mvp)
   }
 
@@ -133,24 +171,18 @@ export class Renderer {
     this.core.useVao(geometory.id)
   }
 
-  setUniform(mesh, camera) {
-    const uniMap = this.getUniMap(mesh, camera)
-    this.core.setUniform(uniMap)
-  }
-
-  getUniMap(mesh, camera) {
-    return mesh.material.uniforms.reduce((obj, key) => {
-      const getUniformValue =
-        getDefaultUniformValue[key] ?? (({mesh}) => mesh.material.uniformValue[key])
+  setUniform({mesh, camera}) {
+    const uniMap = mesh.material.uniforms.reduce((obj, key) => {
+      const getUniformValue = getDefaultUniform[key] ?? (({mesh}) => mesh.material.uniformValue[key])
       const uniformValue = getUniformValue({mesh, camera, self: this})
       if (uniformValue === undefined) throw {error: `uniformValue ${key} is undefined`}
       obj[key] = uniformValue
       return obj
     }, {})
+    this.core.setUniform(uniMap)
   }
 
   setFrameBuffer({texture}) {
-
     const gl = this.core.gl
 
     this.frameBuffer = gl.createFramebuffer()

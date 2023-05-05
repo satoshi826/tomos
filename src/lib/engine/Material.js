@@ -1,7 +1,7 @@
 import {oForEach} from '../util/util'
 
 export class Material {
-  constructor(core, {id, attributes, uniforms, vert, frag, uniformValue}, texture) {
+  constructor(core, {id, attributes, uniforms, vert, frag, uniformValue, instancedAttributes, instancedValue}, texture) {
 
     this.core = core
     this.id = id
@@ -11,6 +11,12 @@ export class Material {
     this.texture = []
     this.vert = vert
     this.frag = frag
+    this.instancedAttributes = instancedAttributes ?? null
+    this.instancedValue = instancedValue ?? null
+
+    this.renderer = instancedValue
+      ? (...arg) => this.core.gl.drawElementsInstanced(...arg)
+      : (...arg) => this.core.gl.drawElements(...arg)
 
     if (!core.program[id]) {
       core.setProgram(id, vert, frag)
@@ -31,12 +37,11 @@ export class Material {
     this.core.useProgram(this.id)
   }
 
-  render({idxLen}) {
+  render({idxLen}, instancedNum) {
     this.texture.forEach((tex) => {
       this.core.useTexture(tex)
     })
-    this.core.gl.drawElements(this.core.gl.TRIANGLES, idxLen, this.core.gl.UNSIGNED_SHORT, 0)
+    this.renderer(this.core.gl.TRIANGLES, idxLen, this.core.gl.UNSIGNED_SHORT, 0, instancedNum)
   }
-
 
 }

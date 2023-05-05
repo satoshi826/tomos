@@ -6,7 +6,6 @@ import {Animation} from '../lib/engine/animation'
 import {geo} from '../lib/engine/asset/geometory/geometory'
 import {sendState} from '../lib/engine/function/state'
 import {cameraControl} from '../lib/engine/extend/mouse'
-
 import {setHandler} from '../lib/engine/function/state'
 
 import {qtn} from '../lib/engine/function/quaternion'
@@ -21,14 +20,16 @@ export function main(core) {
   const camera = new Camera({position: [0, 5, 30], near: 0.1, far: 300, fovy: 80, controller: {cameraControl}})
   camera.control('cameraControl')
 
-  const black = deferredMta(core, {color: [0.02, 0.02, 0.02]})
-
+  const black = deferredMta(core, {color: [0.05, 0.05, 0.05]})
   const box = new Geometory(core, geo.cube())
   const sphere = new Geometory(core, geo.sphere(24, 24, 2))
 
-  const center = new Mesh(core, {geometory: sphere, material: black})
+  const center = new Mesh(core, {geometory: sphere, material: black, scale: [2.0, 2.0, 2.0]})
   const room = new Mesh(core, {geometory: box, material: black, scale: [100, 100, 100]})
   insideOut(room)
+
+  const centerLight = new PointLight({intensity: 120, exponent: 1.0})
+  center.add(centerLight)
 
   const getlightSphere = (num) => {
     console.log(num)
@@ -63,16 +64,16 @@ export function main(core) {
   }
 
   const render = getDeferredRenderer(core)
-  let spheres = getlightSphere(40)
+  let spheres = getlightSphere(180)
 
-  let meshs = [room, center, ...spheres.meshs]
-  let lights = [...spheres.lights]
+  let meshs = [center, room, ...spheres.meshs]
+  let lights = [centerLight]
 
   setHandler('rangelights', (lightsNum) => {
     if(lightsNum) {
       spheres = getlightSphere(Number(lightsNum))
-      meshs = [room, center, ...spheres.meshs]
-      lights = [...spheres.lights]
+      meshs = [center, room, ...spheres.meshs]
+      lights = [centerLight]
     }
   })
 

@@ -1,4 +1,5 @@
-import {oForEach, keys} from '../util/util'
+import {oForEach, oMapO, keys, range} from '../util/util'
+
 export class Core {
 
   program = {} // {id : program}
@@ -11,7 +12,9 @@ export class Core {
   currentVao = null
 
   constructor({canvas, pixelRatio}) {
+
     this.gl = canvas.getContext('webgl2')
+    console.log(this.gl.getParameter(this.gl.MAX_VERTEX_ATTRIBS))
 
     this.canvasWidth = this.gl.canvas.width
     this.canvasHeight = this.gl.canvas.height
@@ -29,6 +32,8 @@ export class Core {
     this.gl.getExtension('OES_texture_half_float_linear')
     this.gl.getExtension('OES_texture_float')
     this.gl.getExtension('OES_texture_float_linear')
+    this.gl.getExtension('WEBGL_color_buffer_float')
+    this.gl.getExtension('WEBGL_depth_texture')
   }
 
   _compile(txt, type) {
@@ -78,8 +83,7 @@ export class Core {
       let vbo = this.gl.createBuffer()
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo)
       this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(v), this.gl.STATIC_DRAW)
-      this.gl.enableVertexAttribArray(attLocMap[k])
-      this.gl.vertexAttribPointer(attLocMap[k], strideMap[k], this.gl.FLOAT, false, 0, 0)
+      this.enableAttribute(k)
     })
     if(index) {
       let ibo = this.gl.createBuffer()
@@ -87,7 +91,6 @@ export class Core {
       this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(index), this.gl.STATIC_DRAW)
     }
     this.gl.bindVertexArray(null)
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null)
     this.vao[id] = vao
   }
 
@@ -107,6 +110,56 @@ export class Core {
       const params = isMat ? [false, v] : [v]
       this.gl[method](this.uniLoc[this.currentProgram][k], ...params)
     })
+  }
+
+  createInstancedVbo(attributes) {
+    const instancedVbo = oMapO(attributes, ([att, v]) => {
+      const isUnitAtt = typeof strideMap[att] === 'number'
+      const stride = isUnitAtt ? strideMap[att] : strideMap[att][1] * strideMap[att][0]
+      const maxInstance = 4000
+      const emptiy = new Float32Array(range(stride * maxInstance).fill(0))
+      let vbo = this.gl.createBuffer()
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo)
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, emptiy, this.gl.DYNAMIC_DRAW)
+      this.gl.vertexAttribDivisor(attLocMap[att], 1)
+      if (isUnitAtt) {
+        this.gl.vertexAttribDivisor(attLocMap[att], 1)
+      }else{
+        const row = strideMap[att][0]
+        range(row).forEach((i) => {
+          this.gl.vertexAttribDivisor(attLocMap[att] + i, 1)
+        })
+      }
+      return vbo
+    })
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null)
+    return instancedVbo
+  }
+
+  updateInstancedVbo(vbo, attributes) {
+    oForEach(vbo, ([att, v]) => {
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, v)
+      this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this.attArrayToTypedArray(attributes[att]))
+      this.enableAttribute(att)
+    })
+  }
+
+  attArrayToTypedArray(array) {
+    return new Float32Array(array.map(a => [...a]).flat())
+  }
+
+  enableAttribute(att) {
+    if (typeof strideMap[att] === 'number') {
+      this.gl.enableVertexAttribArray(attLocMap[att])
+      this.gl.vertexAttribPointer(attLocMap[att], strideMap[att], this.gl.FLOAT, 0, 0, 0)
+    }else{
+      const row = strideMap[att][0]
+      const col = strideMap[att][1]
+      range(row).forEach((i) => {
+        this.gl.enableVertexAttribArray(attLocMap[att] + i)
+        this.gl.vertexAttribPointer(attLocMap[att] + i, col, this.gl.FLOAT, 0, row * col * 4, i * col * 4)
+      })
+    }
   }
 
   useRenderer({id, pixelRatio, width, height, frameBuffer, drawBuffers}) {
@@ -137,7 +190,7 @@ export class Core {
     }
     const textureNum = keys(this.texture).length
     this.texture[key] = {data, number: textureNum}
-    return textureNum
+    return new Number(textureNum)
   }
 
   useTexture(key) {
@@ -152,27 +205,34 @@ export class Core {
 //------------------------------------------------------------------------------
 
 const strideMap = {
-  a_position    : 3,
-  a_normal      : 3,
-  a_color       : 4,
-  a_textureCoord: 2
+  a_position             : 3,
+  a_normal               : 3,
+  a_color                : 4,
+  a_textureCoord         : 2,
+  a_instance_color       : 3,
+  a_instance_modelMatrix : [4, 4], // 16
+  a_instance_normalMatrix: [4, 4], // 16
 }
 
 const attLocMap = {
-  a_position    : 0,
-  a_normal      : 1,
-  a_color       : 2,
-  a_textureCoord: 3
+  a_position             : 0,
+  a_normal               : 1,
+  a_color                : 2,
+  a_textureCoord         : 3,
+  a_instance_color       : 4,
+  a_instance_modelMatrix : 5,
+  a_instance_normalMatrix: 9,
 }
 
 const uniTypeMap = {
-  u_mvpMatrix     : [true, 'uniformMatrix4fv'],
+  u_vpMatrix      : [true, 'uniformMatrix4fv'],
   u_modelMatrix   : [true, 'uniformMatrix4fv'],
+  u_mvpMatrix     : [true, 'uniformMatrix4fv'],
   u_normalMatrix  : [true, 'uniformMatrix4fv'],
-  u_invMatrix     : [true, 'uniformMatrix4fv'],
   u_cameraPosition: [false, 'uniform3fv'],
 
-  u_color              : [false, 'uniform3fv'],
+  u_color: [false, 'uniform3fv'],
+
   u_pointLightNum      : [false, 'uniform1i'],
   u_pointLightPosition : [false, 'uniform3fv'],
   u_pointLightIntensity: [false, 'uniform1fv'],
@@ -183,11 +243,10 @@ const uniTypeMap = {
   u_colorTexture   : [false, 'uniform1i'],
   u_depthTexture   : [false, 'uniform1i'],
 
-  u_preEffectTexture : [false, 'uniform1i'],
-  u_postEffectTexture: [false, 'uniform1i'],
-  u_blurTexture1     : [false, 'uniform1i'],
-  u_blurTexture2     : [false, 'uniform1i'],
-  u_blurTexture3     : [false, 'uniform1i'],
+  u_preEffectTexture: [false, 'uniform1i'],
+  u_blurTexture1    : [false, 'uniform1i'],
+  u_blurTexture2    : [false, 'uniform1i'],
+  u_blurTexture3    : [false, 'uniform1i'],
 
   u_isHorizontal : [false, 'uniform1i'],
   u_invPixelRatio: [false, 'uniform1i'],
@@ -195,3 +254,5 @@ const uniTypeMap = {
   u_near: [false, 'uniform1f'],
   u_far : [false, 'uniform1f'],
 }
+
+//------------------------------------------------------------------------------

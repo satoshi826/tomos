@@ -2,13 +2,14 @@ import {Material} from '@engine/material'
 import {Renderer, depth, rgba16f, rgba8} from '@engine/renderer'
 import {Geometory} from '@engine/geometory'
 import {Mesh} from '@engine/mesh'
-import {deferred} from '@engine/asset/material/deferred'
-import {prePass} from '@engine/asset/material/prePass'
+import {lightning} from '@engine/asset/material/lightning'
+import {gBuffer} from '@engine/asset/material/Gbuffer'
+import {gBufferInstance} from '../asset/material/GbufferInstance'
 import {blur} from '@engine/asset/material/blur'
 import {compose} from '../asset/material/compose'
 import {geo} from '@engine/asset/geometory/geometory'
 
-export const deferredMta = (core, {color, emission}) => new Material(core, prePass({color, emission}))
+export const deferredMta = (core, {color, emission}) => new Material(core, gBufferInstance({color}))
 
 export const getDeferredRenderer = (core) => {
 
@@ -18,28 +19,28 @@ export const getDeferredRenderer = (core) => {
 
   //----------------------------------------------------------
 
-  const preRenderer = new Renderer(core, {
+  const gBufferPass = new Renderer(core, {
     frameBuffer: {texture: [rgba16f, rgba16f, rgba8, depth]}, // pos nor col
     pixelRatio : pixelRatioBase,
   })
 
   //----------------------------------------------------------
 
-  const deferredMta = new Material(core, deferred(), {
-    u_positionTexture: preRenderer.renderTexture[0],
-    u_normalTexture  : preRenderer.renderTexture[1],
-    u_colorTexture   : preRenderer.renderTexture[2]
+  const lightningMaterial = new Material(core, lightning(), {
+    u_positionTexture: gBufferPass.renderTexture[0],
+    u_normalTexture  : gBufferPass.renderTexture[1],
+    u_colorTexture   : gBufferPass.renderTexture[2]
   })
 
-  const deferredRendererResult = screenMesh(deferredMta)
+  const lightningResult = screenMesh(lightningMaterial)
 
-  const deferredRenderer = new Renderer(core, {
+  const lightningPass = new Renderer(core, {
     frameBuffer    : {texture: [rgba16f]}, // res highlight
     pixelRatio     : pixelRatioBase,
     backgroundColor: [0.2, 0.2, 0.2, 1.0], //
   })
 
-  const deferredTex = core.setTexture('deferred', deferredRenderer.renderTexture[0])
+  const deferredTex = core.setTexture('deferred', lightningPass.renderTexture[0])
 
   //----------------------------------------------------------
 
@@ -90,13 +91,11 @@ export const getDeferredRenderer = (core) => {
   const composedMta = new Material(core, compose(), {
     u_blurTexture1: blurPass.texture[0],
     u_blurTexture2: blurPass.texture[1],
-    u_depthTexture: preRenderer.renderTexture[3],
+    u_depthTexture: gBufferPass.renderTexture[3],
   })
   const composedResult = screenMesh(composedMta)
 
   composedMta.uniformValue.u_preEffectTexture = deferredTex
-
-  console.log(composedMta)
 
   const composedRenderer = new Renderer(core, {
     pixelRatio: pixelRatioBase
@@ -104,12 +103,10 @@ export const getDeferredRenderer = (core) => {
 
   //----------------------------------------------------------
 
-  console.log(core)
-
   return ({meshs, camera, lights}) => {
 
-    preRenderer.render({meshs, camera})
-    deferredRenderer.render({meshs: [deferredRendererResult], camera, lights})
+    gBufferPass.render({meshs, camera})
+    lightningPass.render({meshs: [lightningResult], camera, lights})
     blurPass.render()
     composedRenderer.render({meshs: [composedResult], camera})
   }

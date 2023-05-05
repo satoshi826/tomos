@@ -34,6 +34,8 @@ export const range = (num) => [...Array(num).keys()]
 
 export const fill = (num, val) => [...Array(num).fill(val)]
 
+export const unique = (array) => [...new Set(array)]
+
 export const random = (min = 0, max = 1) => Math.random() * (max - min) + min
 
 //------------------------------------------------------------------

@@ -70,6 +70,7 @@ export const compose = () => ({
     vec3 outputFog = mix(outputC, fog, depthLinear * 0.05);
 
     o_color = vec4(outputFog, 1.0);
+    // o_color = vec4(outputFog, 1.0);
     // o_color = vec4(vec3(blur2), 1.0);
     // o_color = vec4(vec3(depthLinear), 1.0);
     // o_color = vec4(depthLinear*(toneMapPreEffect + toneMapPreBloom) + 0.01, 1.0);

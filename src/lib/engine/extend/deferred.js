@@ -9,7 +9,7 @@ import {blur} from '@engine/asset/material/blur'
 import {compose} from '../asset/material/compose'
 import {geo} from '@engine/asset/geometory/geometory'
 
-export const deferredMta = (core, {color, emission}) => new Material(core, gBufferInstance({color}))
+export const deferredMta = (core, {color, emission}) => new Material(core, gBufferInstance({color, emission}))
 
 export const getDeferredRenderer = (core) => {
 

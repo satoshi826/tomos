@@ -50,7 +50,10 @@ export const lightning = () => ({
     void main(void){
       float specIntensity = 40.0;
 
-      vec3 albedo = texture(u_colorTexture, v_uv).xyz;
+      vec4 color = texture(u_colorTexture, v_uv);
+      vec3 albedo = color.xyz;
+      vec3 emission = 10.0 * (color.w) * normalize(albedo);
+
       vec3 position = texture(u_positionTexture, v_uv).xyz;
       vec3 normal = texture(u_normalTexture, v_uv).xyz;
 
@@ -79,7 +82,7 @@ export const lightning = () => ({
         specular += lightPower * albedo * pow(max(0.0, dot(viewDir, reflectDir)), specIntensity);
       }
 
-      vec3 raw = diffuse + 10.0 * specular;
+      vec3 raw = diffuse + 10.0 * specular + emission;
       o_deferred = vec4(raw, 1.0);
       // o_deferred = vec4(position, 1.0);
       // o_deferred = vec4(0.7);

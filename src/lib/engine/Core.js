@@ -210,7 +210,7 @@ export const strideMap = {
   a_normal               : 3,
   a_color                : 4,
   a_textureCoord         : 2,
-  a_instance_color       : 3,
+  a_instance_color       : 4,
   a_instance_modelMatrix : [4, 4], // 16
   a_instance_normalMatrix: [4, 4], // 16
 }

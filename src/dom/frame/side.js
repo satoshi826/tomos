@@ -25,6 +25,7 @@ export function side() {
       ${viewState({key: 'drawTime'})}
       ${viewState({key: 'fps'})}
       ${range({key: 'sphere', info: 'sphere', max: 8000, init: 500})}
+      ${range({key: 'light', info: 'light', max: 180, init: 20})}
       <div></div>
     </div>
   `

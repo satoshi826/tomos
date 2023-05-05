@@ -1,5 +1,5 @@
 
-export const gBuffer = ({color = [0.5, 0.5, 0.5]} = {}) => ({
+export const gBuffer = ({color = [0.5, 0.5, 0.5], emission = 0} = {}) => ({
   id        : 'gBuffer',
   attributes: [
     'a_position',
@@ -13,7 +13,7 @@ export const gBuffer = ({color = [0.5, 0.5, 0.5]} = {}) => ({
     'u_color',
   ],
   uniformValue: {
-    u_color: color
+    u_color: color,
   },
 
   vert: /* glsl */`#version 300 es
@@ -33,7 +33,6 @@ export const gBuffer = ({color = [0.5, 0.5, 0.5]} = {}) => ({
     v_position = (u_modelMatrix * position).xyz;
     v_normal = (u_normalMatrix * vec4(a_normal, 0.0)).xyz;
     gl_Position = u_mvpMatrix * position;
-    // gl_Position = vec4(position);
   }
   `,
 

@@ -179,6 +179,7 @@ export class Renderer {
       this.core.updateInstancedVbo(this.instancedVBO[meshId], attributes)
       material.render(geometory, instancedNum)
     })
+    // console.log(this.instancedValues)
   }
 
   setMVP(mesh, camera) {

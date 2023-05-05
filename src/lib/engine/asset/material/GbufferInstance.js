@@ -1,5 +1,5 @@
 
-export const gBufferInstance = ({color = [0.5, 0.5, 0.5]} = {}) => ({
+export const gBufferInstance = ({color = [0.5, 0.5, 0.5], emission = 0.0} = {}) => ({
   id        : 'gBufferInstance',
   attributes: [
     'a_position',
@@ -12,13 +12,13 @@ export const gBufferInstance = ({color = [0.5, 0.5, 0.5]} = {}) => ({
     'a_instance_normalMatrix'
   ],
   instancedValue: {
-    a_instance_color: color
+    a_instance_color: [...color, emission]
   },
   vert: /* glsl */`#version 300 es
 
   layout(location = 0) in vec3 a_position;
   layout(location = 1) in vec3 a_normal;
-  layout(location = 4) in vec3 a_instance_color;
+  layout(location = 4) in vec4 a_instance_color;
   layout(location = 5) in mat4 a_instance_modelMatrix;
   layout(location = 9) in mat4 a_instance_normalMatrix;
 
@@ -26,7 +26,7 @@ export const gBufferInstance = ({color = [0.5, 0.5, 0.5]} = {}) => ({
 
   out vec3 v_position;
   out vec3 v_normal;
-  out vec3 v_color;
+  out vec4 v_color;
 
   void main(void){
     vec4 position = vec4(a_position, 1.0);
@@ -42,7 +42,7 @@ export const gBufferInstance = ({color = [0.5, 0.5, 0.5]} = {}) => ({
 
   in vec3 v_position;
   in vec3 v_normal;
-  in vec3 v_color;
+  in vec4 v_color;
 
   layout (location = 0) out vec3 o_position;
   layout (location = 1) out vec3 o_normal;
@@ -50,7 +50,7 @@ export const gBufferInstance = ({color = [0.5, 0.5, 0.5]} = {}) => ({
 
   void main(void){
       o_position = v_position;
-      o_color = vec4(v_color, 1.0);
+      o_color = v_color;
       o_normal = normalize(v_normal);
   }`
 

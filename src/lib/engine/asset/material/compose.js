@@ -64,10 +64,10 @@ export const compose = () => ({
     vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);
 
     vec3 bloom = 0.1 * (1.0 * blur1 + 0.5 * blur2);
-    vec3 toneMapBloom = 1.5 * bloom / (1.0 + bloom);
+    vec3 toneMapBloom = 1.8 * bloom / (1.0 + bloom);
     vec3 outputBase = (toneMapPreEffect + toneMapBloom);
     vec3 outputC = mix(outputBase, toneMapBlur, dofPower);
-    vec3 outputFog = mix(outputC, fog, depthLinear * 0.05);
+    vec3 outputFog = mix(outputC, fog, depthLinear * 0.08);
 
     o_color = vec4(outputFog, 1.0);
     // o_color = vec4(outputFog, 1.0);

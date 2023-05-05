@@ -54,9 +54,9 @@ export const lightning = () => ({
       vec3 position = texture(u_positionTexture, v_uv).xyz;
       vec3 normal = texture(u_normalTexture, v_uv).xyz;
 
-      // if (albedo == vec3(0.0)) {
-      //   discard;
-      // }
+      if (albedo == vec3(0.0)) {
+        discard;
+      }
 
       vec3 viewDir = normalize(u_cameraPosition - position);
 

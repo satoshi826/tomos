@@ -112,10 +112,11 @@ export class Core {
     })
   }
 
-  createInstancedVbo(attributes, {maxInstance}) {
+  createInstancedVbo(attributes) {
     const instancedVbo = oMapO(attributes, ([att, v]) => {
       const isUnitAtt = typeof strideMap[att] === 'number'
       const stride = isUnitAtt ? strideMap[att] : strideMap[att][1] * strideMap[att][0]
+      const maxInstance = 4000
       const emptiy = new Float32Array(range(stride * maxInstance).fill(0))
       let vbo = this.gl.createBuffer()
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo)
@@ -138,14 +139,17 @@ export class Core {
   updateInstancedVbo(vbo, attributes) {
     oForEach(vbo, ([att, v]) => {
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, v)
-      this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, attributes[att].value)
+      this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this.attArrayToTypedArray(attributes[att]))
       this.enableAttribute(att)
     })
   }
 
+  attArrayToTypedArray(array) {
+    return new Float32Array(array.map(a => [...a]).flat())
+  }
+
   enableAttribute(att) {
-    const isUnitAtt = typeof strideMap[att] === 'number'
-    if (isUnitAtt) {
+    if (typeof strideMap[att] === 'number') {
       this.gl.enableVertexAttribArray(attLocMap[att])
       this.gl.vertexAttribPointer(attLocMap[att], strideMap[att], this.gl.FLOAT, 0, 0, 0)
     }else{
@@ -156,11 +160,6 @@ export class Core {
         this.gl.vertexAttribPointer(attLocMap[att] + i, col, this.gl.FLOAT, 0, row * col * 4, i * col * 4)
       })
     }
-  }
-
-  getStrideSize(att) {
-    const isUnitAtt = typeof strideMap[att] === 'number'
-    return isUnitAtt ? strideMap[att] : strideMap[att][0] * strideMap[att][1]
   }
 
   useRenderer({id, pixelRatio, width, height, frameBuffer, drawBuffers}) {
@@ -205,7 +204,7 @@ export class Core {
 
 //------------------------------------------------------------------------------
 
-export const strideMap = {
+const strideMap = {
   a_position             : 3,
   a_normal               : 3,
   a_color                : 4,

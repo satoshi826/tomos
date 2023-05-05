@@ -1,9 +1,7 @@
 
 import {mat} from './function/matrix'
 import {setHandler} from './function/state'
-import {oMapO, oForEach, range} from '../util/util'
-
-import {strideMap} from './Core'
+import {oMapO, oForEach} from '../util/util'
 
 let id = 0
 export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE', 'LINEAR']
@@ -143,26 +141,10 @@ export class Renderer {
     this.instancedValues ??= {}
     mesh.update()
     this.instancedValues[mesh.id] ??= {}
-
-    mesh.material.instancedAttributes.forEach((att) => {
-      if (!this.instancedValues[mesh.id][att]) {
-        const strideSize = this.core.getStrideSize(att)
-        this.instancedValues[mesh.id][att] = {
-          counter: 0,
-          value  : new Float32Array(mesh.material.maxInstance * strideSize)
-        }
-      }
-    })
-
-    mesh.material.instancedAttributes.forEach((att) => {
-      const getAttributeValue = getDefaultInstancedAttributes[att] ?? (({mesh}) => mesh.material.instancedValue[att])
-      const strideSize = this.core.getStrideSize(att)
-      let targetAtt = this.instancedValues[mesh.id][att]
-      const attributeValue = getAttributeValue({mesh})
-      for (let i = 0; i < strideSize; i++) {
-        targetAtt.value[i + targetAtt.counter * strideSize] = attributeValue[i]
-      }
-      targetAtt.counter++
+    mesh.material.instancedAttributes.forEach((key) => {
+      this.instancedValues[mesh.id][key] ??= []
+      const getAttributeValue = getDefaultInstancedAttributes[key] ?? (({mesh}) => mesh.material.instancedValue[key])
+      getAttributeValue && this.instancedValues[mesh.id][key].push(getAttributeValue({mesh}))
     })
   }
 
@@ -173,10 +155,10 @@ export class Renderer {
       const instancedMeshSample = instancedMesh[0]
       const {material, geometory} = instancedMeshSample
       this.useVao(geometory)
-      this.instancedVBO[meshId] ??= this.core.createInstancedVbo(attributes, material)
+      this.instancedVBO[meshId] ??= this.core.createInstancedVbo(attributes, geometory.id)
       material.useProgram()
-      this.setUniform({mesh: instancedMeshSample, camera})
       this.core.updateInstancedVbo(this.instancedVBO[meshId], attributes)
+      this.setUniform({mesh: instancedMeshSample, camera})
       material.render(geometory, instancedNum)
     })
   }

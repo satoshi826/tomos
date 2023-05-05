@@ -7,17 +7,14 @@ import {geo} from '../lib/engine/asset/geometory/geometory'
 import {sendState} from '../lib/engine/function/state'
 import {cameraControl} from '../lib/engine/extend/mouse'
 import {setHandler} from '../lib/engine/function/state'
-
 import {qtn} from '../lib/engine/function/quaternion'
-
 import {insideOut} from '../lib/engine/extend/mesh'
 import {deferredMta, getDeferredRenderer} from '../lib/engine/extend/deferred'
-
 import {range, random, fill} from '../lib/util/util'
 
 export function main(core) {
 
-  const camera = new Camera({position: [0, 5, 30], near: 0.1, far: 300, fovy: 80, controller: {cameraControl}})
+  const camera = new Camera({position: [0, 5, 30], near: 0.1, far: 400, fovy: 80, controller: {cameraControl}})
   camera.control('cameraControl')
 
   const black = deferredMta(core, {color: [0.05, 0.05, 0.05]})
@@ -25,14 +22,13 @@ export function main(core) {
   const sphere = new Geometory(core, geo.sphere(24, 24, 2))
 
   const center = new Mesh(core, {geometory: sphere, material: black, scale: [2.0, 2.0, 2.0]})
-  const room = new Mesh(core, {geometory: box, material: black, scale: [100, 100, 100]})
+  const room = new Mesh(core, {geometory: box, material: black, scale: [200, 200, 200]})
   insideOut(room)
 
-  const centerLight = new PointLight({intensity: 120, exponent: 1.0})
+  const centerLight = new PointLight({intensity: 400, exponent: 1.0})
   center.add(centerLight)
 
   const getlightSphere = (num) => {
-    console.log(num)
     const meshs = range(num).flatMap(() => new Mesh(core, {
       geometory: sphere, material: deferredMta(core, {color: [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)]}), scale: fill(3, random(0.3, 5))
     }))
@@ -41,7 +37,7 @@ export function main(core) {
     meshs.forEach((mesh, i) => {
       mesh.add(lights[i])
       mesh.qt = qtn.create()
-      mesh.initPos = [random(-80, 80), random(-80, 80), random(-80, 80)]
+      mesh.initPos = [random(-150, 150), random(-150, 150), random(-150, 150)]
       mesh.axis = [random(), random(), random()]
       mesh.speed = (1 / mesh.attributes.scale[0])
     })
@@ -69,7 +65,7 @@ export function main(core) {
   let meshs = [center, room, ...spheres.meshs]
   let lights = [centerLight]
 
-  setHandler('rangelights', (lightsNum) => {
+  setHandler('rangesphere', (lightsNum) => {
     if(lightsNum) {
       spheres = getlightSphere(Number(lightsNum))
       meshs = [center, room, ...spheres.meshs]

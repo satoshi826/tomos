@@ -1,9 +1,7 @@
 
 import {mat} from './function/matrix'
 import {setHandler} from './function/state'
-import {oMapO, oForEach, range} from '../util/util'
-
-import {strideMap} from './Core'
+import {oMapO, oForEach} from '../util/util'
 
 let id = 0
 export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE', 'LINEAR']
@@ -100,6 +98,7 @@ export class Renderer {
     lights && this.setLight(lights)
     camera && camera.update()
     meshs.forEach(mesh => {
+      mesh.update()
       if (mesh.material.instancedAttributes) {
         this.setInstancedAttributes(mesh)
       }else{
@@ -132,7 +131,6 @@ export class Renderer {
   draw(mesh, camera) {
     const {geometory, material} = mesh
     material.useProgram()
-    mesh.update()
     if (camera) this.setMVP(mesh, camera)
     this.useVao(geometory)
     this.setUniform({mesh, camera})
@@ -141,7 +139,6 @@ export class Renderer {
 
   setInstancedAttributes(mesh) {
     this.instancedValues ??= {}
-    mesh.update()
     this.instancedValues[mesh.id] ??= {}
 
     mesh.material.instancedAttributes.forEach((att) => {
@@ -179,7 +176,6 @@ export class Renderer {
       this.core.updateInstancedVbo(this.instancedVBO[meshId], attributes)
       material.render(geometory, instancedNum)
     })
-    // console.log(this.instancedValues)
   }
 
   setMVP(mesh, camera) {

@@ -7,6 +7,7 @@ onmessage = ({data}) => {
   data.init && init(data.init)
   data.resize && resize(data.resize)
   data.mouse && mouse(data.mouse)
+  data.keyDown && keyDown(data.keyDown)
   data.state && state(data.state)
 }
 
@@ -21,6 +22,10 @@ function resize(resize) {
 
 function mouse(mouse) {
   setState({mouse})
+}
+
+function keyDown(keyDown) {
+  setState(keyDown)
 }
 
 function state(state) {

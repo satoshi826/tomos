@@ -13,7 +13,7 @@ export const gBuffer = ({color = [0.5, 0.5, 0.5], emission = 0} = {}) => ({
     'u_color',
   ],
   uniformValue: {
-    u_color: color,
+    u_color: [...color, emission],
   },
 
   vert: /* glsl */`#version 300 es
@@ -46,11 +46,11 @@ export const gBuffer = ({color = [0.5, 0.5, 0.5], emission = 0} = {}) => ({
   layout (location = 1) out vec3 o_normal;
   layout (location = 2) out vec4 o_color;
 
-  uniform vec3 u_color;
+  uniform vec4 u_color;
 
   void main(void){
       o_position = v_position;
-      o_color = vec4(u_color, 1.0);
+      o_color = u_color;
       o_normal = normalize(v_normal);
   }`
 

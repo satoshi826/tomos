@@ -76,3 +76,11 @@ export class PointLight {
   }
 
 }
+
+export class SpotLight {
+
+}
+
+export class AmbientLight {
+
+}

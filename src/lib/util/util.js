@@ -82,6 +82,18 @@ export const throttle = (f, delay) => {
   }
 }
 
+export const caches = (f) => {
+  const cache = new Map()
+  return (x) => {
+    if (cache.has(x)) {
+      return cache.get(x)
+    }
+    const result = f(x)
+    cache.set(x, result)
+    return result
+  }
+}
+
 //------------------------------------------------------------------
 
 const _stateObj = {}

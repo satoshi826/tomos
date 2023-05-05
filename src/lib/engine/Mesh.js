@@ -1,4 +1,5 @@
 import {mat} from './function/matrix'
+import {oForEach} from '../util/util'
 let uid = 0
 
 export class Mesh {
@@ -15,7 +16,7 @@ export class Mesh {
   parent = null
   children = []
 
-  constructor(core, {geometory, material, position, rotation, scale}) {
+  constructor(core, {geometory, material, position, rotation, scale, controller}) {
 
     this.core = core
     this.id = geometory.id + '-' + material.id
@@ -27,7 +28,18 @@ export class Mesh {
       rotation: rotation ?? [0, [0, 1, 0]],
       scale   : scale ?? [1, 1, 1]
     }
+    this.controller = controller ?? {}
     this.setLocal()
+  }
+
+  setControl(obj) {
+    oForEach(obj, (([k, v]) => {
+      this.controller[k] = v
+    }))
+  }
+
+  control(controller, v) {
+    this.controller[controller](this, v)
   }
 
   mutate(func) {

@@ -53,12 +53,13 @@ export const compose = () => ({
     float depth = texture(u_depthTexture, v_uv).x;
 
     float depthLinear = convertToLinearDepth(depth, u_near, u_far);
+
     vec3 fog = vec3(0.3, 0.3, 0.3);
 
-    float target = 0.11;
+    float target = 0.08;
 
     float dofPower = depthLinear-target;
-    dofPower = (dofPower < 0.0) ? -8.0 * dofPower : 0.8 * dofPower;
+    dofPower = (dofPower < 0.0) ? -16.0 * dofPower : 1.0 * dofPower;
     vec3 dofTyped = (dofPower < 0.0) ? blur2 : blur1;
     vec3 toneMapBlur = dofTyped / (1.0 + dofTyped);
     vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);
@@ -66,7 +67,7 @@ export const compose = () => ({
     vec3 bloom = 0.1 * (1.0 * blur1 + 0.5 * blur2);
     vec3 toneMapBloom = 1.8 * bloom / (1.0 + bloom);
     vec3 outputBase = (toneMapPreEffect + toneMapBloom);
-    vec3 outputC = mix(outputBase, toneMapBlur, dofPower);
+    vec3 outputC = mix(outputBase, toneMapBlur, clamp(dofPower, 0.0, 1.0));
     vec3 outputFog = mix(outputC, fog, depthLinear * 0.08);
 
     o_color = vec4(outputFog, 1.0);

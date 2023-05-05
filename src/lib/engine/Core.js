@@ -113,7 +113,7 @@ export class Core {
   }
 
   createInstancedVbo(attributes, {maxInstance}) {
-    const instancedVbo = oMapO(attributes, ([att, v]) => {
+    const instancedVbo = oMapO(attributes, ([att]) => {
       const isUnitAtt = typeof strideMap[att] === 'number'
       const stride = isUnitAtt ? strideMap[att] : strideMap[att][1] * strideMap[att][0]
       const emptiy = new Float32Array(range(stride * maxInstance).fill(0))
@@ -151,15 +151,15 @@ export class Core {
     }else{
       const row = strideMap[att][0]
       const col = strideMap[att][1]
-      range(row).forEach((i) => {
+      for (let i = 0; i < row; i++) {
         this.gl.enableVertexAttribArray(attLocMap[att] + i)
         this.gl.vertexAttribPointer(attLocMap[att] + i, col, this.gl.FLOAT, 0, row * col * 4, i * col * 4)
-      })
+      }
     }
   }
 
   getStrideSize(att) {
-    const isUnitAtt = typeof strideMap[att] === 'number'
+    const isUnitAtt = !strideMap[att].length
     return isUnitAtt ? strideMap[att] : strideMap[att][0] * strideMap[att][1]
   }
 
@@ -232,7 +232,7 @@ const uniTypeMap = {
   u_normalMatrix  : [true, 'uniformMatrix4fv'],
   u_cameraPosition: [false, 'uniform3fv'],
 
-  u_color: [false, 'uniform3fv'],
+  u_color: [false, 'uniform4fv'],
 
   u_pointLightNum      : [false, 'uniform1i'],
   u_pointLightPosition : [false, 'uniform3fv'],

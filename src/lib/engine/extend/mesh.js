@@ -5,7 +5,7 @@ export const insideOut = (mesh) => {
     let {model, normal} = this.matrix
     mat.inv(model, normal)
     mat.trans(normal, normal)
-    normal.forEach((val, i) => normal[i] = -val)
+    this.matrix.normal.forEach((val, i) => normal[i] = -val)
   }
   mesh.material.render = function({idxLen}, instancedNum) {
     this.core.gl.disable(this.core.gl.CULL_FACE)

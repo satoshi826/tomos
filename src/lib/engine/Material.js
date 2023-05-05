@@ -32,6 +32,7 @@ export class Material {
         this.texture[i] = uniform
       }))
     }
+
   }
 
   useProgram() {

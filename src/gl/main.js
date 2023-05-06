@@ -25,35 +25,30 @@ export function main(core) {
   const box = new Geometory(core, geo.cube())
   const playerMaterial = standart(core, {color: [0.05, 0.05, 0.1], emission: 0.2})
   const playerLight = new PointLight({intensity: 10000, exponent: 2})
-  const player = new Mesh(core, {geometory: box, material: playerMaterial, scale: [2, 5, 2]})
+  const player = new Mesh(core, {geometory: box, material: playerMaterial, scale: [2, 5, 2], position: [0, 0, 0]})
   player.add(playerLight)
 
   const moveControl = (mesh) => {
     setHandler('KeyW', () => {
-      mesh.mutate((v) => v.position[2] -= 0.2)
+      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
     })
     setHandler('KeyS', () => {
-      mesh.mutate((v) => v.position[2] += 0.2)
+      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
     })
     setHandler('KeyD', () => {
-      mesh.mutate((v) => v.position[0] += 0.2)
+      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
     })
     setHandler('KeyA', () => {
-      mesh.mutate((v) => v.position[0] -= 0.2)
+      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
     })
   }
 
   player.setControl({moveControl})
   player.control('moveControl')
 
-
   let target = {}
   const room = lightRoom(core, target)
   const render = getDeferredRenderer(core)
-
-  setHandler('KeyE', (e) => {
-    console.log(e)
-  })
 
   const animation = new Animation({callback: () => {
     room.mutate()

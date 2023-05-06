@@ -27,8 +27,8 @@ export class PointLight {
     }
   }
 
-  mutate(func) {
-    func(this.attributes)
+  mutate(att, func) {
+    this.attributes[att] = func(this.attributes[att])
     this.ver++
   }
 

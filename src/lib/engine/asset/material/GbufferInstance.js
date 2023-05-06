@@ -31,7 +31,7 @@ export const gBufferInstance = ({color = [0.5, 0.5, 0.5], emission = 0.0} = {}) 
   void main(void){
     vec4 position = vec4(a_position, 1.0);
     v_position = (a_instance_modelMatrix * position).xyz;
-    v_normal = (a_instance_normalMatrix * vec4(a_normal, 0.0)).xyz;
+    v_normal = (a_instance_modelMatrix * vec4(a_normal, 0.0)).xyz;
     v_color = a_instance_color;
     gl_Position = u_vpMatrix * a_instance_modelMatrix * position;
   }

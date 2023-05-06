@@ -1,3 +1,11 @@
+import MatrixWorker from './matrixWorker?worker'
+const matrixWorker = new MatrixWorker()
+console.log(matrixWorker)
+
+matrixWorker.postMessage({hage: 1})
+matrixWorker.onmessage = ({data}) => {
+  console.log(data)
+}
 
 export const mat = {
 
@@ -39,7 +47,9 @@ export const mat = {
   },
 
   copy(mat1, dest) {
-    mat1.forEach((v, i) => dest[i] = v)
+    for (let i = 0; i < 16; i++) {
+      dest[i] = mat1[i]
+    }
   },
 
   mul(mat1, mat2, dest) {
@@ -116,14 +126,14 @@ export const mat = {
   },
 
   rot(mat, angle, axis, dest) {
-    let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2])
-    if(!sq) {
-      return null
-    }
+    // let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2])
+    // if(!sq) {
+    //   return null
+    // }
     let a = axis[0], b = axis[1], c = axis[2]
-    if(sq !== 1) {
-      sq = 1 / sq; a *= sq; b *= sq; c *= sq
-    }
+    // if(sq !== 1) {
+    //   sq = 1 / sq; a *= sq; b *= sq; c *= sq
+    // }
     let d = Math.sin(angle), e = Math.cos(angle), f = 1 - e,
       g = mat[0], h = mat[1], i = mat[2], j = mat[3],
       k = mat[4], l = mat[5], m = mat[6], n = mat[7],
@@ -137,14 +147,17 @@ export const mat = {
       y = a * c * f + b * d,
       z = b * c * f - a * d,
       A = c * c * f + e
-    if(angle) {
-      if(mat !== dest) {
-        dest[12] = mat[12]; dest[13] = mat[13]
-        dest[14] = mat[14]; dest[15] = mat[15]
-      }
-    } else {
-      dest = mat
-    }
+    // if(angle) {
+    //   if(mat !== dest) {
+    //     dest[12] = mat[12]; dest[13] = mat[13]
+    //     dest[14] = mat[14]; dest[15] = mat[15]
+    //   }
+    // } else {
+    //   dest = mat
+    // }
+    dest[12] = mat[12]; dest[13] = mat[13]
+    dest[14] = mat[14]; dest[15] = mat[15]
+
     dest[0] = g * s + k * t + o * u
     dest[1] = h * s + l * t + p * u
     dest[2] = i * s + m * t + q * u

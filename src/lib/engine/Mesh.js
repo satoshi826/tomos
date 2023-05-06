@@ -24,9 +24,9 @@ export class Mesh {
     this.geometory = geometory
     this.material = material
     this.attributes = {
-      position: position ?? [0, 0, 0],
-      rotation: rotation ?? [0, [0, 1, 0]],
-      scale   : scale ?? [1, 1, 1]
+      position: position,
+      rotation: this.normalizeRot(rotation),
+      scale   : this.normalizeSca(scale)
     }
     this.controller = controller ?? {}
     this.setLocal()
@@ -42,8 +42,13 @@ export class Mesh {
     this.controller[controller](this, v)
   }
 
-  mutate(func) {
-    func(this.attributes)
+  // mutate(func) {
+  //   func(this.attributes)
+  //   this.ver++
+  // }
+
+  mutate(att, func) {
+    this.attributes[att] = func(this.attributes[att])
     this.ver++
   }
 
@@ -53,7 +58,6 @@ export class Mesh {
   }
 
   update() {
-
     const isUpdateLocal = this.preVer < this.ver
     const isParent = this.parent
     const isUpdateParent = isParent && (this.preParentVer < this.parent.ver)
@@ -75,9 +79,9 @@ export class Mesh {
     const {position, rotation, scale} = this.attributes
     let {local} = this.matrix
     mat.reset(local)
-    mat.move(local, position, local)
-    mat.rot(local, rotation[0], rotation[1], local)
-    mat.scale(local, scale, local)
+    if (position) mat.move(local, position, local)
+    if (rotation) mat.rot(local, rotation[0], rotation[1], local)
+    if (scale) mat.scale(local, scale, local)
   }
 
   setWorld() {
@@ -96,6 +100,24 @@ export class Mesh {
     let {model, normal} = this.matrix
     mat.inv(model, normal)
     mat.trans(normal, normal)
+  }
+
+  normalizeRot(rotation) {
+    if(!rotation) return null
+    let axis = rotation[1]
+    let sq = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2])
+    if(sq !== 1) {
+      rotation[1][0] = rotation[1][0] / sq
+      rotation[1][1] = rotation[1][1] / sq
+      rotation[1][2] = rotation[1][2] / sq
+    }
+    return rotation
+  }
+
+  normalizeSca(scale) {
+    if(!scale) return null
+    if(scale.length) return scale
+    return [scale, scale, scale]
   }
 
 }

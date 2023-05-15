@@ -1,1 +1,1 @@
- metaverse
+自作webGLライブラリ+サンプル実装

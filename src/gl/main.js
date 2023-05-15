@@ -8,10 +8,10 @@ import {lightRoom} from './tmp/lightRoom'
 export async function main(core) {
 
   const camera = new Camera({
-    position: [0, 20, 30],
-    lookAt  : [0, 0, 0],
+    position: [0, 500, 30],
+    lookAt  : [0, -380, 0],
     near    : 0.1,
-    far     : 1000,
+    far     : 2000,
     fovy    : 80,
   })
   cameraControl(camera)
@@ -25,6 +25,6 @@ export async function main(core) {
     render({meshs: [...target.meshs], camera, lights: [...target.lights]})
   }, interval: 0})
 
-  setInterval(() => sendState({drawTime: animation.drawTime, fps: 1000 / animation.delta}), 200)
+  setInterval(() => sendState({drawTime: Number(animation.drawTime).toFixed(2) + ' ms', fps: Number(1000 / animation.delta).toFixed(2)}), 200)
   animation.start()
 }

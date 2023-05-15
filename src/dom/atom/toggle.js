@@ -4,12 +4,6 @@ const size = 24
 
 export function toggle({id}) {
 
-  // (() => {
-  //   const toggleE = _id(`toggle${id}`)
-  //   _gl.sendState({key: `toggle${id}`, value: toggleE.checked})
-  //   toggleE._onInput(() => _gl.sendState({key: `toggle${id}`, value: toggleE.checked}))
-  // })._task(0)()
-
   const activeBackground = {
     [`+#toggle${id}:checked`]: {
       ..._.bgC({type: 'primary', i: 1}),

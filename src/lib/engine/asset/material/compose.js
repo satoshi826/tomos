@@ -59,7 +59,7 @@ export const compose = () => ({
     float target = 0.08;
 
     float dofPower = depthLinear-target;
-    dofPower = (dofPower < 0.0) ? -30.0 * dofPower : 1.0 * dofPower;
+    dofPower = (dofPower < 0.0) ? -30.0 * dofPower : 0.0005 * dofPower * u_far;
     vec3 dofTyped = (dofPower < 0.0) ? blur2 : blur1;
     vec3 toneMapBlur = dofTyped / (1.0 + dofTyped);
     vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);

@@ -1,7 +1,6 @@
 import {id, state, idle} from '../../lib/util/util'
-import {style, _, toCss, is} from '../../lib/theme'
+import {style, _, is} from '../../lib/theme'
 import {viewState} from '../atom/viewState'
-// import {toggle} from '../atom/toggle'
 import {range} from '../atom/range'
 
 export function side() {
@@ -12,20 +11,13 @@ export function side() {
   style('#sidebar', is('mobile') ? closedSideBarC : sideBarC)
   style.responsive('mobile')('#sidebar', sideBarMobileC)
 
-  // const setToggle = (caption, id) => /* html */`
-  //   <div style="${toCss({..._.flex({align: 'center', justify: 'space-between'}), ..._.minW('180px')})}">
-  //     ${caption}
-  //     ${toggle({id})}
-  //   </div>
-  // `
-
   return /* html */`
     <div id="sidebar">
       <div></div>
       ${viewState({key: 'drawTime'})}
       ${viewState({key: 'fps'})}
-      ${range({key: 'sphere', info: 'sphere', max: 8000, init: 500})}
-      ${range({key: 'light', info: 'light', max: 180, init: 20})}
+      ${range({key: 'sphere', info: 'sphere', max: 8000, init: 3000})}
+      ${range({key: 'light', info: 'light', max: 180, init: 50})}
       <div></div>
     </div>
   `

@@ -1,5 +1,5 @@
 import {Geometory} from '../../lib/engine/geometory'
-import {Mesh} from '../../lib/engine/mesh'
+import {Mesh} from '../../lib/engine/Mesh'
 import {PointLight} from '../../lib/engine/Light'
 import {geo} from '../../lib/engine/asset/geometory/geometory'
 import {setHandler} from '../../lib/engine/function/state'
@@ -13,13 +13,14 @@ export function lightRoom(core, target) {
   const roomMaterial = standart(core, {color: [0.05, 0.05, 0.05]})
   const box = new Geometory(core, geo.cube())
   const sphere = new Geometory(core, geo.sphere(24, 24, 2))
+  const lightSphere = new Geometory(core, geo.sphere(24, 24, 2))
 
   const room = new Mesh(core, {geometory: box, material: roomMaterial, scale: 500})
   insideOut(room)
 
   const getSphere = (num) => {
     const meshs = range(num).flatMap(() => new Mesh(core, {
-      geometory: sphere, material : instanse(core, {color: [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)]}),
+      geometory: sphere, material : instanse(core, {maxInstance: 8000, color: [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)]}),
       scale    : random(0.3, 5),
       position : [0, 0, 0]
     }))
@@ -42,9 +43,10 @@ export function lightRoom(core, target) {
 
   const getLights = (num) => {
     const meshs = range(num).flatMap(() => new Mesh(core, {
-      geometory: sphere, material : instanse(core, {
-        color   : [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)],
-        emission: 0.4,
+      geometory: lightSphere, material : instanse(core, {
+        maxInstance: 180,
+        color      : [random(0.05, 0.11), random(0.05, 0.11), random(0.05, 0.11)],
+        emission   : 0.4,
       }),
       scale   : random(0.2, 10),
       position: [0, 0, 0]
@@ -69,8 +71,8 @@ export function lightRoom(core, target) {
     return {lights, meshs, mutate}
   }
 
-  let spheres = getSphere(500)
-  let lightsS = getLights(20)
+  let spheres = getSphere(3000)
+  let lightsS = getLights(50)
 
   target.meshs = [room, ...spheres.meshs, ...lightsS.meshs]
   target.lights = [...lightsS.lights]

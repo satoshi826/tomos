@@ -7,7 +7,7 @@ let id = 0
 export const rgba8 = ['RGBA', 'RGBA', 'UNSIGNED_BYTE', 'LINEAR']
 export const rgba16f = ['RGBA16F', 'RGBA', 'HALF_FLOAT', 'LINEAR']
 export const rgba32f = ['RGBA32F', 'RGBA', 'FLOAT', 'LINEAR']
-export const depth = ['DEPTH_COMPONENT32F', 'DEPTH_COMPONENT', 'FLOAT', 'NEAREST']
+export const depth = ['DEPTH_COMPONENT16', 'DEPTH_COMPONENT', 'UNSIGNED_SHORT', 'NEAREST']
 
 const pointLightUniforms = {
   u_pointLightPosition : (light) => light.worldPosition,
@@ -170,7 +170,7 @@ export class Renderer {
       const instancedMeshSample = instancedMesh[0]
       const {material, geometory} = instancedMeshSample
       this.useVao(geometory)
-      this.instancedVBO[meshId] ??= this.core.createInstancedVbo(attributes, material)
+      this.instancedVBO[meshId] ??= this.core.createInstancedVbo(attributes)
       material.useProgram()
       this.setUniform({mesh: instancedMeshSample, camera})
       this.core.updateInstancedVbo(this.instancedVBO[meshId], attributes)

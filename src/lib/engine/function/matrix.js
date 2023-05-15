@@ -1,11 +1,3 @@
-import MatrixWorker from './matrixWorker?worker'
-const matrixWorker = new MatrixWorker()
-console.log(matrixWorker)
-
-matrixWorker.postMessage({hage: 1})
-matrixWorker.onmessage = ({data}) => {
-  console.log(data)
-}
 
 export const mat = {
 
@@ -271,6 +263,6 @@ export const mat = {
     dest[13] = (a * z - b * x + c * w) * ivd
     dest[14] = (-m * t + n * r - o * q) * ivd
     dest[15] = (i * t - j * r + k * q) * ivd
-  }
+  },
 
 }

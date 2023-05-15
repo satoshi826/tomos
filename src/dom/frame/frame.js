@@ -1,7 +1,7 @@
 import {task, state} from '../../lib/util/util'
 import {style, _, is} from '../../lib/theme'
 
-export function frame({top, side, content, bottom}) {
+export function frame({top = '', side = '', content = '', bottom = ''}) {
 
   task(0, () => {
     const watch = state({key: 'isOpenSidebar', init: !is('mobile')})[0]

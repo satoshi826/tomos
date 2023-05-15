@@ -1,6 +1,6 @@
-import {Camera} from '../lib/engine/camera'
+import {Camera} from '../lib/engine/Camera'
 import {Geometory} from '../lib/engine/geometory'
-import {Mesh} from '../lib/engine/mesh'
+import {Mesh} from '../lib/engine/Mesh'
 import {Animation} from '../lib/engine/animation'
 import {geo} from '../lib/engine/asset/geometory/geometory'
 import {sendState} from '../lib/engine/function/state'
@@ -10,41 +10,39 @@ import {standart, getDeferredRenderer} from '../lib/engine/extend/deferred'
 import {PointLight} from '../lib/engine/Light'
 import {lightRoom} from './tmp/lightRoom'
 
-export function main(core) {
+export async function main(core) {
 
   const camera = new Camera({
-    position  : [0, -300, 30],
-    lookAt    : [0, -300, 0],
-    near      : 0.1,
-    far       : 1000,
-    fovy      : 80,
-    controller: {cameraControl}
+    position: [0, 20, 30],
+    lookAt  : [0, 0, 0],
+    near    : 0.1,
+    far     : 1000,
+    fovy    : 80,
   })
-  camera.control('cameraControl')
+  cameraControl(camera)
 
-  const box = new Geometory(core, geo.cube())
-  const playerMaterial = standart(core, {color: [0.05, 0.05, 0.1], emission: 0.2})
-  const playerLight = new PointLight({intensity: 10000, exponent: 2})
-  const player = new Mesh(core, {geometory: box, material: playerMaterial, scale: [2, 5, 2], position: [0, 0, 0]})
-  player.add(playerLight)
+  // const box = new Geometory(core, geo.cube())
+  // const playerMaterial = standart(core, {color: [0.05, 0.05, 0.1], emission: 0.2})
+  // const playerLight = new PointLight({intensity: 10000, exponent: 2})
+  // const player = new Mesh(core, {geometory: box, material: playerMaterial, scale: [2, 5, 2], position: [0, 0, 0]})
+  // player.add(playerLight)
 
-  const moveControl = (mesh) => {
-    setHandler('KeyW', () => {
-      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
-    })
-    setHandler('KeyS', () => {
-      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
-    })
-    setHandler('KeyD', () => {
-      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
-    })
-    setHandler('KeyA', () => {
-      mesh.mutate('position', ([x, y, z]) => [x, y, z - 20])
-    })
-  }
+  // const moveControl = (mesh) => {
+  //   setHandler('KeyW', () => {
+  //     mesh.mutate('position', ([x, y, z]) => [x, y, z - 2])
+  //   })
+  //   setHandler('KeyS', () => {
+  //     mesh.mutate('position', ([x, y, z]) => [x, y, z + 2])
+  //   })
+  //   setHandler('KeyD', () => {
+  //     mesh.mutate('position', ([x, y, z]) => [x + 2, y, z])
+  //   })
+  //   setHandler('KeyA', () => {
+  //     mesh.mutate('position', ([x, y, z]) => [x - 2, y, z])
+  //   })
+  // }
 
-  player.setControl({moveControl})
-  player.control('moveControl')
+  // moveControl(player)
 
   let target = {}
   const room = lightRoom(core, target)
@@ -52,7 +50,7 @@ export function main(core) {
 
   const animation = new Animation({callback: () => {
     room.mutate()
-    render({meshs: [...target.meshs, player], camera, lights: [...target.lights, playerLight]})
+    render({meshs: [...target.meshs], camera, lights: [...target.lights]})
   }, interval: 0})
 
   setInterval(() => sendState({drawTime: animation.drawTime, fps: 1000 / animation.delta}), 200)

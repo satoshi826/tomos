@@ -8,14 +8,14 @@ export const cameraControl = (camera) => {
     if(!mouse) return
     let {x, y} = mouse
     let sq = 2 * Math.sqrt(x * x + y * y)
-    if (sq === 0) {
-      camera.mutate((v) => v.position = Array.from(initPos))
-      return
-    }
+    if (sq === 0) camera.mutate('position', () => {
+      return Array.from(initPos)
+    })
     let r = sq * 0.5 * Math.PI
     qtn.rot(r, [y, x, 0.0], qtnCam)
-    camera.mutate((v) => {
-      qtn.toVec(initPos, qtnCam, v.position)
+    camera.mutate('position', (v) => {
+      qtn.toVec(initPos, qtnCam, v)
+      return v
     })
   })
 }

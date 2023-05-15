@@ -1,18 +1,18 @@
-import {mat} from '@engine/function/matrix'
 
 export const insideOut = (mesh) => {
+
+  const setNormal = mesh.setNormal
   mesh.setNormal = function() {
-    let {model, normal} = this.matrix
-    mat.inv(model, normal)
-    mat.trans(normal, normal)
-    this.matrix.normal.forEach((val, i) => normal[i] = -val)
+    setNormal.call(this)
+    this.matrix.normal.forEach((val, i) => this.matrix.normal[i] = -val)
   }
-  mesh.material.render = function({idxLen}, instancedNum) {
+
+  const render = mesh.material.render
+  mesh.material.render = function(...args) {
     this.core.gl.disable(this.core.gl.CULL_FACE)
-    this.texture.forEach((tex) => {
-      this.core.useTexture(tex)
-    })
-    this.renderer(this.core.gl.TRIANGLES, idxLen, this.core.gl.UNSIGNED_SHORT, 0, instancedNum)
+    render.call(this, ...args)
     this.core.gl.enable(this.core.gl.CULL_FACE)
   }
 }
+
+

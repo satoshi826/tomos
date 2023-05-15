@@ -25,7 +25,6 @@ export class Core {
     this.gl.depthFunc(this.gl.LEQUAL)
     this.gl.enable(this.gl.BLEND)
 
-    // this.gl.cullFace(this.gl.BACK)
     this.gl.getExtension('EXT_color_buffer_float')
     this.gl.getExtension('EXT_float_blend')
     this.gl.getExtension('OES_texture_half_float')
@@ -33,7 +32,14 @@ export class Core {
     this.gl.getExtension('OES_texture_float')
     this.gl.getExtension('OES_texture_float_linear')
     this.gl.getExtension('WEBGL_color_buffer_float')
-    this.gl.getExtension('WEBGL_depth_texture')
+    this.gl.getExtension('WEBGL_depth_texture') || this.gl.getExtension('MOZ_WEBGL_depth_texture') || this.gl.getExtension('WEBKIT_WEBGL_depth_texture')
+    this.gl.getExtension('OES_vertex_array_object')
+    this.gl.getExtension('ANGLE_instanced_arrays')
+    this.gl.getExtension('WEBGL_draw_buffers')
+    this.gl.getExtension('WEBGL_multi_draw')
+    this.gl.getExtension('OES_standard_derivatives')
+    this.gl.getExtension('OES_element_index_uint')
+    this.gl.getExtension('WEBGL_multisampled_render_to_texture')
   }
 
   _compile(txt, type) {
@@ -112,14 +118,12 @@ export class Core {
     })
   }
 
-  createInstancedVbo(attributes, {maxInstance}) {
+  createInstancedVbo(attributes) {
     const instancedVbo = oMapO(attributes, ([att]) => {
       const isUnitAtt = typeof strideMap[att] === 'number'
-      const stride = isUnitAtt ? strideMap[att] : strideMap[att][1] * strideMap[att][0]
-      const emptiy = new Float32Array(range(stride * maxInstance).fill(0))
       let vbo = this.gl.createBuffer()
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo)
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, emptiy, this.gl.DYNAMIC_DRAW)
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, attributes[att].value, this.gl.DYNAMIC_DRAW)
       this.gl.vertexAttribDivisor(attLocMap[att], 1)
       if (isUnitAtt) {
         this.gl.vertexAttribDivisor(attLocMap[att], 1)

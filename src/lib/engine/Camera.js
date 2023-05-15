@@ -1,20 +1,23 @@
 import {mat} from './function/matrix'
 import {setHandler} from './function/state'
-import {oForEach} from '../util/util'
 
 export class Camera {
+
+  ver = 0
+  preVer = -1
+  preParentVer = -1
 
   matrix = {
     v : mat.create(),
     p : mat.create(),
     vp: mat.create(),
   }
-  isUpdate = true
 
-  constructor({position, lookAt, up, fovy, near, far, aspect, isScreen = true, controller} = {}) {
+  parent = null
+
+  constructor({position, lookAt, up, fovy, near, far, aspect, isScreen = true} = {}) {
 
     this.isScreen = isScreen
-    this.controller = controller ?? {}
     this.attributes = {
       aspect  : 1 ?? aspect,
       position: position ?? [0.0, 0.0, 10.0],
@@ -29,19 +32,9 @@ export class Camera {
 
   }
 
-  setControl(obj) {
-    oForEach(obj, (([k, v]) => {
-      this.controller[k] = v
-    }))
-  }
-
-  control(controller, v) {
-    this.controller[controller](this, v)
-  }
-
-  mutate(func) {
-    func(this.attributes)
-    this.isUpdate = true
+  mutate(att, func) {
+    this.attributes[att] = func(this.attributes[att])
+    this.ver++
   }
 
   resize({width = 1, height = 1} = {}) {
@@ -50,10 +43,21 @@ export class Camera {
   }
 
   update() {
-    if(this.isUpdate) {
+
+    const isUpdateLocal = this.preVer < this.ver
+    const isParent = this.parent
+    const isUpdateParent = isParent && (this.preParentVer < this.parent.ver)
+
+    if(isUpdateLocal) {
       this.setVP()
-      this.isUpdate = false
+      this.preVer = this.ver
     }
+
+    if(isUpdateParent || (isUpdateLocal && isParent)) {
+      // this.setWorld()
+      this.preParentVer = this.parent.ver
+    }
+
   }
 
   setVP() {

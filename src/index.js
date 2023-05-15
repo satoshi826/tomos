@@ -2,7 +2,7 @@ import {id, setH} from './lib/util/util'
 import {init, _, style} from './lib/theme'
 import {frame} from './dom/frame/frame'
 import {tool} from './dom/frame/tool'
-import {nav} from './dom/frame/nav'
+// import {nav} from './dom/frame/nav'
 import {side} from './dom/frame/side'
 import {canvas} from './dom/canvas'
 
@@ -13,7 +13,7 @@ ${frame({
     top    : tool(),
     side   : side(),
     content: canvas(),
-    bottom : nav()
+    // bottom : nav()
   })}
 `)
 

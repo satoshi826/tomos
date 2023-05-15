@@ -59,13 +59,13 @@ export const compose = () => ({
     float target = 0.08;
 
     float dofPower = depthLinear-target;
-    dofPower = (dofPower < 0.0) ? -16.0 * dofPower : 1.0 * dofPower;
+    dofPower = (dofPower < 0.0) ? -30.0 * dofPower : 1.0 * dofPower;
     vec3 dofTyped = (dofPower < 0.0) ? blur2 : blur1;
     vec3 toneMapBlur = dofTyped / (1.0 + dofTyped);
     vec3 toneMapPreEffect = preEffect / (1.0 + preEffect);
 
-    vec3 bloom = 0.1 * (1.0 * blur1 + 0.5 * blur2);
-    vec3 toneMapBloom = 1.8 * bloom / (1.0 + bloom);
+    vec3 bloom = 0.01 * (1.0 * blur1 + 0.5 * blur2);
+    vec3 toneMapBloom = 12.0 * bloom / (1.0 + bloom);
     vec3 outputBase = (toneMapPreEffect + toneMapBloom);
     vec3 outputC = mix(outputBase, toneMapBlur, clamp(dofPower, 0.0, 1.0));
     vec3 outputFog = mix(outputC, fog, depthLinear * 0.08);

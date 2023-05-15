@@ -1,5 +1,5 @@
 
-export const gBufferInstance = ({color = [0.5, 0.5, 0.5], emission = 0.0} = {}) => ({
+export const gBufferInstance = ({color = [0.5, 0.5, 0.5], emission = 0.0, maxInstance = 1000} = {}) => ({
   id        : 'gBufferInstance',
   attributes: [
     'a_position',
@@ -14,6 +14,8 @@ export const gBufferInstance = ({color = [0.5, 0.5, 0.5], emission = 0.0} = {}) 
   instancedValue: {
     a_instance_color: [...color, emission]
   },
+  maxInstance,
+
   vert: /* glsl */`#version 300 es
 
   layout(location = 0) in vec3 a_position;

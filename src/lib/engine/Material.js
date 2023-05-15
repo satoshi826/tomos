@@ -1,8 +1,11 @@
 import {oForEach} from '../util/util'
 
 export class Material {
-  constructor(core, {id, attributes, uniforms, vert, frag, uniformValue, instancedAttributes, instancedValue, maxInstance}, texture) {
-
+  constructor(
+    core,
+    {id, attributes, uniforms, vert, frag, uniformValue, instancedAttributes, instancedValue, maxInstance},
+    texture
+  ) {
     this.core = core
     this.id = id
     this.attributes = attributes
@@ -14,7 +17,7 @@ export class Material {
 
     this.instancedAttributes = instancedAttributes ?? null
     this.instancedValue = instancedValue ?? null
-    this.maxInstance = maxInstance ?? 8000
+    this.maxInstance = maxInstance ?? 1000
 
     this.renderer = instancedValue
       ? (...arg) => this.core.gl.drawElementsInstanced(...arg)

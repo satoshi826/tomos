@@ -9,9 +9,6 @@ binding = "DB"
 database_name = "tomos-db"
 database_id = "2c3e7aca-6293-4336-b2e9-20bfa7606a60"
 
-# Workers Logs
-# Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/
-# Configuration: https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs
 [observability]
 enabled = true
 

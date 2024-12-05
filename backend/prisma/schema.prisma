@@ -14,16 +14,33 @@ model User {
   email String  @unique
   name  String?
 	messages Message[]
+	topics Topic[]
 	createdAt DateTime @default(now())
+}
+
+model Topic {
+	id        Int     @id @default(autoincrement())
+	userId    Int
+	user      User    @relation(fields: [userId], references: [id])
+	title   String
+	x				 Int
+	y				 Int
+	messages Message[]
+	createdAt DateTime @default(now())
+	@@unique([x, y])
 }
 
 model Message {
 	id        Int     @id @default(autoincrement())
 	userId    Int
 	user      User    @relation(fields: [userId], references: [id])
+	topicId   Int
+	topic     Topic   @relation(fields: [topicId], references: [id])
 	content   String
 	x				 Int
 	y				 Int
 	createdAt DateTime @default(now())
 	@@unique([x, y])
 }
+
+

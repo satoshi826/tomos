@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 body {
-	/* biome-ignore lint/a11y/useGenericFontNames: <explanation> */
-	font-family: "Kosugi Maru", "Arial", "メイリオ";
-	touch-action: none;
+  /* biome-ignore lint/a11y/useGenericFontNames: <explanation> */
+  font-family: "Kosugi Maru", "Arial", "メイリオ";
+  touch-action: none;
 }

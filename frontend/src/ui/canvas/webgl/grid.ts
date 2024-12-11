@@ -1,24 +1,24 @@
 import { type Core, Program } from 'glaku'
 
 export const grid = (core: Core) =>
-	new Program(core, {
-		id: 'grid',
-		attributeTypes: {
-			a_position: 'vec2',
-			a_textureCoord: 'vec2',
-		},
-		uniformTypes: {
-			u_resolution: 'vec2',
-			u_camera: 'vec3',
-		},
-		vert: /* glsl */ `
+  new Program(core, {
+    id: 'grid',
+    attributeTypes: {
+      a_position: 'vec2',
+      a_textureCoord: 'vec2',
+    },
+    uniformTypes: {
+      u_resolution: 'vec2',
+      u_camera: 'vec3',
+    },
+    vert: /* glsl */ `
     out vec4 v_color;
     out vec2 v_pos;
     void main() {
       gl_Position = vec4(a_position, 1.0, 1.0);
       v_pos = a_position;
     }`,
-		frag: /* glsl */ `
+    frag: /* glsl */ `
     out vec4 color;
     in vec2 v_pos;
 
@@ -55,4 +55,4 @@ export const grid = (core: Core) =>
       color = vec4(vec3(grids), 1.0);
     }
   `,
-	})
+  })

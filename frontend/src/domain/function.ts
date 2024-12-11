@@ -10,8 +10,7 @@
 import { maxMultiple } from '@/util/function'
 import type { Multiple10 } from './type'
 
-export const numberToMultiple10 = (num: number): Multiple10 =>
-	maxMultiple(num, 10)
+export const numberToMultiple10 = (num: number): Multiple10 => maxMultiple(num, 10)
 
 // export const commandToMessage = (commands: MessageCommand[]): Record<MessageId, Message> => {
 //   return {} as Record<MessageId, Message>

@@ -4,43 +4,83 @@ generator client {
 	previewFeatures = ["driverAdapters"]
 }
 
+generator zod {
+  provider                         = "zod-prisma-types"
+  output                           = "./generated/zod"
+  useMultipleFiles                 = true
+  writeBarrelFiles                 = false
+  createInputTypes                 = false
+  createModelTypes                 = true
+  addInputTypeValidation           = true
+  createOptionalDefaultValuesTypes = true
+  createRelationValuesTypes        = true
+  createPartialTypes               = true
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id    String  @id @default(uuid())
+  email String  @unique // @zod.string.email()
+  name  String  @unique // @zod.string.max(32, { message: "max error" })
 	messages Message[]
 	topics Topic[]
 	createdAt DateTime @default(now())
 }
 
+model Area {
+	id        Int     @id @default(autoincrement())
+	name      String? // @zod.string.max(32, { message: "max error" })
+	x         Int  // @zod.number().nonnegative().multipleOf(100)
+	y         Int  // @zod.number().nonnegative().multipleOf(100)
+	topics    Topic[]
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+	@@unique([x, y])
+	@@index([x, y, updatedAt])
+}
+
 model Topic {
 	id        Int     @id @default(autoincrement())
-	userId    Int
+	userId    String
 	user      User    @relation(fields: [userId], references: [id])
+	areaId    Int
+	area      Area    @relation(fields: [areaId], references: [id])
 	title   String
-	x				 Int
-	y				 Int
+	x				 Int // @zod.number().nonnegative().multipleOf(10)
+	y				 Int // @zod.number().nonnegative().multipleOf(10)
 	messages Message[]
+	tags      Tag[]
 	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
 	@@unique([x, y])
+	@@index([x, y, updatedAt])
+}
+
+model Tag {
+	id        Int     @id @default(autoincrement())
+	name      String  @unique
+	topics    Topic[]
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
 }
 
 model Message {
 	id        Int     @id @default(autoincrement())
-	userId    Int
+	userId    String
 	user      User    @relation(fields: [userId], references: [id])
 	topicId   Int
 	topic     Topic   @relation(fields: [topicId], references: [id])
 	content   String
-	x				 Int
-	y				 Int
+	x				 Int // @zod.number().nonnegative()
+	y				 Int // @zod.number().nonnegative()
 	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
 	@@unique([x, y])
+	@@index([x, y, updatedAt])
 }
 
 

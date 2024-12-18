@@ -8,11 +8,9 @@ import type { TopicWithRelations, TopicPartialWithRelations, TopicOptionalDefaul
 
 export const AreaSchema = z.object({
   id: z.number().int(),
-  name: z.string(),
-  x: z.number().int(),
-  y: z.number().int(),
-  width: z.number().int(),
-  height: z.number().int(),
+  name: z.string().max(32).nullable(),
+  x: z.number().int().nonnegative().multipleOf(100),
+  y: z.number().int().nonnegative().multipleOf(100),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })

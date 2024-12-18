@@ -12,7 +12,7 @@ export const MessageSchema = z.object({
   id: z.number().int(),
   userId: z.string(),
   topicId: z.number().int(),
-  content: z.string(),
+  content: z.string().max(256),
   x: z.number().int(),
   y: z.number().int(),
   createdAt: z.coerce.date(),

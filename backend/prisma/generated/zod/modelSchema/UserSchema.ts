@@ -10,8 +10,8 @@ import type { TopicWithRelations, TopicPartialWithRelations, TopicOptionalDefaul
 
 export const UserSchema = z.object({
   id: z.string().uuid(),
-  email: z.string(),
-  name: z.string(),
+  email: z.string().email(),
+  name: z.string().max(32),
   createdAt: z.coerce.date(),
 })
 

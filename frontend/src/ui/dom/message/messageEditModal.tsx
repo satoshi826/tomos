@@ -1,5 +1,5 @@
 import { useSetMessage, useUserPosition } from '@/domain/hooks'
-import { MAX_MESSAGE_LENGTH } from '@/domain/type'
+import { MAX_MESSAGE_LENGTH } from '@/domain/types'
 import { useState } from 'react'
 import { z } from 'zod'
 

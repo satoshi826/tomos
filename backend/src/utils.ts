@@ -5,6 +5,7 @@ import type { Context } from 'hono'
 
 export const prismaClient = (db: D1Database) => {
   const adapter = new PrismaD1(db)
+  console.log(db)
   return new PrismaClient({ adapter, log: ['query'] })
 }
 

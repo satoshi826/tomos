@@ -1,4 +1,4 @@
-import type { CameraPosition } from '@/domain/type'
+import type { CameraPosition } from '@/domain/types'
 import { Core, Renderer, State, Vao, plane2D } from 'glaku'
 import type { MessageView } from '../../type'
 import { grid } from './grid'

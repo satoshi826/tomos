@@ -1,10 +1,11 @@
-import { useCameraPosition, useMousePosition, useUserPosition } from '@/domain/hooks'
+import { useCameraPosition, useCurrentTopicPosition, useMousePosition, useUserPosition } from '@/domain/hooks'
 import type { ClassName } from '@/util/type'
 
 export function Sidebar({ open }: { open: boolean }) {
   const cameraPosition = useCameraPosition()
   const mousePosition = useMousePosition()
   const userPosition = useUserPosition()
+  const currentTopicPosition = useCurrentTopicPosition()
 
   const openClass: ClassName = open ? 'translate-x-0' : '-translate-x-full'
   const sidebarClassBase: ClassName =
@@ -28,6 +29,11 @@ export function Sidebar({ open }: { open: boolean }) {
         <div>User</div>
         <div>x: {userPosition.x.toFixed(1)}</div>
         <div>y: {userPosition.y.toFixed(1)}</div>
+      </div>
+      <div className="card bg-base-100 p-3">
+        <div>Topic</div>
+        <div>x: {currentTopicPosition.x}</div>
+        <div>y: {currentTopicPosition.y}</div>
       </div>
     </div>
   )

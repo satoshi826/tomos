@@ -25,6 +25,7 @@
     "@hono/zod-openapi": "^0.18.3",
     "@prisma/adapter-d1": "^6.0.1",
     "@prisma/client": "^6.1.0",
-    "hono": "^4.6.12"
+    "hono": "^4.6.12",
+    "jittoku": "^0.1.15"
   }
 }

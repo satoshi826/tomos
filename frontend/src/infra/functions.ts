@@ -1,4 +1,4 @@
-import type { Infra } from '@/domain/type'
+import type { Infra } from '@/domain/types'
 
 export const infra: Infra = {
   getMessage: () => [

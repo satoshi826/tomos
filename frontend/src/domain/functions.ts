@@ -8,7 +8,7 @@
 // } from './type'
 
 import { maxMultiple } from '@/util/function'
-import type { Multiple10 } from './type'
+import type { Multiple10 } from './types'
 
 export const numberToMultiple10 = (num: number): Multiple10 => maxMultiple(num, 10)
 

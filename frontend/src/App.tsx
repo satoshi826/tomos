@@ -1,7 +1,7 @@
 import { clamp } from 'jittoku'
 import { useEffect } from 'react'
 import { useCameraPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from './domain/hooks'
-import { useCanvas, useDragCallback, usePointerCallback, useResizeCallback } from './hooks'
+import { useData } from './infra/hooks'
 import { useMessageView } from './ui/canvas/hooks'
 import Worker from './ui/canvas/webgl/worker?worker'
 import { Frame } from './ui/dom/frame'
@@ -10,6 +10,7 @@ import { MessageButton } from './ui/dom/message/messageButton'
 import { MessageEditModal } from './ui/dom/message/messageEditModal'
 import { Topic } from './ui/dom/topic/topic'
 import { WorldAdapter } from './ui/dom/worldAdapter'
+import { useCanvas, useDragCallback, usePointerCallback, useResizeCallback } from './ui/hooks'
 
 function App() {
   const { canvas, post, ref } = useCanvas({ Worker })
@@ -41,8 +42,12 @@ function App() {
     },
     ref,
   })
-  useEffect(() => post({ camera: cameraPosition }), [post, cameraPosition])
-  useEffect(() => post({ message: messageView }), [post, messageView])
+
+  useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post])
+  useEffect(() => post({ message: messageView }), [messageView, post])
+
+  useData()
+
   return (
     <>
       {canvas}

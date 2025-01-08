@@ -39,12 +39,13 @@ export const topicGetRoute = createRoute({
   request: {
     query: z
       .object({
-        areaId: z.string().default('0').pipe(z.coerce.number().nonnegative().multipleOf(10)),
+        x: z.string().default('0').pipe(z.coerce.number().nonnegative().multipleOf(10)),
+        y: z.string().default('0').pipe(z.coerce.number().nonnegative().multipleOf(10)),
       })
-      .openapi('topicQueryParam'),
+      .openapi('areaParam'),
   },
   responses: {
-    ..._200(z.array(TopicSchema), 'Returns all topics in a given area'),
+    ..._200(TopicSchema.nullable(), 'Returns all topics in a given area'),
     ..._400(),
   },
 })

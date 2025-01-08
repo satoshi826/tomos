@@ -1,6 +1,6 @@
 import { range } from 'jittoku'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { type CanvasSize, DEFAULT_POSITION, type Message, type Position, type ScreenPosition, type Topic } from './type'
+import { type CanvasSize, DEFAULT_POSITION, type Message, type Position, type ScreenPosition, type Topic } from './types'
 
 const canvasSizeAtom = atom<CanvasSize>({ width: 1000, height: 1000 })
 export const useSetCanvasSize = () => useSetAtom(canvasSizeAtom)
@@ -40,6 +40,24 @@ const userPositionAtom = atom<Position>((get) => {
   }
 })
 export const useUserPosition = () => useAtomValue(userPositionAtom)
+
+//----------------------------------------------------------------
+
+let memoizedPosition: Position | null = null
+const currentTopicPositionAtom = atom<Position>((get) => {
+  const cameraPosition = get(cameraPositionAtom)
+  const newPosition = {
+    x: 10 * Math.ceil(cameraPosition.x / 10),
+    y: 10 * Math.ceil(cameraPosition.y / 10),
+  }
+  if (memoizedPosition && memoizedPosition.x === newPosition.x && memoizedPosition.y === newPosition.y) {
+    return memoizedPosition
+  }
+  memoizedPosition = newPosition
+  return newPosition
+})
+
+export const useCurrentTopicPosition = () => useAtomValue(currentTopicPositionAtom)
 
 //----------------------------------------------------------------
 

@@ -1,16 +1,24 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { hc } from 'hono/client'
+import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { areaGetRoute, areaPostRoute } from './route'
+import { areaGetRoute, areaPostRoute, topicGetRoute } from './route'
+import { seed } from './seed'
 import { handleError, hono, prismaClient } from './utils'
 
 const app = hono()
-
 app.use(logger())
+app.use(cors())
 app.onError(handleError)
+app.get('/', (c) => c.text('Hello Tomos!'))
+
 app.doc31('/doc', { openapi: '3.1.0', info: { version: '0.0.0', title: 'Tomos API' } })
 app.get('/ui', swaggerUI({ url: '/doc' }))
-app.get('/', (c) => c.text('Hello Tomos!'))
+
+app.get('/seed', (c) => {
+  seed(prismaClient(c.env.DB))
+  return c.text('Seeding database...')
+})
 
 app.openapi(areaGetRoute, async (c) => {
   const prisma = prismaClient(c.env.DB)
@@ -25,6 +33,13 @@ app.openapi(areaPostRoute, async (c) => {
   const { x, y, name } = await c.req.valid('json')
   const area = await prisma.area.create({ data: { x, y, name } })
   return c.json(area, 200)
+})
+
+app.openapi(topicGetRoute, async (c) => {
+  const prisma = prismaClient(c.env.DB)
+  const { x, y } = await c.req.valid('query')
+  const topic = await prisma.topic.findUnique({ where: { x_y: { x, y } }, include: { messages: true } })
+  return c.json(topic, 200)
 })
 
 // // GET: Fetch all topics in a given area
@@ -81,4 +96,4 @@ app.openapi(areaPostRoute, async (c) => {
 //   return c.json(message, 200)
 // })
 
-// export default app
+export default app

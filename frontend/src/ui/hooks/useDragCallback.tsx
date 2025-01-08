@@ -1,5 +1,5 @@
 import { useEventListeners } from '@/util/hooks'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CanvasWrapperRef } from './useCanvas'
 
 type Callback = (arg: { x: number; y: number; scroll?: number }) => void
@@ -14,6 +14,8 @@ export function useDragCallback({ callback, ref }: { callback: Callback; ref: Ca
   const baseDistance = useRef<number | null>(null)
 
   const [initVel, setInitVel] = useState<[x: number, y: number] | null>(null)
+
+  const sendTarget = useCallback((x: number, y: number) => callback({ x, y }), [callback])
 
   const reset = () => {
     start.current = null
@@ -30,8 +32,6 @@ export function useDragCallback({ callback, ref }: { callback: Callback; ref: Ca
     start.current ??= [clientX, clientY, Date.now()]
     points.current ??= [[0, 0, Date.now()]]
   }
-
-  const sendTarget = (x: number, y: number) => callback({ x, y })
 
   const drag = (clientX: number, clientY: number) => {
     if (!start.current || !ref.current || !points.current) return
@@ -135,7 +135,7 @@ export function useDragCallback({ callback, ref }: { callback: Callback; ref: Ca
     }
 
     return () => cancelAnimationFrame(animationFrameId)
-  }, [initVel, frictionCoff, sendTarget])
+  }, [initVel, sendTarget])
 
   useEventListeners({
     ref,

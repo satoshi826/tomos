@@ -1,8 +1,8 @@
 export class Fetcher {
   constructor(public endpoint: string) {}
-  async get({ path = '' }) {
+  async get({ path = '', query = {} }) {
     try {
-      const response = await fetch(this.endpoint + path)
+      const response = await fetch(`${this.endpoint}${path}?${new URLSearchParams(query).toString()}`)
       if (response.status !== 200) throw new Error(await response.text())
       return response.json()
     } catch (error) {
@@ -26,3 +26,5 @@ export class Fetcher {
     }
   }
 }
+
+export const fetcher = new Fetcher('http://127.0.0.1:8787')

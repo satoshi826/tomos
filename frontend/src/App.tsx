@@ -1,7 +1,7 @@
 import { clamp } from 'jittoku'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useCameraPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from './domain/hooks'
-import { useData } from './infra/hooks'
+import { Fetcher } from './infra/components'
 import { useMessageView } from './ui/canvas/hooks'
 import Worker from './ui/canvas/webgl/worker?worker'
 import { Frame } from './ui/dom/frame'
@@ -11,24 +11,42 @@ import { MessageEditModal } from './ui/dom/message/messageEditModal'
 import { Topic } from './ui/dom/topic/topic'
 import { WorldAdapter } from './ui/dom/worldAdapter'
 import { useCanvas, useDragCallback, usePointerCallback, useResizeCallback } from './ui/hooks'
+import { ErrorBoundary } from './util/component'
 
-function App() {
+export function App() {
   const { canvas, post, ref } = useCanvas({ Worker })
+  return (
+    <ErrorBoundary>
+      {canvas}
+      <CanvasInterface post={post} ref={ref} />
+      <Fetcher />
+      <Frame>
+        <WorldAdapter>
+          <Message />
+          <MessageButton />
+          <MessageEditModal />
+          <Topic />
+        </WorldAdapter>
+      </Frame>
+    </ErrorBoundary>
+  )
+}
+
+function CanvasInterface({ post, ref }: { post: (data: unknown) => void; ref: React.RefObject<HTMLDivElement | null> }) {
   const cameraPosition = useCameraPosition()
   const setCameraPosition = useSetCameraPosition()
   const setMousePosition = useSetMousePosition()
   const setCanvasSize = useSetCanvasSize()
   const messageView = useMessageView()
-
-  useResizeCallback({
-    callback: (resize) => {
+  const resizeCallback = useCallback(
+    (resize: { width: number; height: number }) => {
       setCanvasSize(resize)
       post({ resize })
     },
-    ref,
-  })
+    [setCanvasSize, post],
+  )
+  useResizeCallback({ callback: resizeCallback, ref })
   usePointerCallback({ callback: setMousePosition, ref })
-
   useDragCallback({
     callback: ({ x, y, scroll }) => {
       setCameraPosition((prev) => {
@@ -42,25 +60,7 @@ function App() {
     },
     ref,
   })
-
   useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post])
   useEffect(() => post({ message: messageView }), [messageView, post])
-
-  useData()
-
-  return (
-    <>
-      {canvas}
-      <Frame>
-        <WorldAdapter>
-          <Message />
-          <MessageButton />
-          <MessageEditModal />
-          <Topic />
-        </WorldAdapter>
-      </Frame>
-    </>
-  )
+  return null
 }
-
-export default App

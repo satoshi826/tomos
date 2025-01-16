@@ -1,10 +1,18 @@
-import { useCurrentTopicPosition } from '@/domain/hooks'
-import { fetcher } from '@/lib/fetch'
-import { use, useEffect } from 'react'
+import { IndexDB } from '@/lib/indexDB'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 
-export const useData = () => {
-  const currentTopicPosition = useCurrentTopicPosition()
+const cacheAtom = atom(new Map())
+
+export const useSetCache = () => useSetAtom(cacheAtom)
+
+export const useCache = () => useAtomValue(cacheAtom)
+
+export const useIndexDB = () => {
+  const [db, setDb] = useState<IndexDB | null>(null)
   useEffect(() => {
-    fetcher.get({ path: '/topics', query: { x: currentTopicPosition.x, y: currentTopicPosition.y } }).then(console.log)
-  }, [currentTopicPosition])
+    const db = new IndexDB({ dbName: 'world', storeName: 'topics' })
+    db.open().then(() => setDb(db))
+  }, [])
+  return db
 }

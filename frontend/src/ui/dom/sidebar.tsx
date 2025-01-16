@@ -9,7 +9,7 @@ export function Sidebar({ open }: { open: boolean }) {
 
   const openClass: ClassName = open ? 'translate-x-0' : '-translate-x-full'
   const sidebarClassBase: ClassName =
-    'duration-300 sm:min-w-48 min-w-80 flex flex-col gap-3 h-full p-3 bg-zinc-800-900/50 backdrop-blur-sm pointer-events-auto border-r border-zinc-200/10 z-50 '
+    'duration-300 sm:min-w-48 min-w-80 flex flex-col gap-3 h-full p-3 bg-zinc-800-900/10 backdrop-blur-sm pointer-events-auto border-r border-zinc-200/10 z-50 '
   const sidebarClass = sidebarClassBase + openClass
 
   return (

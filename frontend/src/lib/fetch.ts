@@ -10,13 +10,11 @@ export class Fetcher {
     }
   }
 
-  async post({ body = {}, path = '' }) {
+  async post({ path = '', body = {} }) {
     try {
       const response = await fetch(this.endpoint + path, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
       if (response.status !== 200) throw new Error(await response.text())

@@ -4,16 +4,16 @@ export function useEventListeners({
   ref,
   listeners,
 }: {
-  ref: React.RefObject<HTMLElement>
+  ref: React.RefObject<HTMLElement | null>
   listeners: Record<string, EventListener>
 }) {
   const option = { passive: true }
   useEffect(() => {
-    const current = ref.current
-    if (!current) return
-    Object.entries(listeners).forEach(([event, handler]) => current?.addEventListener(event, handler, option))
+    const el = ref.current
+    if (!el) return
+    Object.entries(listeners).forEach(([event, handler]) => el?.addEventListener(event, handler, option))
     return () => {
-      Object.entries(listeners).forEach(([event, handler]) => current?.removeEventListener(event, handler))
+      Object.entries(listeners).forEach(([event, handler]) => el?.removeEventListener(event, handler))
     }
   }, [ref, listeners])
 }

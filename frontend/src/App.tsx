@@ -8,7 +8,7 @@ import { Frame } from './ui/dom/frame'
 import { Message } from './ui/dom/message/message'
 import { MessageButton } from './ui/dom/message/messageButton'
 import { MessageEditModal } from './ui/dom/message/messageEditModal'
-import { Topic } from './ui/dom/topic/topic'
+import { Topics } from './ui/dom/topic/topic'
 import { WorldAdapter } from './ui/dom/worldAdapter'
 import { useCanvas, useDragCallback, usePointerCallback, useResizeCallback } from './ui/hooks'
 import { ErrorBoundary } from './util/component'
@@ -25,7 +25,7 @@ export function App() {
           <Message />
           <MessageButton />
           <MessageEditModal />
-          <Topic />
+          <Topics />
         </WorldAdapter>
       </Frame>
     </ErrorBoundary>

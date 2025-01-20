@@ -51,7 +51,7 @@ export function MessageEditModal() {
 
   return (
     <dialog id="message_edit_modal" className="modal">
-      <div className="modal-box">
+      <div className="modal-box bg-zinc-800-900/10 backdrop-blur-sm">
         <h3 className="font-bold text-lg">メッセージを作成</h3>
         <textarea
           className="textarea textarea-bordered mt-3 w-full resize-none"

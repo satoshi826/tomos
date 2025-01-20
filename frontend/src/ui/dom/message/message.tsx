@@ -1,11 +1,11 @@
-import { useCameraPosition, useMessage } from '@/domain/hooks'
+import { useCameraZ, useMessage } from '@/domain/hooks'
 import { memo } from 'react'
 import { getTranslate } from '../worldAdapter'
 
 export const Message = memo(function Message() {
-  const cameraPosition = useCameraPosition()
+  const cameraZ = useCameraZ()
   const message = useMessage()
-  if (cameraPosition.z > 10) return null
+  if (cameraZ > 10) return null
   return message.map((m, i) => (
     <div
       key={m.id + i.toString()}

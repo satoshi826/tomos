@@ -50,6 +50,14 @@ export type Message = {
 
 export type Multiple10 = number
 export type TopicId = string
+// export type Topic = {
+//   id: TopicId
+//   title: string
+//   message: MessageId[]
+//   x: Multiple10
+//   y: Multiple10
+// }
+
 export type Topic = {
   id: TopicId
   title: string

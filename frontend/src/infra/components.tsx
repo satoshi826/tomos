@@ -1,12 +1,13 @@
 import { useCurrentTopicPosition, useIsTopicsView } from '@/domain/hooks'
 import { fetcher as _fetcher } from '@/lib/fetch'
-import type { Topic } from '@shared/types/modelSchema/TopicSchema'
+import { client } from './api'
 import { useFetchCache } from './hooks'
 
 const topicFetcher = async (key: string | undefined) => {
   if (!key) return
-  const [_, x, y] = key.split('_').map(Number)
-  return (await _fetcher.get({ path: '/topics', query: { x, y } })) as Topic
+  const [_, x, y] = key.split('_')
+  const result = await client.topics.$get({ query: { x, y } })
+  return result.json()
 }
 
 export const Fetcher = function Fetcher() {

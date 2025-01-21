@@ -1,7 +1,18 @@
 import { useCache } from '@/infra/hooks'
 import { range, truncate } from 'jittoku'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { type CanvasSize, DEFAULT_POSITION, type Message, type Position, type ScreenPosition, type Topic } from './types'
+import {
+  type CanvasSize,
+  DEFAULT_POSITION,
+  MESSAGES_VIEW_MAX_Z,
+  MESSAGE_VIEW_MAX_Z,
+  type Message,
+  type Position,
+  type ScreenPosition,
+  TOPICS_VIEW_MAX_Z,
+  type Topic,
+  type ViewMode,
+} from './types'
 
 const canvasSizeAtom = atom<CanvasSize>({ width: 1000, height: 1000 })
 export const useSetCanvasSize = () => useSetAtom(canvasSizeAtom)
@@ -33,13 +44,6 @@ const cameraZAtom = atom((get) => get(cameraPositionAtom).z)
 
 export const useCameraZ = () => useAtomValue(cameraZAtom)
 
-const VIEW_MODES = ['message', 'messages', 'topics', 'areas'] as const
-const MESSAGE_VIEW_MAX_Z = 1.5
-const MESSAGES_VIEW_MAX_Z = 10
-const TOPICS_VIEW_MAX_Z = 85
-
-type ViewMode = (typeof VIEW_MODES)[number]
-
 const viewModeAtom = atom<ViewMode>((get) => {
   const { z } = get(cameraPositionAtom)
   if (z < MESSAGE_VIEW_MAX_Z) return 'message'
@@ -47,9 +51,7 @@ const viewModeAtom = atom<ViewMode>((get) => {
   if (z < TOPICS_VIEW_MAX_Z) return 'topics'
   return 'areas'
 })
-
 export const useViewMode = () => useAtomValue(viewModeAtom)
-
 export const useIsMessageView = () => useViewMode() === 'message'
 export const useIsMessagesView = () => useViewMode() === 'messages'
 export const useIsTopicsView = () => useViewMode() === 'topics'
@@ -80,7 +82,7 @@ const defaultMessage = range(10).flatMap((x) =>
     createdAt: '20241101',
   })),
 )
-export const messageAtom = atom<Message[]>(defaultMessage)
+export const messageAtom = atom<Message[]>(defaultMessage as unknown as Message[])
 export const useMessage = () => useAtomValue(messageAtom)
 export const useSetMessage = () => useSetAtom(messageAtom)
 
@@ -114,6 +116,6 @@ export const useCurrentTopic = () => {
   return useTopic(pos) as Topic | null
 }
 
-const topicAtom = atom<Topic[]>([{ id: 'topic', title: 'topic', message: [], x: 0, y: 0 }])
+const topicAtom = atom<Topic[]>([{ id: 'topic', title: 'topic', message: [], x: 0, y: 0 }] as unknown as Topic[])
 
 export const useSetTopic = () => useSetAtom(topicAtom)

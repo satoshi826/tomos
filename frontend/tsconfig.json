@@ -1,10 +1,20 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+  "extends": "../tsconfig.json",
+  "composite": true,
+  "include": ["src/**/*"],
   "compilerOptions": {
+    "composite": true,
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../shared/*"],
       "@/*": ["./src/*"]
     }
   }

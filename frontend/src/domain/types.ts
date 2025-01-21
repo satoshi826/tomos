@@ -1,3 +1,7 @@
+import type { Area as _Area } from 'shared/types/modelSchema/AreaSchema'
+import type { Message as _Message } from 'shared/types/modelSchema/MessageSchema'
+import type { Topic as _Topic } from 'shared/types/modelSchema/TopicSchema'
+
 export const TOPIC_SIDE = 10
 export const AREA_SIDE = TOPIC_SIDE * 10
 export const DEFAULT_POSITION: CameraPosition = { x: 0, y: 0, z: 10 }
@@ -5,6 +9,13 @@ export const MAX_X = 2000
 export const MAX_Y = 2000
 export const MIN_X = 0
 export const MIN_Y = 0
+
+export const VIEW_MODES = ['message', 'messages', 'topics', 'areas'] as const
+export const MESSAGE_VIEW_MAX_Z = 1.5
+export const MESSAGES_VIEW_MAX_Z = 10
+export const TOPICS_VIEW_MAX_Z = 85
+
+export type ViewMode = (typeof VIEW_MODES)[number]
 
 export type ScreenPosition = {
   x: number
@@ -25,8 +36,6 @@ export type Zoom = {
   z: number
 }
 
-export type DateString = string
-
 //----------------------------------------------------------------
 
 export type CameraPosition = Zoom & Position
@@ -41,45 +50,9 @@ export type UserPosition = Position
 
 export const MAX_MESSAGE_LENGTH = 100
 export type MessageId = string
-export type Message = {
-  id: MessageId
-  userId: UserId
-  text: string
-  createdAt: DateString
-} & Position
-
-export type Multiple10 = number
-export type TopicId = string
-// export type Topic = {
-//   id: TopicId
-//   title: string
-//   message: MessageId[]
-//   x: Multiple10
-//   y: Multiple10
-// }
-
-export type Topic = {
-  id: TopicId
-  title: string
-  message: MessageId[]
-  x: Multiple10
-  y: Multiple10
-}
-
-export type AreaId = string
-export type Area = {
-  id: AreaId
-  topic: Record<TopicId, Topic>
-}
-
-//----------------------------------------------------------------
-
-export type AddMessage = {
-  type: 'add'
-  message: Message
-}
-
-export type MessageCommand = AddMessage
+export type Message = _Message
+export type Topic = _Topic
+export type Area = _Area
 
 //----------------------------------------------------------------
 

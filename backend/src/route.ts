@@ -1,7 +1,7 @@
 import { createRoute, z } from '@hono/zod-openapi'
-import { AreaSchema } from '../prisma/generated/zod/modelSchema/AreaSchema'
-import MessageSchema from '../prisma/generated/zod/modelSchema/MessageSchema'
-import TopicSchema from '../prisma/generated/zod/modelSchema/TopicSchema'
+import AreaSchema from 'shared/types/modelSchema/AreaSchema'
+import MessageSchema from 'shared/types/modelSchema/MessageSchema'
+import TopicSchema from 'shared/types/modelSchema/TopicSchema'
 import { _200, _400, _404, _jsonContent } from './utils'
 
 export const areaGetRoute = createRoute({

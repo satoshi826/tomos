@@ -1,7 +1,7 @@
 import { clamp } from 'jittoku'
 import { useCallback, useEffect } from 'react'
 import { useCameraPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from './domain/hooks'
-import { Fetcher } from './infra/components'
+import { Fetcher } from './infra'
 import { useMessageView } from './ui/canvas/hooks'
 import Worker from './ui/canvas/webgl/worker?worker'
 import { Frame } from './ui/dom/frame'

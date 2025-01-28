@@ -1,12 +1,13 @@
 import { createRoute, z } from '@hono/zod-openapi'
-import AreaSchema from 'shared/types/modelSchema/AreaSchema'
-import MessageSchema from 'shared/types/modelSchema/MessageSchema'
-import TopicSchema from 'shared/types/modelSchema/TopicSchema'
+import { AreaSchema } from 'shared/types/generated/modelSchema/AreaSchema'
+import { MessageSchema } from 'shared/types/generated/modelSchema/MessageSchema'
+import TopicSchema from 'shared/types/generated/modelSchema/TopicSchema'
+import { AreaWithTopicsSchema, TopicWithMessagesSchema } from 'shared/types/util'
 import { _200, _400, _404, _jsonContent } from './utils'
 
 export const areaGetRoute = createRoute({
   method: 'get',
-  path: '/area',
+  path: '/areas',
   request: {
     query: z
       .object({
@@ -16,7 +17,7 @@ export const areaGetRoute = createRoute({
       .openapi('areaParam'),
   },
   responses: {
-    ..._200(AreaSchema, 'Returns a single area by x y'),
+    ..._200(AreaWithTopicsSchema, 'Returns a single area by x y'),
     ..._400(),
     ..._404(),
   },
@@ -24,7 +25,7 @@ export const areaGetRoute = createRoute({
 
 export const areaPostRoute = createRoute({
   method: 'post',
-  path: '/area',
+  path: '/areas',
   request: {
     body: _jsonContent(AreaSchema.pick({ name: true, x: true, y: true })),
   },
@@ -45,8 +46,9 @@ export const topicGetRoute = createRoute({
       .openapi('areaParam'),
   },
   responses: {
-    ..._200(TopicSchema.nullable(), 'Returns all topics in a given area'),
+    ..._200(TopicWithMessagesSchema, 'Returns all topics in a given area'),
     ..._400(),
+    ..._404(),
   },
 })
 

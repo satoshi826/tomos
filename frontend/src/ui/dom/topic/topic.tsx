@@ -25,11 +25,10 @@ export function Topics() {
 const Topic = memo(function Topic({ topic: t }: { topic: string }) {
   const [x, y] = topicKeyToPosition(t)
   const topic = useTopic({ x, y })
-  console.log(topic)
   if (!topic) return null
   return (
     <div
-      className="pointer-events-none absolute size-36 break-words bg-gray-600 text-lg text-neutral-200"
+      className="pointer-events-none absolute size-36 break-words bg-gray-600 text-lg text-neutral-200 contain-strict"
       style={{ transform: getTranslate(topic.x + 5, topic.y + 5, 10) }}
     >
       {topic.title}

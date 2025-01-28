@@ -1,6 +1,6 @@
-import type { Area as _Area } from 'shared/types/modelSchema/AreaSchema'
-import type { Message as _Message } from 'shared/types/modelSchema/MessageSchema'
-import type { Topic as _Topic } from 'shared/types/modelSchema/TopicSchema'
+import type { Area as _Area } from 'shared/types/generated/modelSchema/AreaSchema'
+import type { Message as _Message } from 'shared/types/generated/modelSchema/MessageSchema'
+import type { Topic as _Topic } from 'shared/types/generated/modelSchema/TopicSchema'
 
 export const TOPIC_SIDE = 10
 export const AREA_SIDE = TOPIC_SIDE * 10

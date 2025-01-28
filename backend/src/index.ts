@@ -23,7 +23,7 @@ const route = app
   .openapi(areaGetRoute, async (c) => {
     const prisma = prismaClient(c.env.DB)
     const { x, y } = await c.req.valid('query')
-    const area = await prisma.area.findUnique({ where: { x_y: { x, y } } })
+    const area = await prisma.area.findUnique({ where: { x_y: { x, y } }, include: { topics: true } })
     if (!area) return c.json({ code: 404 as const, message: 'Area not found' }, 404)
     return c.json(area, 200)
   })
@@ -37,6 +37,7 @@ const route = app
     const prisma = prismaClient(c.env.DB)
     const { x, y } = await c.req.valid('query')
     const topic = await prisma.topic.findUnique({ where: { x_y: { x, y } }, include: { messages: true } })
+    if (!topic) return c.json({ code: 404 as const, message: 'Topic not found' }, 404)
     return c.json(topic, 200)
   })
 

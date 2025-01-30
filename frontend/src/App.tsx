@@ -2,10 +2,9 @@ import { clamp } from 'jittoku'
 import { useCallback, useEffect } from 'react'
 import { useCameraPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from './domain/hooks'
 import { Fetcher } from './infra'
-import { useMessageView } from './ui/canvas/hooks'
 import Worker from './ui/canvas/webgl/worker?worker'
 import { Frame } from './ui/dom/frame'
-import { Message } from './ui/dom/message/message'
+import { Messages } from './ui/dom/message/message'
 import { MessageButton } from './ui/dom/message/messageButton'
 import { MessageEditModal } from './ui/dom/message/messageEditModal'
 import { Topics } from './ui/dom/topic/topic'
@@ -22,8 +21,8 @@ export function App() {
       <Fetcher />
       <Frame>
         <WorldAdapter>
-          <Message />
-          <MessageButton />
+          <Messages />
+          {/* <MessageButton /> */}
           <MessageEditModal />
           <Topics />
         </WorldAdapter>
@@ -37,7 +36,7 @@ function CanvasInterface({ post, ref }: { post: (data: unknown) => void; ref: Re
   const setCameraPosition = useSetCameraPosition()
   const setMousePosition = useSetMousePosition()
   const setCanvasSize = useSetCanvasSize()
-  const messageView = useMessageView()
+  // const messageView = useMessageView()
   const resizeCallback = useCallback(
     (resize: { width: number; height: number }) => {
       setCanvasSize(resize)
@@ -61,6 +60,6 @@ function CanvasInterface({ post, ref }: { post: (data: unknown) => void; ref: Re
     ref,
   })
   useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post])
-  useEffect(() => post({ message: messageView }), [messageView, post])
+  // useEffect(() => post({ message: messageView }), [messageView, post]) // messageはindexDB経由で渡す?
   return null
 }

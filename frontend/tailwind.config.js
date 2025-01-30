@@ -11,5 +11,7 @@ export default {
   daisyui: {
     themes: ['business'],
   },
-  plugins: [require('daisyui')],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
 }

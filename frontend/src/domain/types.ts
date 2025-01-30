@@ -2,6 +2,7 @@ import type { Area as _Area } from 'shared/types/generated/modelSchema/AreaSchem
 import type { Message as _Message } from 'shared/types/generated/modelSchema/MessageSchema'
 import type { Topic as _Topic } from 'shared/types/generated/modelSchema/TopicSchema'
 
+export const MESSAGE_SIDE = 1
 export const TOPIC_SIDE = 10
 export const AREA_SIDE = TOPIC_SIDE * 10
 export const DEFAULT_POSITION: CameraPosition = { x: 0, y: 0, z: 10 }

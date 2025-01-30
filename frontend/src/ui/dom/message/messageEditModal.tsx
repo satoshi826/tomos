@@ -1,4 +1,4 @@
-import { useSetMessage, useUserPosition } from '@/domain/hooks'
+import { useUserPosition } from '@/domain/hooks'
 import { MAX_MESSAGE_LENGTH } from '@/domain/types'
 import { useState } from 'react'
 import { z } from 'zod'
@@ -20,7 +20,7 @@ export function MessageEditModal() {
   const userPosition = useUserPosition()
   const [message, setMessage] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const postMessage = useSetMessage()
+  const postMessage = (any: unknown) => null
 
   const handleClose = () => {
     setMessage('')
@@ -35,17 +35,17 @@ export function MessageEditModal() {
       setError(validationResult.error.issues[0].message)
       return
     }
-    postMessage((prev) => [
-      ...prev,
-      {
-        id: 'message',
-        x: userPosition.x,
-        y: userPosition.y,
-        userId: 'user',
-        text: message,
-        createdAt: Date.now().toString(),
-      },
-    ])
+    // postMessage((prev) => [
+    //   ...prev,
+    //   {
+    //     id: 'message',
+    //     x: userPosition.x,
+    //     y: userPosition.y,
+    //     userId: 'user',
+    //     text: message,
+    //     createdAt: Date.now().toString(),
+    //   },
+    // ])
     handleClose()
   }
 

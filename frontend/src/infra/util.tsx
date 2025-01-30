@@ -44,7 +44,10 @@ export function FetchCacher<T extends object>({
 }
 
 function CacheSetter({ _key, _value }: { _key: string; _value: unknown }) {
-  useSetCache(_key)(_value)
+  const setCache = useSetCache(_key)
+  useEffect(() => {
+    setCache(_value)
+  }, [setCache, _value])
   return null
 }
 

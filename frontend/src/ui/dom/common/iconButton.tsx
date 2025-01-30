@@ -2,7 +2,7 @@ export function IconButton({ children, onClick }: { children: string; onClick?: 
   return (
     <span
       {...(onClick ? { onClick: () => onClick(children) } : {})}
-      className="btn btn-circle material-symbols-rounded border-opacity-0 bg-transparent text-3xl"
+      className="btn btn-circle material-symbols-rounded !text-3xl border-0 bg-transparent"
     >
       {children}
     </span>

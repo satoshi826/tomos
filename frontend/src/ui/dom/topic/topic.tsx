@@ -1,25 +1,22 @@
-import { positionToTopicKey, topicKeyToPosition, useCameraZ, useCanvasAdapter, useCurrentTopicPosition, useIsTopicsView, useTopic } from '@/domain/hooks'
+import { positionToTopicKey, topicKeyToPosition, useCurrentTopicPosition, useIsTopicsView, useTopic } from '@/domain/hooks'
 import { TOPIC_SIDE } from '@/domain/types'
-import { step, truncate } from 'jittoku'
 import { memo } from 'react'
+import { useViewablePositions } from '../hooks'
 import { getTranslate } from '../worldAdapter'
 
 export function Topics() {
-  const currentTopicPosition = useCurrentTopicPosition()
-  const cameraZ = useCameraZ()
   const isTopicsView = useIsTopicsView()
-  const { aspectRatioVec } = useCanvasAdapter()
   if (!isTopicsView) return null
+  return <TopicsBody />
+}
 
-  const centerX = currentTopicPosition.x
-  const centerY = currentTopicPosition.y
-  const width = cameraZ * 0.5
-  const xWidth = truncate(width * aspectRatioVec[0], -1)
-  const yWidth = truncate(width * aspectRatioVec[1], -1)
-  const XArray = step(centerX - TOPIC_SIDE - xWidth, centerX + TOPIC_SIDE + xWidth, 10)
-  const YArray = step(centerY - TOPIC_SIDE - yWidth, centerY + TOPIC_SIDE + yWidth, 10)
-  const topicArray = XArray.flatMap((x) => YArray.map((y) => positionToTopicKey({ x, y })))
-  return topicArray.map((k) => <Topic key={k} topic={k} />)
+function TopicsBody() {
+  const currentTopicPosition = useCurrentTopicPosition()
+  const viewablePositions = useViewablePositions(currentTopicPosition, TOPIC_SIDE)
+  return viewablePositions.map((p) => {
+    const key = positionToTopicKey(p)
+    return <Topic key={key} topic={key} />
+  })
 }
 
 const Topic = memo(function Topic({ topic: t }: { topic: string }) {
@@ -28,7 +25,7 @@ const Topic = memo(function Topic({ topic: t }: { topic: string }) {
   if (!topic) return null
   return (
     <div
-      className="pointer-events-none absolute size-36 break-words bg-gray-600 text-lg text-neutral-200 contain-strict"
+      className="pointer-events-none absolute size-36 break-words bg-gray-700 text-lg text-neutral-200 contain-strict"
       style={{ transform: getTranslate(topic.x + 5, topic.y + 5, 10) }}
     >
       {topic.title}

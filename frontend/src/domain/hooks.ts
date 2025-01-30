@@ -1,5 +1,5 @@
 import { useCache } from '@/infra/util'
-import { range, truncate } from 'jittoku'
+import { truncate } from 'jittoku'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
   type Area,
@@ -71,22 +71,6 @@ export const useUserPosition = () => useAtomValue(userPositionAtom)
 
 //----------------------------------------------------------------
 
-const defaultMessage = range(10).flatMap((x) =>
-  range(10).map((y) => ({
-    id: 'message',
-    x,
-    y,
-    userId: 'user',
-    text: `message ${x}_${y}`,
-    createdAt: '20241101',
-  })),
-)
-export const messageAtom = atom<Message[]>(defaultMessage as unknown as Message[])
-export const useMessage = () => useAtomValue(messageAtom)
-export const useSetMessage = () => useSetAtom(messageAtom)
-
-//----------------------------------------------------------------
-
 const createPositionAtom = (transformFn: (position: Position) => Position, memoRef: { current: Position | null }) =>
   atom<Position>((get) => {
     const cameraPosition = get(cameraPositionAtom)
@@ -131,6 +115,13 @@ export const useCurrentTopic = () => {
 
 //----------------------------------------------------------------
 
-const topicAtom = atom<Topic[]>([{ id: 'topic', title: 'topic', message: [], x: 0, y: 0 }] as unknown as Topic[])
-
-export const useSetTopic = () => useSetAtom(topicAtom)
+const memoMessagePosition = { current: null as Position | null }
+export const currentMessagePositionAtom = createPositionAtom((position) => truncatePosition(position, 0), memoMessagePosition)
+export const useCurrentMessagePosition = () => useAtomValue(currentMessagePositionAtom)
+export const positionToMessageKey = ({ x, y }: Position) => `message_${x}_${y}`
+export const messageKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
+export const useMessage = (p: Position) => useCache(positionToMessageKey(p)) as Message | null
+export const useCurrentMessage = () => {
+  const pos = useCurrentMessagePosition()
+  return useMessage(pos) as Message | null
+}

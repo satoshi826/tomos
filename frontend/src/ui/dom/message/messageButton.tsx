@@ -1,9 +1,12 @@
-import { useCameraPosition, useMessage, useUserPosition } from '@/domain/hooks'
+import { useCameraPosition, useIsMessageCreate, useMessage, useUserPosition, useUserTopicPosition } from '@/domain/hooks'
 import { Button } from '../common/button'
 import { getTranslate } from '../worldAdapter'
 import { openMessageEditModal } from './messageEditModal'
 
 export function MessageButton() {
+  const isMessageCreate = useIsMessageCreate()
+  if (!isMessageCreate) return null
+  // const userTopicPosition = useUserTopicPosition()
   // const userPosition = useUserPosition()
   // const message = useMessage()
   // const cameraPosition = useCameraPosition()
@@ -16,4 +19,5 @@ export function MessageButton() {
   //     ポストする
   //   </Button>
   // )
+  return null
 }

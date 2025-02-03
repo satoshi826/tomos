@@ -1,5 +1,5 @@
 import type { CameraPosition } from '@/domain/types'
-import { Core, Renderer, State, Vao, plane2D } from 'glaku'
+import { Core, Loop, Renderer, State, Vao, plane2D } from 'glaku'
 import type { MessageView } from '../../type'
 import { grid } from './grid'
 import { message } from './message'
@@ -47,9 +47,15 @@ const main = async (canvas: OffscreenCanvas) => {
     // renderer.render(planeVao, userProgram)
   })
 
-  messageState.on((messageView) => {
-    console.log(messageView)
-  })
+  new Loop({
+    callback: () => {
+      renderer.render(planeVao, gridProgram)
+    },
+  }).start()
+
+  // messageState.on((messageView) => {
+  //   console.log(messageView)
+  // })
 }
 
 // biome-ignore lint/suspicious/noGlobalAssign: <explanation>

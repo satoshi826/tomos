@@ -36,7 +36,7 @@ export async function seed(prisma: PrismaClient) {
     ),
   )
 
-  const areaPositions = range(2).flatMap((x) => range(2).map((y) => [x * 100, y * 100]))
+  const areaPositions = range(3).flatMap((x) => range(3).map((y) => [x * 100, y * 100]))
   const areas = await Promise.all(
     areaPositions.map(([x, y]) => {
       return prisma.area.upsert({
@@ -52,7 +52,7 @@ export async function seed(prisma: PrismaClient) {
       const user = users[Math.floor(random() * users.length)]
       const topicTags = tags.sort(() => 0.5 - Math.random()).slice(0, 3)
       const topicPositions = values(
-        aToO(range(80), () => {
+        aToO(range(60), () => {
           const x = area.x + truncate(random(0, 100), -1)
           const y = area.y + truncate(random(0, 100), -1)
           return [`${x}_${y}`, [x, y] as [x: number, y: number]]
@@ -78,10 +78,10 @@ export async function seed(prisma: PrismaClient) {
     }),
   )
 
-  const messages = topics.forEach((topic) => {
+  topics.forEach((topic) => {
     const user = users[Math.floor(random() * users.length)]
     const messagePositions = values(
-      aToO(range(10), () => {
+      aToO(range(20), () => {
         const x = topic.x + truncate(random(0, 10), 0)
         const y = topic.y + truncate(random(0, 10), 0)
         return [`${x}_${y}`, [x, y] as [x: number, y: number]]

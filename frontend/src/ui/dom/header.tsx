@@ -10,7 +10,7 @@ function CurrenTopicTitle() {
 
 export function Header({ toggleOpen }: { toggleOpen: () => void }) {
   return (
-    <div className="z-20 flex items-center justify-between border-zinc-100/20 border-b bg-zinc-600/30 p-2 backdrop-blur-sm">
+    <div className="z-20 flex items-center justify-between border-zinc-50/20 border-b bg-zinc-500/30 px-3 py-2 backdrop-blur-lg">
       <IconButton onClick={toggleOpen}>menu</IconButton>
       <CurrenTopicTitle />
       <IconButton onClick={onClick}>account_circle</IconButton>

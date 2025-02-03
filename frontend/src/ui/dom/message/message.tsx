@@ -21,7 +21,6 @@ export function Messages() {
 function MessagesBody() {
   const currentMessagePosition = useCurrentMessagePosition()
   const viewablePositions = useViewablePositions(currentMessagePosition, MESSAGE_SIDE)
-  console.log(viewablePositions)
   return viewablePositions.map((p) => {
     const key = positionToMessageKey(p)
     return <Message key={key} message={key} />

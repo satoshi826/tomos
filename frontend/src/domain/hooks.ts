@@ -1,16 +1,23 @@
 import { useCache } from '@/infra/util'
+import { truncateUnit } from '@/util/function'
 import { truncate } from 'jittoku'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
+  AREA_SIDE,
   type Area,
   type CanvasSize,
+  type CreateMode,
   DEFAULT_POSITION,
   MESSAGES_VIEW_MAX_Z,
+  MESSAGE_CREATE_VIEW_MAX_Z,
+  MESSAGE_SIDE,
   MESSAGE_VIEW_MAX_Z,
   type Message,
   type Position,
   type ScreenPosition,
   TOPICS_VIEW_MAX_Z,
+  TOPIC_CREATE_VIEW_MAX_Z,
+  TOPIC_SIDE,
   type Topic,
   type ViewMode,
 } from './types'
@@ -44,7 +51,7 @@ const cameraZAtom = atom((get) => get(cameraPositionAtom).z)
 export const useCameraZ = () => useAtomValue(cameraZAtom)
 
 const viewModeAtom = atom<ViewMode>((get) => {
-  const { z } = get(cameraPositionAtom)
+  const z = get(cameraZAtom)
   if (z < MESSAGE_VIEW_MAX_Z) return 'message'
   if (z < MESSAGES_VIEW_MAX_Z) return 'messages'
   if (z < TOPICS_VIEW_MAX_Z) return 'topics'
@@ -55,6 +62,16 @@ export const useIsMessageView = () => useViewMode() === 'message'
 export const useIsMessagesView = () => useViewMode() === 'messages'
 export const useIsTopicsView = () => useViewMode() === 'topics'
 export const useIsAreasView = () => useViewMode() === 'areas'
+
+const createModeAtom = atom<CreateMode | null>((get) => {
+  const z = get(cameraZAtom)
+  if (z < MESSAGE_CREATE_VIEW_MAX_Z) return 'message'
+  if (z > MESSAGES_VIEW_MAX_Z && z < TOPIC_CREATE_VIEW_MAX_Z) return 'topic'
+  return null
+})
+export const useCreateMode = () => useAtomValue(createModeAtom)
+export const useIsMessageCreate = () => useCreateMode() === 'message'
+export const useIsTopicCreate = () => useCreateMode() === 'topic'
 
 //----------------------------------------------------------------
 
@@ -69,6 +86,15 @@ const userPositionAtom = atom<Position>((get) => {
 })
 export const useUserPosition = () => useAtomValue(userPositionAtom)
 
+const userTopicPositionAtom = atom<Position>((get) => {
+  const userPosition = get(userPositionAtom)
+  return {
+    x: truncateUnit(userPosition.x, TOPIC_SIDE),
+    y: truncateUnit(userPosition.y, TOPIC_SIDE),
+  }
+})
+export const useUserTopicPosition = () => useAtomValue(userTopicPositionAtom)
+
 //----------------------------------------------------------------
 
 const createPositionAtom = (transformFn: (position: Position) => Position, memoRef: { current: Position | null }) =>
@@ -82,15 +108,17 @@ const createPositionAtom = (transformFn: (position: Position) => Position, memoR
     return newPosition
   })
 
-const truncatePosition = (position: Position, precision: number) => ({
-  x: truncate(position.x, precision),
-  y: truncate(position.y, precision),
-})
+const truncatePosition = (position: Position, unit: number) => {
+  return {
+    x: truncateUnit(position.x, unit),
+    y: truncateUnit(position.y, unit),
+  }
+}
 
 //----------------------------------------------------------------
 
 const memoAreaPosition = { current: null as Position | null }
-export const currentAreaPositionAtom = createPositionAtom((position) => truncatePosition(position, -2), memoAreaPosition)
+export const currentAreaPositionAtom = createPositionAtom((position) => truncatePosition(position, AREA_SIDE), memoAreaPosition)
 export const useCurrentAreaPosition = () => useAtomValue(currentAreaPositionAtom)
 export const positionToAreaKey = ({ x, y }: Position) => `area_${x}_${y}`
 export const areaKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
@@ -103,7 +131,7 @@ export const useCurrentArea = () => {
 //----------------------------------------------------------------
 
 const memoTopicPosition = { current: null as Position | null }
-export const currentTopicPositionAtom = createPositionAtom((position) => truncatePosition(position, -1), memoTopicPosition)
+export const currentTopicPositionAtom = createPositionAtom((position) => truncatePosition(position, TOPIC_SIDE), memoTopicPosition)
 export const useCurrentTopicPosition = () => useAtomValue(currentTopicPositionAtom)
 export const positionToTopicKey = ({ x, y }: Position) => `topic_${x}_${y}`
 export const topicKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
@@ -116,7 +144,7 @@ export const useCurrentTopic = () => {
 //----------------------------------------------------------------
 
 const memoMessagePosition = { current: null as Position | null }
-export const currentMessagePositionAtom = createPositionAtom((position) => truncatePosition(position, 0), memoMessagePosition)
+export const currentMessagePositionAtom = createPositionAtom((position) => truncatePosition(position, MESSAGE_SIDE), memoMessagePosition)
 export const useCurrentMessagePosition = () => useAtomValue(currentMessagePositionAtom)
 export const positionToMessageKey = ({ x, y }: Position) => `message_${x}_${y}`
 export const messageKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]

@@ -25,7 +25,7 @@ const Topic = memo(function Topic({ topic: t }: { topic: string }) {
   if (!topic) return null
   return (
     <div
-      className="pointer-events-none absolute size-36 break-words bg-gray-700 text-lg text-neutral-200 contain-strict"
+      className="pointer-events-none absolute size-40 break-words bg-zinc-700/30 text-lg text-neutral-200 contain-strict"
       style={{ transform: getTranslate(topic.x + 5, topic.y + 5, 10) }}
     >
       {topic.title}

@@ -1,6 +1,5 @@
-import { useCache } from '@/infra/util'
+import { useCFRSCache } from '@/lib/useCFRS'
 import { truncateUnit } from '@/util/function'
-import { truncate } from 'jittoku'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
   AREA_SIDE,
@@ -122,7 +121,7 @@ export const currentAreaPositionAtom = createPositionAtom((position) => truncate
 export const useCurrentAreaPosition = () => useAtomValue(currentAreaPositionAtom)
 export const positionToAreaKey = ({ x, y }: Position) => `area_${x}_${y}`
 export const areaKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
-export const useArea = (p: Position) => useCache(positionToAreaKey(p)) as Topic | null
+export const useArea = (p: Position) => useCFRSCache(positionToAreaKey(p)) as Topic | null
 export const useCurrentArea = () => {
   const pos = useCurrentAreaPosition()
   return useArea(pos) as Area | null
@@ -135,7 +134,7 @@ export const currentTopicPositionAtom = createPositionAtom((position) => truncat
 export const useCurrentTopicPosition = () => useAtomValue(currentTopicPositionAtom)
 export const positionToTopicKey = ({ x, y }: Position) => `topic_${x}_${y}`
 export const topicKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
-export const useTopic = (p: Position) => useCache(positionToTopicKey(p)) as Topic | null
+export const useTopic = (p: Position) => useCFRSCache(positionToTopicKey(p)) as Topic | null
 export const useCurrentTopic = () => {
   const pos = useCurrentTopicPosition()
   return useTopic(pos) as Topic | null
@@ -148,7 +147,7 @@ export const currentMessagePositionAtom = createPositionAtom((position) => trunc
 export const useCurrentMessagePosition = () => useAtomValue(currentMessagePositionAtom)
 export const positionToMessageKey = ({ x, y }: Position) => `message_${x}_${y}`
 export const messageKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
-export const useMessage = (p: Position) => useCache(positionToMessageKey(p)) as Message | null
+export const useMessage = (p: Position) => useCFRSCache(positionToMessageKey(p)) as Message | null
 export const useCurrentMessage = () => {
   const pos = useCurrentMessagePosition()
   return useMessage(pos) as Message | null

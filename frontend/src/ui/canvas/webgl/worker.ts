@@ -48,9 +48,7 @@ const main = async (canvas: OffscreenCanvas) => {
   })
 
   new Loop({
-    callback: () => {
-      renderer.render(planeVao, gridProgram)
-    },
+    callback: () => renderer.render(planeVao, gridProgram),
   }).start()
 
   // messageState.on((messageView) => {

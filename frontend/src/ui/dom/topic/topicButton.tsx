@@ -10,9 +10,8 @@ export function TopicButton() {
 }
 
 function TopicButtonBody() {
-  const { x, y } = useUserTopicPosition()
+  const { x, y } = useUserTopicPosition() // 重いのでどうにかする
   const existTopic = useTopic({ x, y })
-  console.log('existTopic', existTopic)
   if (existTopic) return null
   const style = { transform: getTranslate(x + 5, y + 8, 8) }
   return (

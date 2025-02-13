@@ -1,8 +1,8 @@
 import { clamp } from 'jittoku'
-import { useCallback, useEffect } from 'react'
+import { Suspense, useCallback, useEffect } from 'react'
 import { useCameraPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from './domain/hooks'
 import { Fetcher } from './infra'
-import { CFRSProvider } from './lib/useCFRS'
+import { CFRSProvider, CFRSProvider2 } from './lib/useCFRS'
 import Worker from './ui/canvas/webgl/worker?worker'
 import { Frame } from './ui/dom/frame'
 import { Messages } from './ui/dom/message/message'
@@ -18,20 +18,24 @@ export function App() {
   const { canvas, post, ref } = useCanvas({ Worker })
   return (
     <ErrorBoundary>
-      <CFRSProvider>
-        {canvas}
-        <CanvasInterface post={post} ref={ref} />
-        <Fetcher />
-        <Frame>
-          <WorldAdapter>
-            <Messages />
-            <MessageButton />
-            <MessageEditModal />
-            <Topics />
-            <TopicButton />
-          </WorldAdapter>
-        </Frame>
-      </CFRSProvider>
+      <CFRSProvider2>
+        <CFRSProvider>
+          {canvas}
+          <CanvasInterface post={post} ref={ref} />
+          <Fetcher />
+          <Frame>
+            <WorldAdapter>
+              <Suspense fallback={null}>
+                <Messages />
+                <MessageButton />
+                <MessageEditModal />
+                <Topics />
+                <TopicButton />
+              </Suspense>
+            </WorldAdapter>
+          </Frame>
+        </CFRSProvider>
+      </CFRSProvider2>
     </ErrorBoundary>
   )
 }

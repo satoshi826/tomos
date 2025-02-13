@@ -1,6 +1,6 @@
 import { areaKeyToPosition, positionToAreaKey, positionToTopicKey, useCurrentAreaPosition } from '@/domain/hooks'
 import { fetcher as _fetcher } from '@/lib/fetch'
-import { useCFRSFetch } from '@/lib/useCFRS'
+import { useCFRSFetch, useCFRSFetch2 } from '@/lib/useCFRS'
 import type { JSONCompatible } from '@/util/type'
 import { aToO } from 'jittoku'
 import type { AreaWithTopics } from 'shared/types/util'
@@ -19,5 +19,7 @@ const keyValue = ({ topics }: JSONCompatible<AreaWithTopics>) => {
 
 export function TopicsFetcher() {
   useCFRSFetch({ promiseKey: positionToAreaKey(useCurrentAreaPosition()), fetcher, keyValue })
+  // const pos = positionToAreaKey(useCurrentAreaPosition())
+  useCFRSFetch2('topics', useCurrentAreaPosition())
   return null
 }

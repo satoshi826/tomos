@@ -9,11 +9,13 @@ export class IndexDB {
     this.db = null
   }
 
-  async open(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const req: IDBOpenDBRequest = indexedDB.open(this.dbName, 1)
+  private async open(): Promise<void> {
+    if (this.db) return
 
-      req.onerror = () => reject('Failed to open database')
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(this.dbName, 1)
+
+      req.onerror = () => reject(new Error('Failed to open database'))
       req.onsuccess = (event: Event) => {
         const target = event.target as IDBOpenDBRequest
         this.db = target.result
@@ -22,38 +24,48 @@ export class IndexDB {
       req.onupgradeneeded = (event: IDBVersionChangeEvent) => {
         const target = event.target as IDBOpenDBRequest
         const db = target.result
-        db.createObjectStore(this.storeName)
+        if (!db.objectStoreNames.contains(this.storeName)) {
+          db.createObjectStore(this.storeName)
+        }
       }
     })
   }
 
+  private async ensureOpen(): Promise<void> {
+    if (!this.db) {
+      await this.open()
+    }
+  }
+
   async set<T>(key: IDBValidKey, data: T): Promise<IDBValidKey> {
+    await this.ensureOpen()
     return new Promise((resolve, reject) => {
       if (!this.db) {
-        return reject('Database is not open')
+        return reject(new Error('Database is not open'))
       }
 
-      const tx: IDBTransaction = this.db.transaction([this.storeName], 'readwrite')
-      const store: IDBObjectStore = tx.objectStore(this.storeName)
-      const req: IDBRequest<IDBValidKey> = store.put(data, key)
+      const tx = this.db.transaction([this.storeName], 'readwrite')
+      const store = tx.objectStore(this.storeName)
+      const req = store.put(data, key)
 
       req.onsuccess = () => resolve(req.result)
-      req.onerror = () => reject('Failed to add data')
+      req.onerror = () => reject(new Error('Failed to add data'))
     })
   }
 
   async get<T>(key: IDBValidKey): Promise<T | undefined> {
+    await this.ensureOpen()
     return new Promise((resolve, reject) => {
       if (!this.db) {
-        return reject('Database is not open')
+        return reject(new Error('Database is not open'))
       }
 
-      const tx: IDBTransaction = this.db.transaction([this.storeName], 'readonly')
-      const store: IDBObjectStore = tx.objectStore(this.storeName)
-      const req: IDBRequest<T> = store.get(key)
+      const tx = this.db.transaction([this.storeName], 'readonly')
+      const store = tx.objectStore(this.storeName)
+      const req = store.get(key)
 
       req.onsuccess = () => resolve(req.result)
-      req.onerror = () => reject('Failed to get data')
+      req.onerror = () => reject(new Error('Failed to get data'))
     })
   }
 }

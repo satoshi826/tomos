@@ -1,4 +1,5 @@
-import { oForEach } from 'jittoku'
+import { isNullish, oForEach } from 'jittoku'
+import { IndexDB } from '../indexDB'
 
 const PROMISE_TTL = 1000 * 60 * 1
 
@@ -8,7 +9,7 @@ export class CFRS {
   private subscribers = new Map<string, Set<() => void>>()
   private promiseMap = new Map<string, { time: number; promise: Promise<unknown> }>()
   private cacheMap = new Map<string, { time: number; value: unknown }>()
-
+  private indexDB = new IndexDB({ dbName: 'CFRS', storeName: 'tomos' })
   constructor() {
     console.debug('CFRS constructor')
   }
@@ -44,6 +45,7 @@ export class CFRS {
           const kv = keyValue(result as T)
           oForEach(kv, ([k, { value: v }]) => {
             this.cacheMap?.set(k, { time: Date.now(), value: v })
+            // this.indexDB.set(k, v)
             this.notify(k)
           })
         }),
@@ -53,6 +55,15 @@ export class CFRS {
 
   get(cacheKey: string) {
     // ここで場合によっては再度fetch
-    return () => this.cacheMap.get(cacheKey)?.value
+    const cache = this.cacheMap.get(cacheKey)
+    // if (!cache) {
+    //   this.indexDB.get(cacheKey).then((value) => {
+    //     if (!isNullish(value)) {
+    //       this.cacheMap.set(cacheKey, { time: Date.now(), value })
+    //       this.notify(cacheKey)
+    //     }
+    //   })
+    // }
+    return () => cache?.value
   }
 }

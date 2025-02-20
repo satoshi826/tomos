@@ -65,6 +65,6 @@ function CanvasInterface({ post, ref }: { post: (data: unknown) => void; ref: Re
     ref,
   })
   useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post])
-  // useEffect(() => post({ message: messageView }), [messageView, post]) // messageはindexDB経由で渡す?
+  // useEffect(() => post({ message: messageView }), [messageView, post]) // messageはIndexedDB経由で渡す?
   return null
 }

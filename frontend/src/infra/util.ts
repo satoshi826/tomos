@@ -1,4 +1,4 @@
-import { IndexDB } from '@/lib/indexDB'
+import { IndexedDB } from '@/lib/IndexedDB'
 import { useEffect, useState } from 'react'
 
 export const resultToJson = async (result: Response) => {
@@ -8,10 +8,10 @@ export const resultToJson = async (result: Response) => {
   return await json
 }
 
-export const useIndexDB = () => {
-  const [db, setDb] = useState<IndexDB | null>(null)
+export const useIndexedDB = () => {
+  const [db, setDb] = useState<IndexedDB | null>(null)
   useEffect(() => {
-    const db = new IndexDB({ dbName: 'world', storeName: 'topics' })
+    const db = new IndexedDB({ dbName: 'world', storeName: 'topics' })
     db.open().then(() => setDb(db))
   }, [])
   return db

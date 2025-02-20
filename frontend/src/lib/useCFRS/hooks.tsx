@@ -1,7 +1,7 @@
 import { createContext, use, useCallback, useSyncExternalStore } from 'react'
 import { CFRS } from './observer'
 
-const CFRSContext = createContext<CFRS>(new CFRS())
+const CFRSContext = createContext<CFRS>(undefined as unknown as CFRS)
 
 export function CFRSProvider({ children }: React.PropsWithChildren) {
   return <CFRSContext.Provider value={new CFRS()}>{children}</CFRSContext.Provider>

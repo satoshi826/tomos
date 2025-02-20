@@ -1,7 +1,7 @@
 import { useIsTopicCreate, useTopic, useUserTopicPosition } from '@/domain/hooks'
+import { useMemo } from 'react'
 import { Button } from '../common/button'
 import { getTranslate } from '../worldAdapter'
-// import {openMessageEditModal} from './messageEditModal'
 
 export function TopicButton() {
   const isTopicCreate = useIsTopicCreate()
@@ -12,8 +12,8 @@ export function TopicButton() {
 function TopicButtonBody() {
   const { x, y } = useUserTopicPosition() // 重いのでどうにかする
   const existTopic = useTopic({ x, y })
+  const style = useMemo(() => ({ transform: getTranslate(x + 5, y + 8, 8) }), [x, y])
   if (existTopic) return null
-  const style = { transform: getTranslate(x + 5, y + 8, 8) }
   return (
     <Button className="absolute text-nowrap" outline style={style} onClick={() => {}}>
       トピックを作成

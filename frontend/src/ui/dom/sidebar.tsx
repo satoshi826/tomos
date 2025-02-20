@@ -1,6 +1,7 @@
 import { useCameraPosition, useMousePosition, useUserPosition } from '@/domain/hooks'
 import type { ClassName } from '@/util/type'
 import { Card } from './common/card'
+import { Dialog } from './common/dialog'
 
 export function Sidebar({ open }: { open: boolean }) {
   const cameraPosition = useCameraPosition()
@@ -30,6 +31,7 @@ export function Sidebar({ open }: { open: boolean }) {
         <div>x: {userPosition.x.toFixed(1)}</div>
         <div>y: {userPosition.y.toFixed(1)}</div>
       </Card>
+      <Dialog />
     </div>
   )
 }

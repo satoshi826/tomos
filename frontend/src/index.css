@@ -6,7 +6,10 @@
   themes: business --default;
 }
 body {
-  /* biome-ignore lint/a11y/useGenericFontNames: <explanation> */
   font-family: "Kosugi Maru", "Arial", "メイリオ";
   touch-action: none;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
 }

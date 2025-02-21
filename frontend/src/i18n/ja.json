@@ -1,0 +1,18 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "close": "閉じる",
+    "submit": "送信",
+    "back": "戻る",
+    "delete_confirm": "削除してもよろしいですか？"
+  },
+  "topic": {
+    "title": "トピック",
+    "create": "トピックを作成",
+    "edit": "トピックを編集"
+  }
+}

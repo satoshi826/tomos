@@ -1,7 +1,6 @@
 import { useCurrentTopic } from '@/domain/hooks'
-import { IconButton } from './common/iconButton'
-
-const onClick = (c: unknown) => console.log(c)
+import { IconButton } from '../common/iconButton'
+import { ProfileButton } from './profile'
 
 function CurrenTopicTitle() {
   const currentTopic = useCurrentTopic()
@@ -10,10 +9,10 @@ function CurrenTopicTitle() {
 
 export function Header({ toggleOpen }: { toggleOpen: () => void }) {
   return (
-    <div className="z-20 flex items-center justify-between border-zinc-50/20 border-b bg-zinc-500/30 px-3 py-2 backdrop-blur-lg">
+    <div className="z-20 flex items-center justify-between border-divider-extension border-b bg-base-100 px-3 py-2 backdrop-blur-md backdrop-saturate-200">
       <IconButton onClick={toggleOpen}>menu</IconButton>
       <CurrenTopicTitle />
-      <IconButton onClick={onClick}>account_circle</IconButton>
+      <ProfileButton />
     </div>
   )
 }

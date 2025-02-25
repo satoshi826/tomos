@@ -11,8 +11,10 @@
     "delete_confirm": "削除してもよろしいですか？"
   },
   "topic": {
-    "title": "トピック",
+    "itself": "トピック",
     "create": "トピックを作成",
-    "edit": "トピックを編集"
+    "do_create": "作成する",
+    "edit": "トピックを編集",
+    "title_placeholder": "話したいこと、聞いてみたいこと、思ったこと..."
   }
 }

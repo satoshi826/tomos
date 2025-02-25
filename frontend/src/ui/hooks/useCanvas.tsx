@@ -52,7 +52,7 @@ export function useCanvas({ Worker, style = '', id = '' }: useCanvasArgs) {
         style={{
           position: 'absolute',
           height: '100%',
-          width: '100%',
+          width: '100lvw',
           top: 0,
           zIndex: 10,
           WebkitTapHighlightColor: 'rgba(0,0,0,0)',

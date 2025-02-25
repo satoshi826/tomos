@@ -1,5 +1,4 @@
 import { useCameraPosition, useIsMessageCreate, useMessage, useUserPosition, useUserTopicPosition } from '@/domain/hooks'
-import { Button } from '../common/button'
 import { getTranslate } from '../worldAdapter'
 import { openMessageEditModal } from './messageEditModal'
 

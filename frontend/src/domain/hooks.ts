@@ -1,6 +1,7 @@
 import { useCFRSCache } from '@/lib/useCFRS'
 import { truncateUnit } from '@/util/function'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { observe } from 'jotai-effect'
 import {
   AREA_SIDE,
   type Area,
@@ -20,6 +21,38 @@ import {
   type Topic,
   type ViewMode,
 } from './types'
+
+const myProfileAtom = atom({
+  name: 'Anonymous',
+  color: 230, // 0 - 360 deg
+})
+
+const myProfileColorAtom = atom((get) => get(myProfileAtom).color)
+
+const setMyProfileColorEffect = (color: number) => {
+  document.documentElement.style.setProperty('--color-primary', `oklch(46% 0.20 ${color})`)
+  document.documentElement.style.setProperty('--color-primary-dark', `oklch(40% 0.18 ${color})`)
+  document.documentElement.style.setProperty('--color-primary-light', `oklch(55% 0.25 ${color})`)
+  document.documentElement.style.setProperty('--color-primary-lighter', `oklch(82% 0.20 ${color})`)
+}
+
+observe((get) => {
+  const color = get(myProfileColorAtom)
+  setMyProfileColorEffect(color)
+})
+
+export const useMyProfile = () => useAtomValue(myProfileAtom)
+
+export const useMyProfileColor = () => useAtomValue(myProfileColorAtom)
+
+export const useSetMyProfileColor = () => {
+  const setMyProfile = useSetAtom(myProfileAtom)
+  return (color: number) => {
+    setMyProfile((prev) => ({ ...prev, color: Math.max(0, Math.min(360, color)) }))
+  }
+}
+
+//----------------------------------------------------------------
 
 const canvasSizeAtom = atom<CanvasSize>({ width: 1000, height: 1000 })
 export const useSetCanvasSize = () => useSetAtom(canvasSizeAtom)

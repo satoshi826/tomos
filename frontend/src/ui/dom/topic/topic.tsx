@@ -19,7 +19,7 @@ function TopicsBody() {
   })
 }
 
-const Topic = memo(function Topic({ topic: t }: { topic: string }) {
+const Topic = memo(function _Topic({ topic: t }: { topic: string }) {
   const [x, y] = topicKeyToPosition(t)
   const topic = useTopic({ x, y })
   if (!topic) return null

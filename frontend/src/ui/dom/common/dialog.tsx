@@ -1,7 +1,9 @@
+import type React from 'react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from './button'
+import { IconButton } from './iconButton'
 
 const ModalPortal = ({ children }: { children: React.ReactNode }) => {
   // biome-ignore lint/style/noNonNullAssertion: <explanation>
@@ -13,9 +15,10 @@ type Props = {
   onClose: () => void
   children: ReactNode
   title?: string
+  primaryButton?: ReactNode
 }
 
-export const Dialog = ({ children, open, onClose, title }: Props) => {
+export const Dialog = ({ children, open, onClose, title, primaryButton }: Props) => {
   const [_open, setOpen] = useState(open)
   const handleClose = () => {
     onClose()
@@ -40,19 +43,21 @@ export const Dialog = ({ children, open, onClose, title }: Props) => {
   })
 
   const { t } = useTranslation()
+
   return (
     <ModalPortal>
       <dialog className="modal" ref={dialogRef}>
-        <div className="modal-box">
-          {title && <h3 className="font-bold text-lg">{title}</h3>}
-          <div className="px-1 py-2">{_open && children}</div>
-          <div className="modal-action">
-            <form method="dialog">
-              <Button onClick={handleClose} outline>
-                {t('common.cancel')}
-              </Button>
-            </form>
-          </div>
+        <div className="modal-box border border-divider shadow-xl backdrop-blur-md">
+          {_open && (
+            <>
+              {title && <h3 className="font-bold text-lg">{title}</h3>}
+              <div className="px-1 py-2">{children}</div>
+              <div className="modal-action gap-2.5">{primaryButton}</div>
+              <IconButton size="sm" onClick={handleClose} className="absolute top-3 right-4">
+                close
+              </IconButton>
+            </>
+          )}
         </div>
         <form method="dialog" className="modal-backdrop">
           <button type="button" onClick={handleClose} />

@@ -1,19 +1,30 @@
 import { useCameraPosition, useMousePosition, useUserPosition } from '@/domain/hooks'
 import type { ClassName } from '@/util/type'
-import { Card } from './common/card'
+import { cva } from 'class-variance-authority'
+import { Card } from '../common/card'
+
+const baseStyles: ClassName =
+  'duration-300 sm:min-w-72 min-w-90 flex flex-col gap-3 h-full p-3 bg-base-300 backdrop-blur-md backdrop-saturate-200 pointer-events-auto border-r border-divider z-50 '
+
+const sidebarStyles = cva(baseStyles, {
+  variants: {
+    open: {
+      true: 'translate-x-0',
+      false: '-translate-x-full',
+    },
+  },
+  defaultVariants: {
+    open: true,
+  },
+})
 
 export function Sidebar({ open }: { open: boolean }) {
   const cameraPosition = useCameraPosition()
   const mousePosition = useMousePosition()
   const userPosition = useUserPosition()
 
-  const openClass: ClassName = open ? 'translate-x-0' : '-translate-x-full'
-  const sidebarClassBase: ClassName =
-    'duration-300 sm:min-w-64 min-w-80 flex flex-col gap-3 h-full p-3 bg-zinc-950/30 backdrop-blur-lg pointer-events-auto border-r border-zinc-50/10 z-50 '
-  const sidebarClass = sidebarClassBase + openClass
-
   return (
-    <div className={sidebarClass}>
+    <div className={sidebarStyles({ open })}>
       <Card>
         <div>Camera</div>
         <div>x: {cameraPosition.x.toFixed(2)}</div>

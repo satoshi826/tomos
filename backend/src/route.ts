@@ -58,7 +58,6 @@ export const topicPostRoute = createRoute({
   request: {
     body: _jsonContent(
       TopicSchema.pick({
-        areaId: true,
         userId: true,
         title: true,
         x: true,

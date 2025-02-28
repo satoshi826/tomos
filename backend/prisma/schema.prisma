@@ -25,7 +25,8 @@ datasource db {
 model User {
   id    String  @id @default(uuid())
   email String  @unique /// @zod.string.email()
-  name  String  @unique /// @zod.string.max(32)
+  name  String  @unique /// @zod.string.min(1).max(32)
+	color Float  /// @zod.number.min(0).max(360)
 	messages Message[]
 	topics Topic[]
 	createdAt DateTime @default(now())
@@ -33,7 +34,7 @@ model User {
 
 model Area {
 	id        Int     @id @default(autoincrement())
-	name      String? /// @zod.string.max(32)
+	name      String? /// @zod.string.min(1).max(64)
 	x         Int  /// @zod.number.int().nonnegative().multipleOf(100)
 	y         Int  /// @zod.number.int().nonnegative().multipleOf(100)
 	topics    Topic[]
@@ -49,7 +50,7 @@ model Topic {
 	user      User    @relation(fields: [userId], references: [id])
 	areaId    Int
 	area      Area    @relation(fields: [areaId], references: [id])
-	title   String
+	title   String ///z.string.min(1).max(128)
 	x				 Int /// @zod.number.int().nonnegative().multipleOf(10)
 	y				 Int /// @zod.number.int().nonnegative().multipleOf(10)
 	messages Message[]
@@ -62,7 +63,7 @@ model Topic {
 
 model Tag {
 	id        Int     @id @default(autoincrement())
-	name      String  @unique
+	name      String  @unique /// @zod.string.min(1).max(32)
 	topics    Topic[]
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
@@ -74,7 +75,7 @@ model Message {
 	user      User    @relation(fields: [userId], references: [id])
 	topicId   Int
 	topic     Topic   @relation(fields: [topicId], references: [id])
-	content   String  /// @zod.string.max(256)
+	content   String  /// @zod.string.min(1).max(256)
 	x				 Int /// @zod.number.int().nonnegative()
 	y				 Int /// @zod.number.int().nonnegative()
 	createdAt DateTime @default(now())

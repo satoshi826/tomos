@@ -5,7 +5,7 @@ import { MyColorSlider } from './myColorSlider'
 
 export const ProfileButton = memo(function _ProfileButton() {
   return (
-    <div className="dropdown dropdown-end">
+    <div className="dropdown dropdown-end ">
       {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
       <div tabIndex={0} role="button" className={iconButtonStyles} onClick={() => {}} onKeyDown={() => {}}>
         <Icon size="md">account_circle</Icon>
@@ -13,7 +13,7 @@ export const ProfileButton = memo(function _ProfileButton() {
       <div
         // biome-ignore lint/a11y/noNoninteractiveTabindex: <explanation>
         tabIndex={0}
-        className="dropdown-content card !gap-2 w-96 flex-col border border-divider-extension bg-base-200A px-4 py-6 shadow-md"
+        className="dropdown-content card !gap-2 w-96 flex-col border border-divider-extension bg-base-200A px-5 py-6 shadow-md"
       >
         <div className="flex items-center gap-3">
           <div className="avatar placeholder">

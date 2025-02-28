@@ -1,6 +1,7 @@
 import type { Area as _Area } from 'shared/types/generated/modelSchema/AreaSchema'
 import type { Message as _Message } from 'shared/types/generated/modelSchema/MessageSchema'
 import type { Topic as _Topic } from 'shared/types/generated/modelSchema/TopicSchema'
+import type { Position as _Position } from 'shared/types/util'
 
 export const MESSAGE_SIDE = 1
 export const TOPIC_SIDE = 10
@@ -31,10 +32,7 @@ export type CanvasSize = {
   height: number
 }
 
-export type Position = {
-  x: number
-  y: number
-}
+export type Position = _Position
 
 export type Zoom = {
   z: number

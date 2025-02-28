@@ -23,28 +23,30 @@ import {
 } from './types'
 
 const myProfileAtom = atom({
+  id: '7b7db97f-0205-4685-a373-5573d5fe2a53',
   name: 'Anonymous',
   color: 230, // 0 - 360 deg
 })
 
 const myProfileColorAtom = atom((get) => get(myProfileAtom).color)
+const myProfileIdAtom = atom((get) => get(myProfileAtom).id)
 
-const setMyProfileColorEffect = (color: number) => {
-  document.documentElement.style.setProperty('--color-primary', `oklch(46% 0.20 ${color})`)
-  document.documentElement.style.setProperty('--color-primary-dark', `oklch(40% 0.18 ${color})`)
-  document.documentElement.style.setProperty('--color-primary-light', `oklch(55% 0.25 ${color})`)
-  document.documentElement.style.setProperty('--color-primary-lighter', `oklch(82% 0.20 ${color})`)
+const setStyleProperty = (key: string, value: string) => {
+  document.body.style.setProperty(key, value)
 }
-
+const setMyProfileColorEffect = (color: number) => {
+  setStyleProperty('--color-primary', `oklch(46% 0.20 ${color})`)
+  setStyleProperty('--color-primary-dark', `oklch(40% 0.18 ${color})`)
+  setStyleProperty('--color-primary-light', `oklch(55% 0.25 ${color})`)
+  setStyleProperty('--color-primary-lighter', `oklch(82% 0.20 ${color})`)
+}
 observe((get) => {
-  const color = get(myProfileColorAtom)
-  setMyProfileColorEffect(color)
+  setMyProfileColorEffect(get(myProfileColorAtom))
 })
 
 export const useMyProfile = () => useAtomValue(myProfileAtom)
-
 export const useMyProfileColor = () => useAtomValue(myProfileColorAtom)
-
+export const useMyProfileId = () => useAtomValue(myProfileIdAtom)
 export const useSetMyProfileColor = () => {
   const setMyProfile = useSetAtom(myProfileAtom)
   return (color: number) => {
@@ -58,7 +60,7 @@ const canvasSizeAtom = atom<CanvasSize>({ width: 1000, height: 1000 })
 export const useSetCanvasSize = () => useSetAtom(canvasSizeAtom)
 export const useCanvasSize = () => useAtomValue(canvasSizeAtom)
 
-const canvasAdapterAtom = atom((get) => {
+export const canvasAdapterAtom = atom((get) => {
   const { width, height } = get(canvasSizeAtom)
   const aspectRatio = width / height
   const aspectRatioVec = width > height ? [width / height, 1] : [1, height / width]
@@ -74,7 +76,7 @@ export const useMousePosition = () => useAtomValue(mousePositionAtom)
 
 //----------------------------------------------------------------
 
-const cameraPositionAtom = atom(DEFAULT_POSITION)
+export const cameraPositionAtom = atom(DEFAULT_POSITION)
 export const useSetCameraPosition = () => useSetAtom(cameraPositionAtom)
 export const useCameraPosition = () => useAtomValue(cameraPositionAtom)
 
@@ -150,7 +152,8 @@ const truncatePosition = (position: Position, unit: number) => {
 //----------------------------------------------------------------
 
 const memoAreaPosition = { current: null as Position | null }
-export const currentAreaPositionAtom = createPositionAtom((position) => truncatePosition(position, AREA_SIDE), memoAreaPosition)
+export const truncateAreaPosition = (position: Position) => truncatePosition(position, AREA_SIDE)
+export const currentAreaPositionAtom = createPositionAtom((position) => truncateAreaPosition(position), memoAreaPosition)
 export const useCurrentAreaPosition = () => useAtomValue(currentAreaPositionAtom)
 export const positionToAreaKey = ({ x, y }: Position) => `area_${x}_${y}`
 export const areaKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]

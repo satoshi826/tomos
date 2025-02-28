@@ -8,7 +8,7 @@ import type { TopicWithRelations, TopicPartialWithRelations, TopicOptionalDefaul
 
 export const TagSchema = z.object({
   id: z.number().int(),
-  name: z.string(),
+  name: z.string().min(1).max(32),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })

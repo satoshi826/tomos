@@ -2,8 +2,8 @@ import type { ClassName } from '@/util/type'
 import clsx from 'clsx'
 import { Icon } from './icon'
 
-// export const iconButtonStyles: ClassName = 'btn btn-circle border-0 bg-transparent'
-export const iconButtonStyles: ClassName = 'duration-300 hover:text-primary-lighter hover:scale-110 active:scale-85 active:text-white '
+export const iconButtonStyles: ClassName =
+  'duration-300 hover:text-primary-lighter hover:scale-115 active:scale-85 active:text-white w-10 h-10'
 
 type Props = {
   children: string

@@ -31,7 +31,7 @@ export function CanvasInterface({ post, ref }: { post: (data: unknown) => void; 
     },
     ref,
   })
-  useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post])
+  useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post]) // atomEffectで送るか
   // useEffect(() => post({ message: messageView }), [messageView, post]) // messageはIndexedDB経由で渡す?
   return null
 }

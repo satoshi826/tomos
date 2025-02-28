@@ -8,7 +8,7 @@ import type { TopicWithRelations, TopicPartialWithRelations, TopicOptionalDefaul
 
 export const AreaSchema = z.object({
   id: z.number().int(),
-  name: z.string().max(32).nullable(),
+  name: z.string().min(1).max(64).nullable(),
   x: z.number().int().nonnegative().multipleOf(100),
   y: z.number().int().nonnegative().multipleOf(100),
   createdAt: z.coerce.date(),

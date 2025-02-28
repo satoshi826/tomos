@@ -16,6 +16,9 @@ export const TopicSchema = z.object({
   id: z.number().int(),
   userId: z.string(),
   areaId: z.number().int(),
+  /**
+   * z.string.min(1).max(128)
+   */
   title: z.string(),
   x: z.number().int().nonnegative().multipleOf(10),
   y: z.number().int().nonnegative().multipleOf(10),

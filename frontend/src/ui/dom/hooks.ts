@@ -1,7 +1,7 @@
 import { useCameraZ, useCanvasAdapter } from '@/domain/hooks'
-import type { Position } from '@/domain/types'
-import { truncateUnit } from '@/util/function'
 import { step } from 'jittoku'
+import { truncateUnit } from 'shared/functions'
+import type { Position } from 'shared/types'
 
 export function useViewablePositions(center: Position, itemSize: number): Position[] {
   const cameraZ = useCameraZ()

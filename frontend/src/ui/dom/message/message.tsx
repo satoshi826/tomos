@@ -6,8 +6,8 @@ import {
   useIsMessagesView,
   useMessage,
 } from '@/domain/hooks'
-import { MESSAGE_SIDE } from '@/domain/types'
 import { memo } from 'react'
+import { MESSAGE_SIDE } from 'shared/constants'
 import { useViewablePositions } from '../hooks'
 import { getTranslate } from '../worldAdapter'
 

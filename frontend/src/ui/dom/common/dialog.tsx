@@ -45,7 +45,7 @@ export const Dialog = ({ children, open, onClose, title }: Props) => {
         <div className="modal-box border border-divider shadow-xl backdrop-blur-md">
           {_open && (
             <>
-              {title && <h3 className="font-bold text-lg">{title}</h3>}
+              {title && <h3 className="pb-3 font-bold text-lg">{title}</h3>}
               <div className="px-1 py-1">{children}</div>
               <IconButton size="sm" onClick={handleClose} className="absolute top-3 right-4">
                 close
@@ -62,5 +62,11 @@ export const Dialog = ({ children, open, onClose, title }: Props) => {
 }
 
 export const DialogActions = ({ children }: { children: ReactNode }) => {
-  return <div className="modal-action gap-2.5">{children}</div>
+  return (
+    <div className="modal-action gap-2.5">
+      {' '}
+      <button type="submit" disabled style={{ display: 'none' }} />
+      {children}
+    </div>
+  )
 }

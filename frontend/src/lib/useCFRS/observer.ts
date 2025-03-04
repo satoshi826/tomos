@@ -1,14 +1,17 @@
 import { oForEach } from 'jittoku'
 import { IndexedDB } from '../indexedDB'
 
-const PROMISE_TTL = 1000 * 60
+const PROMISE_TTL = 1000 * 1
 
 const isOutdated = (time: number, ttl: number) => Date.now() - time > ttl
 
 export class CFRS {
   private subscribers = new Map<string, Set<() => void>>()
   private lastFetchTime = new Map<string, number>()
-  private promiseMap = new Map<string, Promise<unknown>>()
+  private fetcherMap = new Map<
+    string,
+    { func: (key: string) => Promise<unknown>; keyValue: (result: unknown) => Record<string, { value: unknown }> }
+  >()
   private cacheMap = new Map<string, unknown>()
   private indexedDB = new IndexedDB({ dbName: 'cfrs', storeName: 'tomos' })
 
@@ -40,6 +43,16 @@ export class CFRS {
     ttl?: number
   }) {
     let lastFetchTime = this.lastFetchTime.get(promiseKey)
+
+    let _fetcher = this.fetcherMap.get(promiseKey)?.func as (key: string) => Promise<T>
+    if (!_fetcher) {
+      _fetcher = fetcher
+      this.fetcherMap.set(promiseKey, {
+        func: fetcher,
+        keyValue: keyValue as (result: unknown) => Record<string, { value: unknown }>,
+      })
+    }
+
     if (!lastFetchTime) {
       this.lastFetchTime.set(promiseKey, Date.now())
       const result = await this.indexedDB.get<{ value: T; time: number }>(promiseKey)
@@ -55,13 +68,26 @@ export class CFRS {
     if (lastFetchTime && isOutdated(lastFetchTime, ttl)) {
       const now = Date.now()
       this.lastFetchTime.set(promiseKey, now)
-      this.promiseMap.set(
-        promiseKey,
-        fetcher(promiseKey).then((result) => {
-          this.updateCache(keyValue(result))
-          this.indexedDB.set(promiseKey, { time: now, value: result })
-        }),
-      )
+      _fetcher(promiseKey).then((result) => {
+        this.updateCache(keyValue(result as T))
+        this.indexedDB.set(promiseKey, { time: now, value: result })
+      })
+    }
+  }
+
+  async refetch(key: string) {
+    const fetcher = this.fetcherMap.get(key)
+    if (fetcher) {
+      const now = Date.now()
+      this.lastFetchTime.set(key, now)
+      fetcher.func(key).then((result) => {
+        const keyValue = fetcher.keyValue(result)
+        this.updateCache(keyValue)
+        this.indexedDB.set(key, { time: now, value: result })
+      })
+    } else {
+      console.log(this.fetcherMap)
+      console.error('fetcher not found', key)
     }
   }
 

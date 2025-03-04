@@ -1,6 +1,6 @@
 import { positionToTopicKey, topicKeyToPosition, useCurrentTopicPosition, useIsTopicsView, useTopic } from '@/domain/hooks'
-import { TOPIC_SIDE } from '@/domain/types'
 import { memo } from 'react'
+import { TOPIC_SIDE } from 'shared/constants'
 import { useViewablePositions } from '../hooks'
 import { getTranslate } from '../worldAdapter'
 

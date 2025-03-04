@@ -1,11 +1,9 @@
 .rainbow-slider::-webkit-slider-thumb {
-  border-width: 3px;
-  border-color: oklch(96% 0 0);
+  border-color: oklch(98% 0 0);
   box-shadow: none;
 }
 
 .rainbow-slider::-moz-range-thumb {
-  border-width: 3px;
-  border-color: oklch(96% 0 0);
+  border-color: oklch(98% 0 0);
   box-shadow: none;
 }

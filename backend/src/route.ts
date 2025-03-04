@@ -1,8 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi'
-import { AreaSchema } from 'shared/types/generated/modelSchema/AreaSchema'
-import { MessageSchema } from 'shared/types/generated/modelSchema/MessageSchema'
-import TopicSchema from 'shared/types/generated/modelSchema/TopicSchema'
-import { AreaWithTopicsSchema, TopicWithMessagesSchema } from 'shared/types/util'
+import { AreaSchema, AreaWithTopicsSchema, MessageSchema, TopicSchema, TopicWithMessagesSchema } from 'shared/types'
 import { _200, _400, _404, _jsonContent } from './utils'
 
 export const areaGetRoute = createRoute({

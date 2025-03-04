@@ -1,24 +1,19 @@
 import { useCFRSCache } from '@/lib/useCFRS'
-import { truncateUnit } from '@/util/function'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { observe } from 'jotai-effect'
+import { TOPIC_SIDE } from 'shared/constants'
+import { truncateAreaPosition, truncateMessagePosition, truncateTopicPosition, truncateUnit } from 'shared/functions'
+import type { Area, Message, Position, Topic } from 'shared/types'
 import {
-  AREA_SIDE,
-  type Area,
   type CanvasSize,
   type CreateMode,
   DEFAULT_POSITION,
   MESSAGES_VIEW_MAX_Z,
   MESSAGE_CREATE_VIEW_MAX_Z,
-  MESSAGE_SIDE,
   MESSAGE_VIEW_MAX_Z,
-  type Message,
-  type Position,
   type ScreenPosition,
   TOPICS_VIEW_MAX_Z,
   TOPIC_CREATE_VIEW_MAX_Z,
-  TOPIC_SIDE,
-  type Topic,
   type ViewMode,
 } from './types'
 
@@ -31,18 +26,14 @@ const myProfileAtom = atom({
 const myProfileColorAtom = atom((get) => get(myProfileAtom).color)
 const myProfileIdAtom = atom((get) => get(myProfileAtom).id)
 
-const setStyleProperty = (key: string, value: string) => {
-  document.body.style.setProperty(key, value)
-}
+const setStyleProperty = (key: string, value: string) => document.body.style.setProperty(key, value)
 const setMyProfileColorEffect = (color: number) => {
   setStyleProperty('--color-primary', `oklch(46% 0.20 ${color})`)
   setStyleProperty('--color-primary-dark', `oklch(40% 0.18 ${color})`)
   setStyleProperty('--color-primary-light', `oklch(55% 0.25 ${color})`)
   setStyleProperty('--color-primary-lighter', `oklch(82% 0.20 ${color})`)
 }
-observe((get) => {
-  setMyProfileColorEffect(get(myProfileColorAtom))
-})
+observe((get) => setMyProfileColorEffect(get(myProfileColorAtom)))
 
 export const useMyProfile = () => useAtomValue(myProfileAtom)
 export const useMyProfileColor = () => useAtomValue(myProfileColorAtom)
@@ -142,18 +133,10 @@ const createPositionAtom = (transformFn: (position: Position) => Position, memoR
     return newPosition
   })
 
-const truncatePosition = (position: Position, unit: number) => {
-  return {
-    x: truncateUnit(position.x, unit),
-    y: truncateUnit(position.y, unit),
-  }
-}
-
 //----------------------------------------------------------------
 
 const memoAreaPosition = { current: null as Position | null }
-export const truncateAreaPosition = (position: Position) => truncatePosition(position, AREA_SIDE)
-export const currentAreaPositionAtom = createPositionAtom((position) => truncateAreaPosition(position), memoAreaPosition)
+const currentAreaPositionAtom = createPositionAtom((position) => truncateAreaPosition(position), memoAreaPosition)
 export const useCurrentAreaPosition = () => useAtomValue(currentAreaPositionAtom)
 export const positionToAreaKey = ({ x, y }: Position) => `area_${x}_${y}`
 export const areaKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
@@ -164,9 +147,8 @@ export const useCurrentArea = () => {
 }
 
 //----------------------------------------------------------------
-
 const memoTopicPosition = { current: null as Position | null }
-export const currentTopicPositionAtom = createPositionAtom((position) => truncatePosition(position, TOPIC_SIDE), memoTopicPosition)
+const currentTopicPositionAtom = createPositionAtom((position) => truncateTopicPosition(position), memoTopicPosition)
 export const useCurrentTopicPosition = () => useAtomValue(currentTopicPositionAtom)
 export const positionToTopicKey = ({ x, y }: Position) => `topic_${x}_${y}`
 export const topicKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]
@@ -179,7 +161,7 @@ export const useCurrentTopic = () => {
 //----------------------------------------------------------------
 
 const memoMessagePosition = { current: null as Position | null }
-export const currentMessagePositionAtom = createPositionAtom((position) => truncatePosition(position, MESSAGE_SIDE), memoMessagePosition)
+const currentMessagePositionAtom = createPositionAtom((position) => truncateMessagePosition(position), memoMessagePosition)
 export const useCurrentMessagePosition = () => useAtomValue(currentMessagePositionAtom)
 export const positionToMessageKey = ({ x, y }: Position) => `message_${x}_${y}`
 export const messageKeyToPosition = (key: string) => key.split('_').slice(1).map(Number) as [number, number]

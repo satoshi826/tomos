@@ -1,6 +1,6 @@
 import { useUserPosition } from '@/domain/hooks'
-import { MAX_MESSAGE_LENGTH } from '@/domain/types'
 import { useState } from 'react'
+import { MAX_MESSAGE_LENGTH } from 'shared/constants'
 import { z } from 'zod'
 
 const messageSchema = z

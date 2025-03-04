@@ -1,4 +1,5 @@
 import { truncate } from 'jittoku'
+import { AREA_SIDE, MESSAGE_SIDE, TOPIC_SIDE } from './constants'
 import type { Position } from './types/util'
 
 export const truncateUnit = (value: number, unit: number): number => {
@@ -13,4 +14,6 @@ export const truncatePosition = (position: Position, unit: number) => {
   }
 }
 
-// export const truncateAreaPosition = (position: Position) => truncatePosition(position, AREA_SIDE)
+export const truncateAreaPosition = (position: Position) => truncatePosition(position, AREA_SIDE)
+export const truncateTopicPosition = (position: Position) => truncatePosition(position, TOPIC_SIDE)
+export const truncateMessagePosition = (position: Position) => truncatePosition(position, MESSAGE_SIDE)

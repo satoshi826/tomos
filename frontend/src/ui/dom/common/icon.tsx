@@ -9,7 +9,7 @@ const SIZE = {
   unset: null,
 }
 
-const iconStyles = cva('material-symbols-rounded select-none', {
+const iconStyles = cva('material-symbols-rounded select-none text-center', {
   variants: {
     size: SIZE,
   },

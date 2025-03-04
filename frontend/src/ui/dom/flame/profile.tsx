@@ -1,9 +1,11 @@
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Icon } from '../common/icon'
 import { iconButtonStyles } from '../common/iconButton'
 import { MyColorSlider } from './myColorSlider'
 
 export const ProfileButton = memo(function _ProfileButton() {
+  const { t } = useTranslation()
   return (
     <div className="dropdown dropdown-end ">
       {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
@@ -26,7 +28,7 @@ export const ProfileButton = memo(function _ProfileButton() {
             <div className="text-content text-sm">id: $jek5v3</div>
           </div>
         </div>
-        <div className="mt-1 text-sm">マイカラー</div>
+        <div className="mt-1 text-sm">{t('user.my_color')}</div>
         <MyColorSlider />
       </div>
     </div>

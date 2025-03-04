@@ -10,6 +10,9 @@
     "back": "戻る",
     "delete_confirm": "削除してもよろしいですか？"
   },
+  "user": {
+    "my_color": "マイカラー"
+  },
   "topic": {
     "itself": "トピック",
     "create": "トピックを作成",

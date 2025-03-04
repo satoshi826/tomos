@@ -1,10 +1,19 @@
 import type { ClassName } from '@/util/type'
 import { cva } from 'class-variance-authority'
 import clsx from 'clsx'
-import type React from 'react'
 import { Icon } from './icon'
 
-const baseStyles: ClassName = 'rounded-field duration-200 inline-flex gap-0.5 cursor-pointer'
+const baseStyles: ClassName = 'rounded-field duration-200 inline-flex gap-1 cursor-pointer'
+
+const Spinner = ({ size = 24, color = 'currentColor' }) => {
+  return (
+    <svg width={size} height={size} fill={color} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="animate-spin">
+      <title>Loading spinner</title>
+      <path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25" />
+      <path d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z" />
+    </svg>
+  )
+}
 
 const variants = {
   variant: {
@@ -17,7 +26,7 @@ const variants = {
     lg: 'px-6 py-3 text-lg',
   },
   disabled: {
-    true: null,
+    true: 'cursor-not-allowed pointer-events-none !duration-100',
     false: null,
   },
 }
@@ -26,7 +35,7 @@ const compoundVariants = [
   {
     variant: 'contained' as const,
     disabled: true,
-    class: 'bg-base-300 text-base-content',
+    class: '!bg-base-100A opacity-60',
   },
   {
     variant: 'outlined' as const,
@@ -45,21 +54,33 @@ const buttonStyles = cva(baseStyles, {
   },
 })
 
-type Props = {
+export type ButtonProps = {
   size?: 'sm' | 'md' | 'lg'
+  type?: 'button' | 'submit' | 'reset'
   variant?: 'contained' | 'outlined'
+  loading?: boolean
   disabled?: boolean
-  children: React.ReactNode
+  children: string
   className?: string
   style?: React.CSSProperties
   icon?: string
   onClick?: () => void
 }
 
-export const Button = ({ size = 'md', disabled = false, children, className, icon, variant, ...props }: Props) => {
+export const Button = ({
+  size = 'md',
+  type = 'button',
+  loading = false,
+  disabled = loading,
+  children,
+  className,
+  icon,
+  variant = 'contained',
+  ...props
+}: ButtonProps) => {
   return (
-    <button type="button" className={clsx(buttonStyles({ size, disabled, variant }), className)} disabled={disabled} {...props}>
-      {icon && <Icon size="sm">{icon}</Icon>}
+    <button type={type} className={clsx(buttonStyles({ size, disabled, variant }), className)} disabled={disabled} {...props}>
+      {icon && (loading ? <Spinner /> : <Icon size="sm">{icon}</Icon>)}
       {children}
     </button>
   )

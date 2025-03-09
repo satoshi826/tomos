@@ -31,6 +31,7 @@ export async function seed(prisma: PrismaClient) {
         create: {
           email: `user${i}@example.com`,
           name: `User_${i}`,
+          color: random(0, 360),
         },
       }),
     ),

@@ -1,22 +1,32 @@
-import { useCameraPosition, useIsMessageCreate, useMessage, useUserPosition, useUserTopicPosition } from '@/domain/hooks'
+import { useIsMessageCreate, useMessage, useTopic, useUserPosition, useUserTopicPosition } from '@/domain/hooks'
+import { useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Button } from '../common/button'
 import { getTranslate } from '../worldAdapter'
-import { openMessageEditModal } from './messageEditModal'
+import { MessageCreateDialog } from './messageCreateDialog'
+// import { TopicCreateDialog } from './topicCreateDialog'
 
 export function MessageButton() {
-  const isMessageCreate = useIsMessageCreate()
-  if (!isMessageCreate) return null
-  // const userTopicPosition = useUserTopicPosition()
-  // const userPosition = useUserPosition()
-  // const message = useMessage()
-  // const cameraPosition = useCameraPosition()
-  // const handleClick = openMessageEditModal
-  // if (cameraPosition.z > 4) return null
-  // if (message.find((m) => m.x === userPosition.x && m.y === userPosition.y)) return null
-  // const style = { transform: getTranslate(userPosition.x + 0.5, userPosition.y + 0.8) }
-  // return (
-  //   <Button className="absolute text-nowrap" outline onClick={handleClick} style={style}>
-  //     ポストする
-  //   </Button>
-  // )
-  return null
+  const isTopicCreate = useIsMessageCreate()
+  if (!isTopicCreate) return null
+  return <MessageButtonBody />
+}
+
+function MessageButtonBody() {
+  const { x, y } = useUserPosition()
+  const existMessage = useMessage({ x, y })
+  const style = useMemo(() => ({ transform: getTranslate(x + 0.5, y + 0.85, 0.85) }), [x, y])
+  const [open, setOpen] = useState(false)
+  const handleOpen = useCallback(() => setOpen(true), [])
+  const handleClose = useCallback(() => setOpen(false), [])
+  const { t } = useTranslation()
+  if (existMessage) return null
+  return (
+    <>
+      <Button className="absolute text-nowrap" style={style} onClick={handleOpen} icon="edit_square">
+        {t('message.create')}
+      </Button>
+      <MessageCreateDialog open={open} onClose={handleClose} position={{ x, y }} />
+    </>
+  )
 }

@@ -10,5 +10,4 @@ export const MIN_X = 0
 export const MIN_Y = 0
 
 export const MAX_MESSAGE_LENGTH = 100
-
 export const MAX_TOPIC_TITLE_LENGTH = 48

@@ -22,7 +22,10 @@
     "rules": {
       "recommended": true,
       "complexity": { "noForEach": "off" },
-      "nursery": { "useSortedClasses": "warn" }
+      "nursery": { "useSortedClasses": "warn" },
+      "correctness": {
+        "noChildrenProp": "off"
+      }
     }
   },
   "javascript": {

@@ -16,15 +16,16 @@ function TopicButtonBody() {
   const existTopic = useTopic({ x, y })
   const style = useMemo(() => ({ transform: getTranslate(x + 5, y + 8.5, 8) }), [x, y])
   const [open, setOpen] = useState(false)
+  const handleOpen = useCallback(() => setOpen(true), [])
   const handleClose = useCallback(() => setOpen(false), [])
   const { t } = useTranslation()
   if (existTopic) return null
   return (
     <>
-      <Button className="absolute text-nowrap" style={style} onClick={() => setOpen(true)} icon="emoji_objects">
+      <Button className="absolute text-nowrap" style={style} onClick={handleOpen} icon="emoji_objects">
         {t('topic.create')}
       </Button>
-      <TopicCreateDialog open={open} onClose={handleClose} />
+      <TopicCreateDialog open={open} onClose={handleClose} position={{ x, y }} />
     </>
   )
 }

@@ -84,14 +84,12 @@ export const messageGetRoute = createRoute({
   },
 })
 
-// POST: Create a new message
 export const messagePostRoute = createRoute({
   method: 'post',
   path: '/messages',
   request: {
     body: _jsonContent(
       MessageSchema.pick({
-        topicId: true,
         userId: true,
         content: true,
         x: true,

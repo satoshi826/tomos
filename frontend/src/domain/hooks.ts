@@ -29,6 +29,7 @@ const myProfileIdAtom = atom((get) => get(myProfileAtom).id)
 const setStyleProperty = (key: string, value: string) => document.body.style.setProperty(key, value)
 const setMyProfileColorEffect = (color: number) => {
   setStyleProperty('--color-primary', `oklch(46% 0.20 ${color})`)
+  setStyleProperty('--color-primary-darker', `oklch(38% 0.12 ${color})`)
   setStyleProperty('--color-primary-dark', `oklch(40% 0.18 ${color})`)
   setStyleProperty('--color-primary-light', `oklch(55% 0.25 ${color})`)
   setStyleProperty('--color-primary-lighter', `oklch(82% 0.20 ${color})`)

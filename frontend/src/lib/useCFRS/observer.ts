@@ -86,8 +86,7 @@ export class CFRS {
         this.indexedDB.set(key, { time: now, value: result })
       })
     } else {
-      console.log(this.fetcherMap)
-      console.error('fetcher not found', key)
+      console.error('fetcher not found', key, this.fetcherMap)
     }
   }
 

@@ -2,10 +2,11 @@ import { Fetcher } from './infra'
 import { CFRSProvider } from './lib/useCFRS'
 import { CanvasInterface } from './ui/canvas/interface'
 import Worker from './ui/canvas/webgl/worker?worker'
+import { ModalWrapper } from './ui/dom/common/dialog'
+import { Snackbar } from './ui/dom/common/snackbar'
 import { Frame } from './ui/dom/flame/frame'
 import { Messages } from './ui/dom/message/message'
 import { MessageButton } from './ui/dom/message/messageButton'
-import { MessageEditModal } from './ui/dom/message/messageEditModal'
 import { Topics } from './ui/dom/topic/topic'
 import { TopicButton } from './ui/dom/topic/topicButton'
 import { WorldAdapter } from './ui/dom/worldAdapter'
@@ -17,6 +18,8 @@ export function App() {
   return (
     <ErrorBoundary>
       <CFRSProvider>
+        <ModalWrapper />
+        <Snackbar />
         {canvas}
         <CanvasInterface post={post} ref={ref} />
         <Fetcher />
@@ -24,7 +27,6 @@ export function App() {
           <WorldAdapter>
             <Messages />
             <MessageButton />
-            <MessageEditModal />
             <Topics />
             <TopicButton />
           </WorldAdapter>

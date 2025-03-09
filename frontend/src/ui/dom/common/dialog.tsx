@@ -3,9 +3,14 @@ import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { IconButton } from './iconButton'
 
+const modalId = 'modal'
+export function ModalWrapper() {
+  return <div id={modalId} />
+}
+
 const ModalPortal = ({ children }: { children: React.ReactNode }) => {
   // biome-ignore lint/style/noNonNullAssertion: <explanation>
-  return createPortal(children, document.getElementById('modal')!)
+  return createPortal(children, document.getElementById(modalId)!)
 }
 
 type Props = {
@@ -63,8 +68,7 @@ export const Dialog = ({ children, open, onClose, title }: Props) => {
 
 export const DialogActions = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="modal-action gap-2.5">
-      {' '}
+    <div className="modal-action mt-3 gap-2.5">
       <button type="submit" disabled style={{ display: 'none' }} />
       {children}
     </div>

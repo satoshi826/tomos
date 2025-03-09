@@ -10,6 +10,16 @@
     "back": "戻る",
     "delete_confirm": "削除してもよろしいですか？"
   },
+  "error": {
+    "basic": "エラーが発生しました",
+    "required": "必須の項目です",
+    "min": "最小値は{min}です",
+    "max": "最大値は{max}です",
+    "max_length": "{{len}}文字以内で入力してください",
+    "email": "メールアドレスの形式で入力してください",
+    "password": "パスワードは8文字以上で入力してください",
+    "password_confirm": "パスワードが一致しません"
+  },
   "user": {
     "my_color": "マイカラー"
   },
@@ -17,7 +27,16 @@
     "itself": "トピック",
     "create": "トピックを作成",
     "do_create": "作成する",
+    "created": "トピックを作成しました",
     "edit": "トピックを編集",
     "title_placeholder": "話したいこと、聞いてみたいこと、思ったこと..."
+  },
+  "message": {
+    "itself": "メッセージ",
+    "create": "メッセージを送信",
+    "do_create": "送信する",
+    "created": "メッセージを送信しました",
+    "edit": "メッセージを編集",
+    "content_placeholder": "メッセージを入力してください"
   }
 }

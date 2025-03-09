@@ -1,16 +1,16 @@
-import { positionToAreaKey, useMyProfileId, useUserTopicPosition } from '@/domain/hooks'
-import { postTopic } from '@/infra/api'
+import { positionToTopicKey, useMyProfileId } from '@/domain/hooks'
+import { postMessage } from '@/infra/api'
 import { useCFRS } from '@/lib/useCFRS'
 import { useForm } from '@tanstack/react-form'
 import { useTranslation } from 'react-i18next'
-import { MAX_TOPIC_TITLE_LENGTH } from 'shared/constants'
-import { truncateAreaPosition } from 'shared/functions'
+import { MAX_MESSAGE_LENGTH } from 'shared/constants'
+import { truncateTopicPosition } from 'shared/functions'
 import type { Position } from 'shared/types'
 import { z } from 'zod'
 import { Button } from '../common/button'
 import { Dialog, DialogActions } from '../common/dialog'
-import { Input } from '../common/input'
 import { useSnackbar } from '../common/snackbar'
+import { Textarea } from '../common/textarea'
 
 type Props = {
   open: boolean
@@ -18,17 +18,17 @@ type Props = {
   position: Position
 }
 
-export function TopicCreateDialog({ open, onClose, position }: Props) {
+export function MessageCreateDialog({ open, onClose, position }: Props) {
   const { t } = useTranslation()
   return (
-    <Dialog open={open} onClose={onClose} title={t('topic.create')}>
+    <Dialog open={open} onClose={onClose} title={t('message.create')}>
       <Body onClose={onClose} position={position} />
     </Dialog>
   )
 }
 
-const topicInputSchema = z.object({
-  title: z.string().nonempty('').max(MAX_TOPIC_TITLE_LENGTH, 'max_length'),
+const messageInputSchema = z.object({
+  content: z.string().nonempty('').max(MAX_MESSAGE_LENGTH, 'max_length'),
 })
 
 function Body({ onClose, position }: { onClose: () => void; position: { x: number; y: number } }) {
@@ -38,20 +38,20 @@ function Body({ onClose, position }: { onClose: () => void; position: { x: numbe
   const cfrs = useCFRS()
 
   const form = useForm({
-    defaultValues: { title: '' },
+    defaultValues: { content: '' },
     validators: {
-      onChange: topicInputSchema,
-      onMount: topicInputSchema,
+      onChange: messageInputSchema,
+      onMount: messageInputSchema,
     },
-    onSubmit: async ({ value: { title } }) => {
+    onSubmit: async ({ value: { content } }) => {
       try {
-        await postTopic(position.x, position.y, title, userId)
-        setSnackbar(t('topic.created'))
+        await postMessage(position.x, position.y, content, userId)
+        setSnackbar(t('message.created'))
       } catch (error) {
         console.error('Failed to create topic:', error)
         setSnackbar(t('error.basic'), 'error')
       } finally {
-        cfrs.refetch(positionToAreaKey(truncateAreaPosition(position)))
+        cfrs.refetch(positionToTopicKey(truncateTopicPosition(position)))
         onClose()
       }
     },
@@ -60,15 +60,16 @@ function Body({ onClose, position }: { onClose: () => void; position: { x: numbe
   return (
     <form action={form.handleSubmit}>
       <form.Field
-        name="title"
+        name="content"
         children={({ state: { value, meta }, handleChange }) => {
           const error = meta.errors?.find((e) => e && e.message === 'max_length')
           return (
-            <Input
-              placeholder={t('topic.title_placeholder')}
+            <Textarea
+              placeholder={t('message.content_placeholder')}
               value={value}
               onChange={(e) => handleChange(e.target.value)}
-              hint={error ? t('error.max_length', { len: MAX_TOPIC_TITLE_LENGTH }) : undefined}
+              hint={error ? t('error.max_length', { len: MAX_MESSAGE_LENGTH }) : undefined}
+              rows={5}
             />
           )
         }}
@@ -79,7 +80,7 @@ function Body({ onClose, position }: { onClose: () => void; position: { x: numbe
           children={([isSubmitting, isValid]: [boolean, boolean]) => {
             return (
               <Button type="submit" icon="check" loading={isSubmitting} disabled={!isValid}>
-                {t('topic.do_create')}
+                {t('message.do_create')}
               </Button>
             )
           }}

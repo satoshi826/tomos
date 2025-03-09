@@ -1,8 +1,8 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { truncateAreaPosition } from 'shared/functions'
-import { areaGetRoute, areaPostRoute, topicGetRoute, topicPostRoute } from './route'
+import { truncateAreaPosition, truncateTopicPosition } from 'shared/functions'
+import { areaGetRoute, areaPostRoute, messagePostRoute, topicGetRoute, topicPostRoute } from './route'
 import { seed } from './seed'
 import { handleError, hono, prismaClient } from './utils'
 
@@ -45,9 +45,18 @@ const route = app
     const prisma = prismaClient(c.env.DB)
     const { x, y, title, userId } = await c.req.valid('json')
     const areaPosition = truncateAreaPosition({ x, y })
-    const areaId = await prisma.area.findUnique({ where: { x_y: areaPosition }, select: { id: true } }).then((area) => area?.id)
+    const areaId = await prisma.area.findUnique({ where: { x_y: areaPosition }, select: { id: true } }).then((a) => a?.id)
     if (!areaId) return c.json({ code: 400 as const, message: 'Area not found' }, 400)
     const topic = await prisma.topic.create({ data: { x, y, title, userId, areaId } })
+    return c.json(topic, 200)
+  })
+  .openapi(messagePostRoute, async (c) => {
+    const prisma = prismaClient(c.env.DB)
+    const { x, y, userId, content } = await c.req.valid('json')
+    const topicPosition = truncateTopicPosition({ x, y })
+    const topicId = await prisma.topic.findUnique({ where: { x_y: topicPosition }, select: { id: true } }).then((t) => t?.id)
+    if (!topicId) return c.json({ code: 400 as const, message: 'Topic not found' }, 400)
+    const topic = await prisma.message.create({ data: { x, y, content, userId, topicId } })
     return c.json(topic, 200)
   })
 

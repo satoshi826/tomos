@@ -26,7 +26,7 @@ const variants = {
     lg: 'px-6 py-3 text-lg',
   },
   disabled: {
-    true: 'cursor-not-allowed pointer-events-none !duration-100',
+    true: 'cursor-not-allowed pointer-events-none',
     false: null,
   },
 }
@@ -71,15 +71,16 @@ export const Button = ({
   size = 'md',
   type = 'button',
   loading = false,
-  disabled = loading,
+  disabled,
   children,
   className,
   icon,
   variant = 'contained',
   ...props
 }: ButtonProps) => {
+  const _disabled = disabled || loading
   return (
-    <button type={type} className={clsx(buttonStyles({ size, disabled, variant }), className)} disabled={disabled} {...props}>
+    <button type={type} className={clsx(buttonStyles({ size, disabled: _disabled, variant }), className)} disabled={_disabled} {...props}>
       {icon && (loading ? <Spinner /> : <Icon size="sm">{icon}</Icon>)}
       {children}
     </button>

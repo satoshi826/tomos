@@ -1,8 +1,6 @@
 import type { HTMLAttributes } from 'react'
 
 export type ClassName = HTMLAttributes<HTMLElement>['className']
-export type CssColor = 'primary' | 'secondary' | 'neutral' | 'accent' | 'ghost' | 'link'
-export type StateColor = 'info' | 'success' | 'warning' | 'error'
 
 type JSONValue = string | number | boolean | null | { [key: string]: JSONValue } | JSONValue[]
 
@@ -15,3 +13,6 @@ export type JSONCompatible<T> = {
         ? T[K] // JSONで表現可能な型はそのまま
         : never // JSONで表現できない型はneverに
 }
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export type PromiseType<T extends Promise<any>> = T extends Promise<infer P> ? P : never

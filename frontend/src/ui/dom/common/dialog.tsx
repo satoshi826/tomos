@@ -9,7 +9,6 @@ export function ModalWrapper() {
 }
 
 const ModalPortal = ({ children }: { children: React.ReactNode }) => {
-  // biome-ignore lint/style/noNonNullAssertion: <explanation>
   return createPortal(children, document.getElementById(modalId)!)
 }
 
@@ -52,7 +51,7 @@ export const Dialog = ({ children, open, onClose, title }: Props) => {
             <>
               {title && <h3 className="pb-3 font-bold text-lg">{title}</h3>}
               <div className="px-1 py-1">{children}</div>
-              <IconButton size="sm" onClick={handleClose} className="absolute top-3 right-4">
+              <IconButton size="sm" onClick={handleClose} className="absolute top-4 right-4">
                 close
               </IconButton>
             </>

@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "workspaces": ["frontend", "backend", "shared"],
+  "type": "module",
   "scripts": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

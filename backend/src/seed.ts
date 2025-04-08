@@ -53,7 +53,7 @@ export async function seed(prisma: PrismaClient) {
       const user = users[Math.floor(random() * users.length)]
       const topicTags = tags.sort(() => 0.5 - Math.random()).slice(0, 3)
       const topicPositions = values(
-        aToO(range(60), () => {
+        aToO(range(50), () => {
           const x = area.x + truncate(random(0, 100), -1)
           const y = area.y + truncate(random(0, 100), -1)
           return [`${x}_${y}`, [x, y] as [x: number, y: number]]
@@ -79,30 +79,44 @@ export async function seed(prisma: PrismaClient) {
     }),
   )
 
-  topics.forEach((topic) => {
-    const user = users[Math.floor(random() * users.length)]
-    const messagePositions = values(
-      aToO(range(20), () => {
+  const messages = await Promise.all(
+    topics.flatMap((topic) => {
+      const user = users[Math.floor(random() * users.length)]
+      // const messagePositions = values(
+      //   aToO(range(20), () => {
+      //     const x = topic.x + truncate(random(0, 10), 0)
+      //     const y = topic.y + truncate(random(0, 10), 0)
+      //     return [`${x}_${y}`, [x, y] as [x: number, y: number]]
+      //   }),
+      // )
+      const messagePositions = range(20).map(() => {
         const x = topic.x + truncate(random(0, 10), 0)
         const y = topic.y + truncate(random(0, 10), 0)
-        return [`${x}_${y}`, [x, y] as [x: number, y: number]]
-      }),
-    )
-    console.log(messagePositions)
-    messagePositions.forEach(async ([x, y]) => {
-      const item = {
-        userId: user.id,
-        topicId: topic.id,
-        content: `Message_${x}_${y}_in_Topic_${topic.id}_by_User_${user.id}`,
-        x,
-        y,
-      }
-      await prisma.message.upsert({
-        where: { x_y: { x, y } },
-        update: item,
-        create: item,
+        return [x, y]
       })
-    })
-  })
-  // console.log('------------------ Database seeding completed! ------------------ ')
+
+      console.log(messagePositions)
+      return messagePositions.map(async ([x, y]) => {
+        const item = {
+          userId: user.id,
+          topicId: topic.id,
+          content: `Message_${x}_${y}_in_Topic_${topic.id}_by_User_${user.id}`,
+          x,
+          y,
+        }
+        await prisma.message.upsert({
+          where: { x_y: { x, y } },
+          update: item,
+          create: item,
+        })
+      })
+    }),
+  )
+
+  console.log('------------------ Database seeding completed! ------------------ ')
+  console.log('Users:', users.length)
+  console.log('Tags:', tags.length)
+  console.log('Areas:', areas.length)
+  console.log('Topics:', topics.length)
+  console.log('Messages:', messages.length)
 }

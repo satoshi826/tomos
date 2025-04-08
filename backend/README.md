@@ -43,7 +43,7 @@ npm run dev
 ### 新しいマイグレーションファイルの作成
 
 ```bash
-npm run migrate create <db_name> <migration_name>
+npm run migrate generate <migration_name>
 ```
 
 ### ローカル環境へのマイグレーション適用

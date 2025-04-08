@@ -19,7 +19,7 @@ export const hono = () =>
         return c.json(
           {
             code: 400,
-            message: 'Validation Error',
+            message: 'Error',
             issues: result.error.issues,
           },
           400,
@@ -35,6 +35,11 @@ export const handleError = (err: Error, c: Context<HonoEnv>): Response => {
   }
   return c.json({ code: 500, message: 'Internal Server Error' }, 500)
 }
+
+// export const encryptData = (data: string) => {
+//   const encrypted = crypto.publicEncrypt(env, Buffer.from(data))
+//   return encrypted.toString('base64')
+// }
 
 export const _jsonContent = <T>(schema: T) => ({
   content: { 'application/json': { schema } },

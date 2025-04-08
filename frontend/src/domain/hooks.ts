@@ -1,6 +1,7 @@
 import { useCFRSCache } from '@/lib/useCFRS'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { observe } from 'jotai-effect'
+import { selectAtom } from 'jotai/utils'
 import { TOPIC_SIDE } from 'shared/constants'
 import { truncateAreaPosition, truncateMessagePosition, truncateTopicPosition, truncateUnit } from 'shared/functions'
 import type { Area, Message, Position, Topic } from 'shared/types'
@@ -72,8 +73,7 @@ export const cameraPositionAtom = atom(DEFAULT_POSITION)
 export const useSetCameraPosition = () => useSetAtom(cameraPositionAtom)
 export const useCameraPosition = () => useAtomValue(cameraPositionAtom)
 
-const cameraZAtom = atom((get) => get(cameraPositionAtom).z)
-
+const cameraZAtom = selectAtom(cameraPositionAtom, (position) => position.z)
 export const useCameraZ = () => useAtomValue(cameraZAtom)
 
 const viewModeAtom = atom<ViewMode>((get) => {

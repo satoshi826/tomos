@@ -2,16 +2,16 @@ export class IndexedDB {
   private dbName: string
   private storeName: string
   private db: IDBDatabase | null
+  private openPromise: Promise<void>
 
   constructor({ dbName, storeName }: { dbName: string; storeName: string }) {
     this.dbName = dbName
     this.storeName = storeName
     this.db = null
+    this.openPromise = this.open()
   }
 
   private async open(): Promise<void> {
-    if (this.db) return
-
     return new Promise((resolve, reject) => {
       const req = indexedDB.open(this.dbName, 1)
 
@@ -32,7 +32,7 @@ export class IndexedDB {
   }
 
   private async ensureOpen(): Promise<void> {
-    if (!this.db) await this.open()
+    if (!this.db) await this.openPromise
   }
 
   async set<T>(key: IDBValidKey, data: T): Promise<IDBValidKey> {

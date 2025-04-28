@@ -1,22 +1,26 @@
 import { swaggerUI } from '@hono/swagger-ui'
+import { getCookie, setCookie } from 'hono/cookie'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { DEFAULT_COLOR } from 'shared/constants'
 import { truncateAreaPosition, truncateTopicPosition } from 'shared/functions'
-import { areaGetRoute, areaPostRoute, messagePostRoute, topicGetRoute, topicPostRoute } from './route'
+import { authCallbackScript, frontEndUrl, getToken, getTokenInfo, refresh_token_expires_in, tokenRoute } from './auth'
+import { areaGetRoute, areaPostRoute, messagePostRoute, profileGetRoute, topicGetRoute, topicPostRoute } from './route'
 import { seed } from './seed'
-import { handleError, hono, prismaClient } from './utils'
+import { generateUniqueId, handleError, hono, prismaClient } from './utils'
 
 const app = hono()
 
 app
   .use(logger())
-  .use(cors())
+  .use(cors({ origin: frontEndUrl, credentials: true }))
   .onError(handleError)
   .get('/', (c) => c.text('Hello Tomos!'))
   .get('/seed', (c) => {
     seed(prismaClient(c.env.DB))
     return c.text('Seeding database...')
   })
+  .get('/auth/callback', async (c) => c.html(authCallbackScript))
 
 app.doc31('/doc', { openapi: '3.1.0', info: { version: '0.0.0', title: 'Tomos API' } }).get('/ui', swaggerUI({ url: '/doc' }))
 
@@ -36,6 +40,8 @@ const route = app
   })
   .openapi(topicGetRoute, async (c) => {
     const prisma = prismaClient(c.env.DB)
+    const ck = getCookie(c, 'refresh_token')
+    console.log(ck)
     const { x, y } = await c.req.valid('query')
     const topic = await prisma.topic.findUnique({ where: { x_y: { x, y } }, include: { messages: true } })
     if (!topic) return c.json({ code: 404 as const, message: 'Topic not found' }, 404)
@@ -59,61 +65,47 @@ const route = app
     const topic = await prisma.message.create({ data: { x, y, content, userId, topicId } })
     return c.json(topic, 200)
   })
+  .openapi(profileGetRoute, async (c) => {
+    const access_token = c.req.header('Authorization')?.split(' ')[1]
+    if (!access_token) return c.json({ id: 'hoge' }, 200)
+    const prisma = prismaClient(c.env.DB)
+    const profile = await getTokenInfo(access_token)
+    const user = await prisma.user.findUnique({ where: { googleId: profile.sub } })
+    if (!user) return c.json({ id: 'user_not_found' }, 200)
+    return c.json({ id: user.userId, name: user.name, color: user.color }, 200)
+  })
+  .openapi(tokenRoute, async (c) => {
+    const { code, code_verifier } = await c.req.valid('json')
+    const token = await getToken(code, code_verifier)
+    const prisma = prismaClient(c.env.DB)
+    const user = await prisma.user.findUnique({ where: { googleId: token.id_token.sub } })
+    if (!user) {
+      const isIdTaken = async (userId: string) => {
+        const existUser = await prisma.user.findUnique({ where: { userId } })
+        return !!existUser
+      }
+      const userId = await generateUniqueId(isIdTaken)
+      await prismaClient(c.env.DB).user.create({
+        data: { googleId: token.id_token.sub, name: token.id_token.name, color: DEFAULT_COLOR, userId },
+      })
+      console.log('User created:', userId)
+    }
+    setCookie(c, 'refresh_token', token.refresh_token, {
+      sameSite: 'None',
+      secure: true,
+      httpOnly: true,
+      maxAge: refresh_token_expires_in - 60 * 60 * 24,
+    })
+    return c.json(
+      {
+        access_token: token.access_token,
+        expires_in: token.expires_in,
+        profile: token.id_token,
+      },
+      200,
+    )
+  })
 
 export type HONO_API = typeof route
-
-// // GET: Fetch all topics in a given area
-// app.openapi(topicGetRoute, async (c) => {
-//   const prisma = prismaClient(c.env.DB)
-//   const { areaId } = await c.req.valid('query')
-//   const topics = await prisma.topic.findMany({
-//     where: { areaId: Number(areaId) },
-//     include: { user: true, tags: true },
-//   })
-//   return c.json(topics, 200)
-// })
-
-// // POST: Create a new topic in a specific area
-// app.openapi(topicPostRoute, async (c) => {
-//   const prisma = prismaClient(c.env.DB)
-//   const { areaId, userId, title, x, y } = await c.req.valid('json')
-//   const topic = await prisma.topic.create({
-//     data: {
-//       areaId: Number(areaId),
-//       userId,
-//       title,
-//       x,
-//       y,
-//     },
-//   })
-//   return c.json(topic, 200)
-// })
-
-// // GET: Fetch all messages for a specific topic
-// app.openapi(messageGetRoute, async (c) => {
-//   const prisma = prismaClient(c.env.DB)
-//   const { topicId } = await c.req.valid('query')
-//   const messages = await prisma.message.findMany({
-//     where: { topicId: Number(topicId) },
-//     include: { user: true },
-//   })
-//   return c.json(messages, 200)
-// })
-
-// // POST: Create a new message under a specific topic
-// app.openapi(messagePostRoute, async (c) => {
-//   const prisma = prismaClient(c.env.DB)
-//   const { topicId, userId, content, x, y } = await c.req.valid('json')
-//   const message = await prisma.message.create({
-//     data: {
-//       topicId: Number(topicId),
-//       userId,
-//       content,
-//       x,
-//       y,
-//     },
-//   })
-//   return c.json(message, 200)
-// })
 
 export default app

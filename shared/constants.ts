@@ -1,5 +1,6 @@
 import type { CameraPosition } from './types/util'
 
+export const DEFAULT_COLOR = 230 // 0 - 360 deg
 export const MESSAGE_SIDE = 1
 export const TOPIC_SIDE = MESSAGE_SIDE * 10
 export const AREA_SIDE = TOPIC_SIDE * 10

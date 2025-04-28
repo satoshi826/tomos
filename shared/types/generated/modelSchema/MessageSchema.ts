@@ -13,6 +13,7 @@ export const MessageSchema = z.object({
   userId: z.string(),
   topicId: z.number().int(),
   content: z.string().min(1).max(256),
+  color: z.number().min(0).max(360),
   x: z.number().int().nonnegative(),
   y: z.number().int().nonnegative(),
   createdAt: z.coerce.date(),
@@ -35,6 +36,7 @@ export type MessagePartial = z.infer<typeof MessagePartialSchema>
 
 export const MessageOptionalDefaultsSchema = MessageSchema.merge(z.object({
   id: z.number().int().optional(),
+  color: z.number().min(0).max(360).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 }))

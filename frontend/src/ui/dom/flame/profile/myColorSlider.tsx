@@ -9,6 +9,7 @@ const style = { background: RAINBOW_GRADIENT, color: 'transparent' }
 
 export function MyColorSlider({ className }: Props) {
   const myProfileColor = useMyProfileColor()
+  // console.log(myProfileColor)
   const setMyProfileColor = useSetMyProfileColor()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setMyProfileColor(Number(e.target.value))
   return (

@@ -5,7 +5,6 @@ import type { Context } from 'hono'
 
 export const prismaClient = (db: D1Database) => {
   const adapter = new PrismaD1(db)
-  console.log(db)
   return new PrismaClient({ adapter, log: ['query'] })
 }
 
@@ -19,7 +18,7 @@ export const hono = () =>
         return c.json(
           {
             code: 400,
-            message: 'Validation Error',
+            message: 'Error',
             issues: result.error.issues,
           },
           400,
@@ -35,7 +34,6 @@ export const handleError = (err: Error, c: Context<HonoEnv>): Response => {
   }
   return c.json({ code: 500, message: 'Internal Server Error' }, 500)
 }
-
 export const _jsonContent = <T>(schema: T) => ({
   content: { 'application/json': { schema } },
 })
@@ -70,3 +68,26 @@ export const _404 = (desc = 'Not Found') => ({
     description: desc,
   },
 })
+
+type IsIdTaken = (publicId: string) => Promise<boolean>
+
+export async function generateUniqueId(isIdTaken: IsIdTaken, maxAttempts = 10): Promise<string> {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const idLength = 8
+
+  const generateRandomId = (): string => {
+    return Array.from({ length: idLength }, () => {
+      const index = Math.floor(Math.random() * charset.length)
+      return charset[index]
+    }).join('')
+  }
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const candidate = generateRandomId()
+    if (!(await isIdTaken(candidate))) {
+      return candidate
+    }
+  }
+
+  throw new Error('Failed to generate a unique public ID after multiple attempts.')
+}

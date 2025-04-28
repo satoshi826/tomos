@@ -1,9 +1,7 @@
 import { hc } from 'hono/client'
 import type { HONO_API } from 'shared/types'
 
-const LOCAL_API = 'http://127.0.0.1:8787'
-
-export const client = hc<HONO_API>(LOCAL_API)
+export const client = hc<HONO_API>(import.meta.env.VITE_API_URL)
 
 export const postMessage = async (x: number, y: number, content: string, userId: string) => {
   const result = await client.messages.$post({ json: { x, y, content, userId } })

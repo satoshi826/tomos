@@ -21,7 +21,9 @@
     "password_confirm": "パスワードが一致しません"
   },
   "user": {
-    "my_color": "マイカラー"
+    "account": "アカウント",
+    "my_color": "マイカラー",
+    "login_with_google": "Googleでログイン"
   },
   "topic": {
     "itself": "トピック",

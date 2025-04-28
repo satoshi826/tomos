@@ -1,5 +1,5 @@
-import type { CameraPosition } from '@/domain/types'
 import { Core, Loop, Renderer, State, Vao, plane2D } from 'glaku'
+import type { CameraPosition } from 'shared/types'
 import type { MessageView } from '../../type'
 import { grid } from './grid'
 import { message } from './message'
@@ -10,6 +10,10 @@ const mouseState = new State({ x: 0, y: 0 })
 const cameraState = new State<CameraPosition>({ x: 0, y: 0, z: 1 })
 const resizeState = new State({ width: 1, height: 1 })
 const messageState = new State<MessageView[]>([])
+
+const hoge = () => {
+  console.log('hoge')
+}
 
 const main = async (canvas: OffscreenCanvas) => {
   const core = new Core({
@@ -40,6 +44,7 @@ const main = async (canvas: OffscreenCanvas) => {
   })
 
   cameraState.on(({ x, y, z }) => {
+    // hoge({ x, y, z })
     gridProgram.setUniform({ u_camera: [x, y, z] })
     messageProgram.setUniform({ u_camera: [x, y, z] })
     userProgram.setUniform({ u_cameraPosition: [x, y, z] })

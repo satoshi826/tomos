@@ -3,8 +3,6 @@ import { cva } from 'class-variance-authority'
 import clsx from 'clsx'
 import { Icon } from './icon'
 
-const baseStyles: ClassName = 'rounded-field duration-200 inline-flex gap-1 cursor-pointer'
-
 const Spinner = ({ size = 24, color = 'currentColor' }) => {
   return (
     <svg width={size} height={size} fill={color} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="animate-spin">
@@ -14,6 +12,8 @@ const Spinner = ({ size = 24, color = 'currentColor' }) => {
     </svg>
   )
 }
+
+const baseStyles: ClassName = 'rounded-field duration-300 inline-flex gap-2 cursor-pointer justify-center items-center'
 
 const variants = {
   variant: {
@@ -63,7 +63,7 @@ export type ButtonProps = {
   children: string
   className?: string
   style?: React.CSSProperties
-  icon?: string
+  icon?: string | React.ReactNode
   onClick?: () => void
 }
 
@@ -81,7 +81,7 @@ export const Button = ({
   const _disabled = disabled || loading
   return (
     <button type={type} className={clsx(buttonStyles({ size, disabled: _disabled, variant }), className)} disabled={_disabled} {...props}>
-      {icon && (loading ? <Spinner /> : <Icon size="sm">{icon}</Icon>)}
+      {icon && (loading ? <Spinner /> : typeof icon === 'string' ? <Icon size="sm">{icon}</Icon> : icon)}
       {children}
     </button>
   )

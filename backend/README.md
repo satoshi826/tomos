@@ -43,19 +43,19 @@ npm run dev
 ### 新しいマイグレーションファイルの作成
 
 ```bash
-npm run migrate create <db_name> <migration_name>
+npm run migrate generate <migration_name>
 ```
 
 ### ローカル環境へのマイグレーション適用
 
 ```bash
-npm run migrate apply:local <db_name>
+npm run migrate apply:local
 ```
 
 ### リモート環境へのマイグレーション適用
 
 ```bash
-npm run migrate apply:remote <db_name>
+npm run migrate apply:remote
 ```
 
 ## テストの実行
@@ -67,5 +67,7 @@ npm test
 ## デプロイ
 
 Cloudflare Workersへのデプロイ
+
 ```bash
 npm run deploy
+```

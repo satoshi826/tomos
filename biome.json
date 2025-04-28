@@ -25,6 +25,9 @@
       "nursery": { "useSortedClasses": "warn" },
       "correctness": {
         "noChildrenProp": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
       }
     }
   },

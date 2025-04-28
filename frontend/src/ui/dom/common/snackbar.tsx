@@ -13,13 +13,13 @@ export const useSnackbar = () => {
   return (message: string, type: SnackbarType = 'info') => setSnackbar({ open: true, message, type })
 }
 
-const baseStyle = 'alert !min-w-50 absolute right-5 bottom-4 z-50 border-1 border-divider backdrop-blur-sm duration-400'
+const baseStyle = 'alert !min-w-50 absolute right-5 bottom-4 z-50 border-1 border-divider backdrop-blur-sm duration-300'
 
 const snackbarStyle = cva(baseStyle, {
   variants: {
     show: {
       true: 'opacity-100 scale-100',
-      false: 'opacity-10 scale-0',
+      false: 'opacity-0 scale-0',
     },
     variant: {
       info: 'bg-primary-darker/60',

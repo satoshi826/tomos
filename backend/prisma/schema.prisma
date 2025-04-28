@@ -24,12 +24,16 @@ datasource db {
 
 model User {
   id    String  @id @default(uuid())
-  email String  @unique /// @zod.string.email()
-  name  String  @unique /// @zod.string.min(1).max(32)
+	userId String @unique  /// @zod.string.min(8).max(16)
+	googleId String? @unique
+  name  String /// @zod.string.min(1).max(32)
 	color Float  /// @zod.number.min(0).max(360)
 	messages Message[]
 	topics Topic[]
 	createdAt DateTime @default(now())
+	@@index([googleId])
+	@@index([userId])
+
 }
 
 model Area {
@@ -76,6 +80,7 @@ model Message {
 	topicId   Int
 	topic     Topic   @relation(fields: [topicId], references: [id])
 	content   String  /// @zod.string.min(1).max(256)
+	color    Float  @default(220)/// @zod.number.min(0).max(360)
 	x				 Int /// @zod.number.int().nonnegative()
 	y				 Int /// @zod.number.int().nonnegative()
 	createdAt DateTime @default(now())

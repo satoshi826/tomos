@@ -1,5 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi'
-import { AreaSchema, AreaWithTopicsSchema, MessageSchema, TopicSchema, TopicWithMessagesSchema } from 'shared/types'
+import { AreaSchema, AreaWithTopicsSchema, MessageSchema, TopicSchema, TopicWithMessagesSchema, UserSchema } from 'shared/types'
 import { _200, _400, _404, _jsonContent } from './utils'
 
 export const areaGetRoute = createRoute({
@@ -99,6 +99,16 @@ export const messagePostRoute = createRoute({
   },
   responses: {
     ..._200(MessageSchema, 'Successfully created message'),
+    ..._400(),
+  },
+})
+
+export const profileGetRoute = createRoute({
+  method: 'get',
+  path: '/profile',
+  request: {},
+  responses: {
+    ..._200(UserSchema.pick({ id: true }), 'Returns user profile'),
     ..._400(),
   },
 })

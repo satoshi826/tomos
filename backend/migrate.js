@@ -20,19 +20,16 @@ switch (command) {
       execSync(`npx wrangler d1 migrations create ${dbName} ${migrationName}`, {
         stdio: 'inherit',
       })
-
       const migrationsDir = './migrations'
       const files = fs.readdirSync(migrationsDir)
       const latestMigration = files
         .filter((f) => f.endsWith('.sql'))
         .sort()
         .pop()
-
       if (!latestMigration) {
         console.error('No migration files found')
         process.exit(1)
       }
-
       const migrationPath = path.join(migrationsDir, latestMigration)
       execSync(`npx prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output ${migrationPath}`, {
         stdio: 'inherit',

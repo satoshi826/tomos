@@ -1,7 +1,8 @@
 import { useCFRSCache } from '@/lib/useCFRS'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { observe } from 'jotai-effect'
-import { TOPIC_SIDE } from 'shared/constants'
+import { selectAtom } from 'jotai/utils'
+import { DEFAULT_COLOR, TOPIC_SIDE } from 'shared/constants'
 import { truncateAreaPosition, truncateMessagePosition, truncateTopicPosition, truncateUnit } from 'shared/functions'
 import type { Area, Message, Position, Topic } from 'shared/types'
 import {
@@ -20,7 +21,7 @@ import {
 const myProfileAtom = atom({
   id: '7b7db97f-0205-4685-a373-5573d5fe2a53',
   name: 'Anonymous',
-  color: 230, // 0 - 360 deg
+  color: DEFAULT_COLOR, // 0 - 360 deg
 })
 
 const myProfileColorAtom = atom((get) => get(myProfileAtom).color)
@@ -72,8 +73,7 @@ export const cameraPositionAtom = atom(DEFAULT_POSITION)
 export const useSetCameraPosition = () => useSetAtom(cameraPositionAtom)
 export const useCameraPosition = () => useAtomValue(cameraPositionAtom)
 
-const cameraZAtom = atom((get) => get(cameraPositionAtom).z)
-
+const cameraZAtom = selectAtom(cameraPositionAtom, (position) => position.z)
 export const useCameraZ = () => useAtomValue(cameraZAtom)
 
 const viewModeAtom = atom<ViewMode>((get) => {

@@ -1,13 +1,18 @@
-import { useCameraPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from '@/domain/hooks'
+import { useCameraPosition, useCurrentAreaPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from '@/domain/hooks'
+import { useCFRS } from '@/lib/useCFRS'
 import { clamp } from 'jittoku'
 import { useCallback, useEffect } from 'react'
 import { useDragCallback, usePointerCallback, useResizeCallback } from '../hooks'
 
 export function CanvasInterface({ post, ref }: { post: (data: unknown) => void; ref: React.RefObject<HTMLDivElement | null> }) {
   const cameraPosition = useCameraPosition()
+  const currentAreaPosition = useCurrentAreaPosition()
   const setCameraPosition = useSetCameraPosition()
   const setMousePosition = useSetMousePosition()
   const setCanvasSize = useSetCanvasSize()
+
+  const cfrs = useCFRS()
+
   // const messageView = useMessageView()
   const resizeCallback = useCallback(
     (resize: { width: number; height: number }) => {
@@ -32,6 +37,11 @@ export function CanvasInterface({ post, ref }: { post: (data: unknown) => void; 
     ref,
   })
   useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post]) // atomEffectで送るか
+
+  useEffect(() => {
+    console.log(post, currentAreaPosition)
+  }, [currentAreaPosition, post])
+
   // useEffect(() => post({ message: messageView }), [messageView, post]) // messageはIndexedDB経由で渡す?
   return null
 }

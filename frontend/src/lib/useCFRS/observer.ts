@@ -1,7 +1,7 @@
 import { oForEach } from 'jittoku'
 import { IndexedDB } from '../indexedDB'
 
-const PROMISE_TTL = 1000 * 1
+const PROMISE_TTL = 1000 * 30
 
 const isOutdated = (time: number, ttl: number) => Date.now() - time > ttl
 

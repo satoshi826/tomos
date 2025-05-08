@@ -1,7 +1,11 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": ["frontend", "backend", "shared"],
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
   "type": "module",
   "scripts": {},
   "devDependencies": {
@@ -9,7 +13,7 @@
     "typescript": "^5.5.2"
   },
   "dependencies": {
-    "hono": "^4.6.17",
+    "hono": "^4.7.8",
     "jittoku": "^0.1.16",
     "zod": "^3.23.8"
   }

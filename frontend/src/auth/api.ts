@@ -5,7 +5,14 @@ import { getStoredCodeVerifier } from './util'
 export const getToken = async (code: string) => {
   const code_verifier = getStoredCodeVerifier()
   if (!code_verifier) throw new Error('code_verifier not found')
-  const result = await client.auth.token.google.$post({ json: { code, code_verifier } })
+  const result = await client.auth.token.google.$post(
+    { json: { code, code_verifier } },
+    {
+      init: {
+        credentials: 'include',
+      },
+    },
+  )
   if (!result.ok) throw new Error('fetcher error')
   return result.json()
 }

@@ -1,7 +1,15 @@
-import { createRoute, z } from '@hono/zod-openapi'
-import { ENV } from './env'
-import type { IdToken } from './type'
-import { _200, _400, _jsonContent } from './utils'
+import { PrismaD1 } from '@prisma/adapter-d1'
+import { PrismaClient } from '@prisma/client'
+import type { Context } from 'hono'
+import { ENV } from 'src/env'
+
+export const prismaClient = () => {
+  const D1 = ENV.DB
+  const adapter = new PrismaD1(D1)
+  return new PrismaClient({ adapter, log: ['query'] })
+}
+
+//-----------------------------------------------------------------
 
 export const frontEndUrl = ENV.FRONT_END_URL
 const client_id = ENV.GOOGLE_OAUTH_CLIENT_ID
@@ -13,29 +21,20 @@ const TOKEN_INFO_ENDPOINT = `${BASE_URL}/tokeninfo`
 const expires_in = 60 * 60 // access token expires in 1 hour
 export const refresh_token_expires_in = 60 * 60 * 24 * 7 // 1 week
 
-export const authCallbackScript = /* html */ `
-  <script>
-    const urlParams = new URLSearchParams(window.location.search)
-    window.opener.postMessage({ code: urlParams.get("code") }, '${frontEndUrl}')
-  </script>
-`
+export const getTokenInfo = async (access_token: string) => {
+  const response = await fetch(`${TOKEN_INFO_ENDPOINT}?access_token=${access_token}`)
+  const json = (await response.json()) as { exp: number; azp: string; sub: string }
+  return json
+}
 
-export const tokenRoute = createRoute({
-  method: 'post',
-  path: '/auth/token/google',
-  request: {
-    body: _jsonContent(
-      z.object({
-        code: z.string(),
-        code_verifier: z.string(),
-      }),
-    ),
-  },
-  responses: {
-    ..._200(z.object({ access_token: z.string(), expires_in: z.number(), profile: z.object({}) }), 'Returns an access token'),
-  },
-})
-
+export type IdToken = {
+  iss: string
+  sub: string
+  azp: string
+  aud: string
+  iat: number
+  name: string
+}
 export const getToken = async (code: string, code_verifier: string) => {
   const response = await fetch(TOKEN_ENDPOINT, {
     method: 'POST',
@@ -60,24 +59,10 @@ export const getToken = async (code: string, code_verifier: string) => {
   return {
     access_token: json.access_token,
     refresh_token: json.refresh_token,
-    id_token: decodeJwt(json.id_token) as unknown as IdToken,
+    id_token: decodeJwt(json.id_token) as unknown as IdToken, // Todo: replace with hono/jwt
     expires_in: json.expires_in,
   }
 }
-
-export const getTokenInfo = async (access_token: string) => {
-  const response = await fetch(`${TOKEN_INFO_ENDPOINT}?access_token=${access_token}`)
-  const json = (await response.json()) as { exp: number; azp: string; sub: string }
-  return json
-}
-
-export const tokenRefreshRoute = createRoute({
-  method: 'get',
-  path: '/auth/token/google/refresh',
-  responses: {
-    ..._200(z.object({ access_token: z.string(), expires_in: z.number() }), 'Refresh an access token'),
-  },
-})
 
 const base64UrlDecode = (base64Url: string): string => {
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
@@ -102,4 +87,37 @@ const decodeJwt = (token: string): Record<string, string> => {
     console.error('Error decoding token:', error)
     throw new Error('Invalid token')
   }
+}
+
+export const accessTokenFromHeader = (c: Context) => {
+  const access_token = c.req.header('Authorization')?.split(' ')[1]
+  return access_token
+}
+
+export const remoteAddress = (c: Context) => {
+  return c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || c.req.header('X-Forwarded-For') || 'localhost'
+}
+
+//-----------------------------------------------------------------
+
+type IsIdTaken = (publicId: string) => Promise<boolean>
+export async function generateUniqueId(isIdTaken: IsIdTaken, maxAttempts = 10): Promise<string> {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const idLength = 8
+
+  const generateRandomId = (): string => {
+    return Array.from({ length: idLength }, () => {
+      const index = Math.floor(Math.random() * charset.length)
+      return charset[index]
+    }).join('')
+  }
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const candidate = generateRandomId()
+    if (!(await isIdTaken(candidate))) {
+      return candidate
+    }
+  }
+
+  throw new Error('Failed to generate a unique public ID after multiple attempts.')
 }

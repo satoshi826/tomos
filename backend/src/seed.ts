@@ -26,10 +26,10 @@ export async function seed(prisma: PrismaClient) {
   const users = await Promise.all(
     range(NUM_USERS).map((i) =>
       prisma.user.upsert({
-        where: { email: `user${i}@example.com` },
+        where: { userId: `user${i}` },
         update: {},
         create: {
-          email: `user${i}@example.com`,
+          userId: `user${i}`,
           name: `User_${i}`,
           color: random(0, 360),
         },

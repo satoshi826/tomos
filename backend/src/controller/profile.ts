@@ -1,15 +1,15 @@
 import type { RouteHandler } from '@hono/zod-openapi'
+import type { Context } from 'hono'
 import type { profileGetRoute } from 'src/routes/profile'
-import { accessTokenFromHeader, getTokenInfo, prismaClient, remoteAddress } from './utils'
+import { accessTokenFromHeader, generateAnonymousId, prismaClient } from './utils'
+
+const guestProfile = async (c: Context) => c.json({ id: await generateAnonymousId(c), guest: true }, 200)
 
 export const profileGetController: RouteHandler<typeof profileGetRoute> = async (c) => {
-  const access_token = accessTokenFromHeader(c)
-  const address = remoteAddress(c)
-  console.log(address)
-  if (!access_token) return c.json({ id: 'hoge' }, 200)
+  const access_token = await accessTokenFromHeader(c)
+  if (!access_token) return await guestProfile(c)
   const prisma = prismaClient()
-  const profile = await getTokenInfo(access_token)
-  const user = await prisma.user.findUnique({ where: { googleId: profile.sub } })
-  if (!user) return c.json({ id: 'user_not_found' }, 200)
-  return c.json({ id: user.userId, name: user.name, color: user.color }, 200)
+  const user = await prisma.user.findUnique({ where: { id: access_token.userId } })
+  if (!user) return await guestProfile(c)
+  return c.json({ id: user.userId, name: user.name, color: user.color, guest: false }, 200)
 }

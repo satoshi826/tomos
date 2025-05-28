@@ -7,7 +7,7 @@ export const profileGetRoute = createRoute({
   path: '/profile',
   request: {},
   responses: {
-    ..._200(UserSchema.pick({ id: true }), 'Returns user profile'),
+    ..._200(UserSchema.pick({ id: true }).strict(), 'Returns user profile'),
     ..._400(),
   },
 })

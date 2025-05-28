@@ -1,8 +1,9 @@
-import { useSetOauth } from '@/auth/hooks'
+import { useSetAccessToken } from '@/auth/hooks'
 import { handleLogin } from '@/auth/util'
 import type { ClassName } from '@/util/type'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../common/button'
+import { useSnackbar } from '../../common/snackbar'
 
 const Icon = ({ className }: { className?: ClassName }) => (
   <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className={className}>
@@ -11,12 +12,16 @@ const Icon = ({ className }: { className?: ClassName }) => (
   </svg>
 )
 
-export function GoogleLoginButton() {
+export function GoogleLoginButton({ className }: { className?: ClassName }) {
   const { t } = useTranslation()
-  const setOAuth = useSetOauth()
-  const handleClick = handleLogin((token) => setOAuth(token))
+  const setAccessToken = useSetAccessToken()
+  const setSnackbar = useSnackbar()
+  const handleClick = handleLogin((token) => {
+    setAccessToken(token)
+    setSnackbar(t('user.login_success'))
+  })
   return (
-    <Button onClick={handleClick} icon={<Icon className="size-5 text-white/80" />}>
+    <Button onClick={handleClick} icon={<Icon className="size-5 text-white/80" />} className={className}>
       {t('user.login_with_google')}
     </Button>
   )

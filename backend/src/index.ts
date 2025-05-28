@@ -2,13 +2,13 @@ import { swaggerUI } from '@hono/swagger-ui'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { areaGetController, areaPostController } from './controller/area'
-import { getTokenController } from './controller/auth'
+import { loginController, logoutController, tokenRefreshController } from './controller/auth'
 import { messagePostController } from './controller/message'
 import { profileGetController } from './controller/profile'
 import { topicGetController, topicPostController } from './controller/topic'
 import { frontEndUrl, prismaClient } from './controller/utils'
 import { areaGetRoute, areaPostRoute } from './routes/area'
-import { getTokenRoute } from './routes/auth'
+import { loginRoute, logoutRoute, tokenRefreshRoute } from './routes/auth'
 import { messagePostRoute } from './routes/message'
 import { profileGetRoute } from './routes/profile'
 import { topicGetRoute, topicPostRoute } from './routes/topic'
@@ -35,6 +35,7 @@ app
   })
   .get('/auth/callback', async (c) => c.html(authCallbackScript))
 app.doc31('/doc', { openapi: '3.1.0', info: { version: '0.0.0', title: 'Tomos API' } }).get('/ui', swaggerUI({ url: '/doc' }))
+app.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', { type: 'http', scheme: 'bearer' })
 
 const route = app
   .openapi(areaGetRoute, areaGetController)
@@ -43,8 +44,9 @@ const route = app
   .openapi(topicPostRoute, topicPostController)
   .openapi(messagePostRoute, messagePostController)
   .openapi(profileGetRoute, profileGetController)
-  .openapi(getTokenRoute, getTokenController)
-
+  .openapi(loginRoute, loginController)
+  .openapi(tokenRefreshRoute, tokenRefreshController)
+  .openapi(logoutRoute, logoutController)
 export type HONO_API = typeof route
 
 export default app

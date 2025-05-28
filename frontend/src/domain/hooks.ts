@@ -1,7 +1,9 @@
+import { asyncAccessTokenAtom } from '@/auth/hooks'
+import { getProfile } from '@/infra/api'
 import { useCFRSCache } from '@/lib/useCFRS'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { observe } from 'jotai-effect'
-import { selectAtom } from 'jotai/utils'
+import { loadable, selectAtom } from 'jotai/utils'
 import { DEFAULT_COLOR, TOPIC_SIDE } from 'shared/constants'
 import { truncateAreaPosition, truncateMessagePosition, truncateTopicPosition, truncateUnit } from 'shared/functions'
 import type { Area, Message, Position, Topic } from 'shared/types'
@@ -17,6 +19,31 @@ import {
   TOPIC_CREATE_VIEW_MAX_Z,
   type ViewMode,
 } from './types'
+
+type Profile = {
+  id: string
+  color?: number // 0 - 360 deg
+  name?: string
+  guest?: boolean
+}
+
+const defaultProfile: Profile = {
+  id: 'Loading...',
+  name: 'Loading...',
+  guest: true,
+}
+
+const asyncProfileAtom = atom(async (get) => {
+  const accessToken = await get(asyncAccessTokenAtom)
+  return getProfile(accessToken.access_token)
+})
+const profileAtom = loadable(asyncProfileAtom)
+
+export const useProfile: () => Profile = () => {
+  const profile = useAtomValue(profileAtom)
+  if (profile.state === 'loading' || profile.state === 'hasError') return defaultProfile
+  return profile.data
+}
 
 const myProfileAtom = atom({
   id: '7b7db97f-0205-4685-a373-5573d5fe2a53',
@@ -37,7 +64,6 @@ const setMyProfileColorEffect = (color: number) => {
 }
 observe((get) => setMyProfileColorEffect(get(myProfileColorAtom)))
 
-export const useMyProfile = () => useAtomValue(myProfileAtom)
 export const useMyProfileColor = () => useAtomValue(myProfileColorAtom)
 export const useMyProfileId = () => useAtomValue(myProfileIdAtom)
 export const useSetMyProfileColor = () => {

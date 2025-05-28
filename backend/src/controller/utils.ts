@@ -1,13 +1,19 @@
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
 import type { Context } from 'hono'
+import { decode, verify } from 'hono/jwt'
 import { ENV } from 'src/env'
+import type { AccessToken } from './auth'
+
+export const BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
 export const prismaClient = () => {
   const D1 = ENV.DB
   const adapter = new PrismaD1(D1)
   return new PrismaClient({ adapter, log: ['query'] })
 }
+
+export type Prisma = ReturnType<typeof prismaClient>
 
 //-----------------------------------------------------------------
 
@@ -17,15 +23,8 @@ const client_secret = ENV.GOOGLE_OAUTH_CLIENT_SECRET
 const redirect_uri = ENV.GOOGLE_OAUTH_CALLBACK_URL
 const BASE_URL = 'https://oauth2.googleapis.com'
 const TOKEN_ENDPOINT = `${BASE_URL}/token`
-const TOKEN_INFO_ENDPOINT = `${BASE_URL}/tokeninfo`
 const expires_in = 60 * 60 // access token expires in 1 hour
 export const refresh_token_expires_in = 60 * 60 * 24 * 7 // 1 week
-
-export const getTokenInfo = async (access_token: string) => {
-  const response = await fetch(`${TOKEN_INFO_ENDPOINT}?access_token=${access_token}`)
-  const json = (await response.json()) as { exp: number; azp: string; sub: string }
-  return json
-}
 
 export type IdToken = {
   iss: string
@@ -35,7 +34,7 @@ export type IdToken = {
   iat: number
   name: string
 }
-export const getToken = async (code: string, code_verifier: string) => {
+export const getOAuthToken = async (code: string, code_verifier: string) => {
   const response = await fetch(TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -59,61 +58,83 @@ export const getToken = async (code: string, code_verifier: string) => {
   return {
     access_token: json.access_token,
     refresh_token: json.refresh_token,
-    id_token: decodeJwt(json.id_token) as unknown as IdToken, // Todo: replace with hono/jwt
+    id_token: decode(json.id_token).payload as unknown as IdToken, // Todo: replace with hono/jwt
     expires_in: json.expires_in,
   }
 }
 
-const base64UrlDecode = (base64Url: string): string => {
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-  const paddedBase64 = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=')
-  return decodeURIComponent(
-    atob(paddedBase64)
-      .split('')
-      .map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, '0')}`)
-      .join(''),
-  )
+export const accessTokenFromHeader = async (c: Context) => {
+  const access_token_raw = c.req.header('Authorization')?.split(' ')[1]
+  if (!access_token_raw) return null
+  const { exp } = await verify(access_token_raw, ENV.TOKEN_SECRET)
+  if (!exp || exp < Math.floor(Date.now() / 1000)) return null
+  const { payload: access_token } = decode(access_token_raw)
+  return access_token as AccessToken
 }
-
-const decodeJwt = (token: string): Record<string, string> => {
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3) {
-      throw new Error('Invalid token: JWT must have three parts.')
-    }
-    const payload = base64UrlDecode(parts[1])
-    return JSON.parse(payload)
-  } catch (error) {
-    console.error('Error decoding token:', error)
-    throw new Error('Invalid token')
-  }
-}
-
-export const accessTokenFromHeader = (c: Context) => {
-  const access_token = c.req.header('Authorization')?.split(' ')[1]
-  return access_token
-}
-
 export const remoteAddress = (c: Context) => {
   return c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || c.req.header('X-Forwarded-For') || 'localhost'
 }
 
+export const getUserId = async (c: Context): Promise<string> => {
+  const accessToken = await accessTokenFromHeader(c)
+  return accessToken?.userId ?? (await generateAnonymousId(c))
+}
+
 //-----------------------------------------------------------------
+
+export async function generateAnonymousId(c: Context): Promise<string> {
+  const ip = remoteAddress(c)
+  const dateStr = formatDateToUTCYMD(new Date())
+  const input = ip + dateStr + ENV.ID_SALT
+  const fullHash = await hashToBase62(input)
+  return `_${fullHash.slice(0, 10)}`
+}
+
+function formatDateToUTCYMD(date: Date): string {
+  const year = date.getUTCFullYear()
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
+  const day = date.getUTCDate().toString().padStart(2, '0')
+  return `${year}-${month}-${day}` // "2000-01-01"
+}
+
+async function hashToBase62(text: string): Promise<string> {
+  const encoder: TextEncoder = new TextEncoder()
+  const data: Uint8Array = encoder.encode(text)
+  const hashBuffer: ArrayBuffer = await crypto.subtle.digest('SHA-256', data)
+  const hashArray: Uint8Array = new Uint8Array(hashBuffer)
+  return toBase62(hashArray)
+}
+
+function toBase62(bytes: Uint8Array): string {
+  const hex = Array.from(bytes)
+    .map((b: number) => b.toString(16).padStart(2, '0'))
+    .join('')
+  let value = BigInt(`0x${hex}`)
+  let result = ''
+  while (value > 0n) {
+    const remainder = value % 62n
+    result = BASE62_ALPHABET[Number(remainder)] + result
+    value /= 62n
+  }
+  return result || '0'
+}
+
+//------------------------------------------------------------------
 
 type IsIdTaken = (publicId: string) => Promise<boolean>
 export async function generateUniqueId(isIdTaken: IsIdTaken, maxAttempts = 10): Promise<string> {
-  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  const idLength = 8
+  const idLength = 10
 
   const generateRandomId = (): string => {
     return Array.from({ length: idLength }, () => {
-      const index = Math.floor(Math.random() * charset.length)
-      return charset[index]
+      const index = Math.floor(Math.random() * BASE62_ALPHABET.length)
+      return BASE62_ALPHABET[index]
     }).join('')
   }
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const candidate = generateRandomId()
+    console.log('Generated candidate:', candidate)
     if (!(await isIdTaken(candidate))) {
       return candidate
     }

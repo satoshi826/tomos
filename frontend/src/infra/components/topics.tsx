@@ -1,5 +1,4 @@
 import { areaKeyToPosition, positionToAreaKey, positionToTopicKey, useCurrentAreaPosition } from '@/domain/hooks'
-import { fetcher as _fetcher } from '@/lib/fetch'
 import { useCFRSFetch } from '@/lib/useCFRS'
 import type { JSONCompatible } from '@/util/type'
 import { aToO } from 'jittoku'

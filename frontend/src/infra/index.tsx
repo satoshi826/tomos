@@ -1,5 +1,4 @@
 import { useIsMessagesView, useIsTopicsView } from '@/domain/hooks'
-import { fetcher as _fetcher } from '@/lib/fetch'
 import { MessagesFetcher } from './components/messages'
 import { TopicsFetcher } from './components/topics'
 

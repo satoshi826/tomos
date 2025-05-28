@@ -33,7 +33,6 @@ model User {
 	createdAt DateTime @default(now())
 	@@index([googleId])
 	@@index([userId])
-
 }
 
 model Area {
@@ -54,7 +53,7 @@ model Topic {
 	user      User    @relation(fields: [userId], references: [id])
 	areaId    Int
 	area      Area    @relation(fields: [areaId], references: [id])
-	title   String ///z.string.min(1).max(128)
+	title   String /// z.string.min(1).max(128)
 	x				 Int /// @zod.number.int().nonnegative().multipleOf(10)
 	y				 Int /// @zod.number.int().nonnegative().multipleOf(10)
 	messages Message[]

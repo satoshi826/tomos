@@ -6,6 +6,8 @@ type Env = {
   GOOGLE_OAUTH_CLIENT_SECRET: string
   GOOGLE_OAUTH_CALLBACK_URL: string
   TOMOS_PUBLIC_KEY: string
+  ID_SALT: string
+  TOKEN_SECRET: string
   DB: D1Database
 }
 

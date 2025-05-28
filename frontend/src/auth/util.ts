@@ -43,9 +43,7 @@ export const handleLogin = (callback: (token: AuthToken) => void) => async () =>
       try {
         console.log('auth_code received')
         window.removeEventListener('message', handlePopupMessage)
-        getToken(code).then((res) => {
-          callback(res)
-        })
+        getToken(code).then((res) => callback(res))
       } catch (error) {
         console.error(error)
       } finally {

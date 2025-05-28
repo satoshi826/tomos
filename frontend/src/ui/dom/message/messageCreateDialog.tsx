@@ -1,4 +1,5 @@
-import { positionToTopicKey, useMyProfileId } from '@/domain/hooks'
+import { useAccessToken } from '@/auth/hooks'
+import { positionToTopicKey } from '@/domain/hooks'
 import { postMessage } from '@/infra/api'
 import { useCFRS } from '@/lib/useCFRS'
 import { useForm } from '@tanstack/react-form'
@@ -33,7 +34,7 @@ const messageInputSchema = z.object({
 
 function Body({ onClose, position }: { onClose: () => void; position: { x: number; y: number } }) {
   const { t } = useTranslation()
-  const userId = useMyProfileId()
+  const accessToken = useAccessToken()
   const setSnackbar = useSnackbar()
   const cfrs = useCFRS()
 
@@ -45,7 +46,7 @@ function Body({ onClose, position }: { onClose: () => void; position: { x: numbe
     },
     onSubmit: async ({ value: { content } }) => {
       try {
-        await postMessage(position.x, position.y, content, userId)
+        await postMessage(position.x, position.y, content, accessToken.access_token)
         setSnackbar(t('message.created'))
       } catch (error) {
         console.error('Failed to create topic:', error)

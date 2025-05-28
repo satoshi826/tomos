@@ -23,7 +23,10 @@
   "user": {
     "account": "アカウント",
     "my_color": "マイカラー",
-    "login_with_google": "Googleでログイン"
+    "login_with_google": "Googleでログイン",
+    "login_success": "ログインしました！ 🎉",
+    "logout": "ログアウト",
+    "logout_success": "ログアウトしました 👋"
   },
   "topic": {
     "itself": "トピック",

@@ -1,5 +1,4 @@
 import { useCameraPosition, useCurrentAreaPosition, useSetCameraPosition, useSetCanvasSize, useSetMousePosition } from '@/domain/hooks'
-import { useCFRS } from '@/lib/useCFRS'
 import { clamp } from 'jittoku'
 import { useCallback, useEffect } from 'react'
 import { useDragCallback, usePointerCallback, useResizeCallback } from '../hooks'
@@ -10,8 +9,6 @@ export function CanvasInterface({ post, ref }: { post: (data: unknown) => void; 
   const setCameraPosition = useSetCameraPosition()
   const setMousePosition = useSetMousePosition()
   const setCanvasSize = useSetCanvasSize()
-
-  const cfrs = useCFRS()
 
   // const messageView = useMessageView()
   const resizeCallback = useCallback(
@@ -37,10 +34,9 @@ export function CanvasInterface({ post, ref }: { post: (data: unknown) => void; 
     ref,
   })
   useEffect(() => post({ camera: cameraPosition }), [cameraPosition, post]) // atomEffectで送るか
-
   useEffect(() => {
-    console.log(post, currentAreaPosition)
-  }, [currentAreaPosition, post])
+    console.log(currentAreaPosition)
+  }, [currentAreaPosition])
 
   // useEffect(() => post({ message: messageView }), [messageView, post]) // messageはIndexedDB経由で渡す?
   return null

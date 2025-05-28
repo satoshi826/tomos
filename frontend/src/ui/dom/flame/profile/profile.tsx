@@ -1,14 +1,16 @@
-import { useProfile } from '@/auth/hooks'
+import { useProfile } from '@/domain/hooks'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../../common/icon'
 import { iconButtonStyles } from '../../common/iconButton'
 import { GoogleLoginButton } from './googleLoginButton'
+import { LogoutButton } from './logoutButton'
 import { MyColorSlider } from './myColorSlider'
 
 export const ProfileButton = memo(function _ProfileButton() {
   const { t } = useTranslation()
   const profile = useProfile()
+  console.log(profile)
   return (
     <div className="dropdown dropdown-end ">
       {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
@@ -28,13 +30,12 @@ export const ProfileButton = memo(function _ProfileButton() {
           </div>
           <div className="flex flex-col gap-0.5">
             <div className="font-bold text-primary-lighter text-xl">{profile?.name ?? 'ななし'}</div>
-            <div className="text-content text-sm">{`Id: ${profile?.id ?? 'loading...'}`}</div>
+            <div className="text-content text-sm">{`ID: ${profile?.id ?? 'loading...'}`}</div>
           </div>
         </div>
         <div className="mt-1 text-sm">{t('user.my_color')}</div>
         <MyColorSlider />
-        <div className="mt-1 text-sm">アカウント</div>
-        <GoogleLoginButton />
+        {profile.guest === true ? <GoogleLoginButton className="mt-3" /> : <LogoutButton className="mt-3" />}
       </div>
     </div>
   )

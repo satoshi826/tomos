@@ -1,7 +1,7 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { truncateAreaPosition } from 'shared/functions'
 import type { topicGetRoute, topicPostRoute } from '../routes/topic'
-import { prismaClient } from './utils'
+import { getUserId, prismaClient } from './utils'
 
 export const topicGetController: RouteHandler<typeof topicGetRoute> = async (c) => {
   const prisma = prismaClient()
@@ -13,7 +13,8 @@ export const topicGetController: RouteHandler<typeof topicGetRoute> = async (c) 
 
 export const topicPostController: RouteHandler<typeof topicPostRoute> = async (c) => {
   const prisma = prismaClient()
-  const { x, y, title, userId } = await c.req.valid('json')
+  const { x, y, title } = await c.req.valid('json')
+  const userId = await getUserId(c)
   const areaPosition = truncateAreaPosition({ x, y })
   const areaId = await prisma.area.findUnique({ where: { x_y: areaPosition }, select: { id: true } }).then((a) => a?.id)
   if (!areaId) return c.json({ code: 400 as const, message: 'Area not found' }, 400)

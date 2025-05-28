@@ -1,26 +1,24 @@
-import { client } from '@/infra/api'
+import { c } from '@/infra/api'
 import type { PromiseType } from '@/util/type'
 import { getStoredCodeVerifier } from './util'
 
 export const getToken = async (code: string) => {
   const code_verifier = getStoredCodeVerifier()
   if (!code_verifier) throw new Error('code_verifier not found')
-  const result = await client.auth.token.google.$post(
-    { json: { code, code_verifier } },
-    {
-      init: {
-        credentials: 'include',
-      },
-    },
-  )
+  const result = await c.auth.login.$post({ json: { code, code_verifier } }, { init: { credentials: 'include' } })
   if (!result.ok) throw new Error('fetcher error')
   return result.json()
 }
 
-export const getProfile = async (access_token: string | null) => {
-  const options = access_token ? { init: { headers: { Authorization: `Bearer ${access_token}` } } } : {}
-  const result = await client.profile.$get({}, options)
+export const logout = async () => {
+  const result = await c.auth.logout.$post({}, { init: { credentials: 'include' } })
   if (!result.ok) throw new Error('fetcher error')
+  return result.json()
+}
+
+export const tokenRefresh = async () => {
+  const result = await c.auth.refresh.$post({}, { init: { credentials: 'include' } })
+  if (!result.ok) return { access_token: null, expires_at: null }
   return result.json()
 }
 

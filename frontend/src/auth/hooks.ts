@@ -1,32 +1,45 @@
+import { isNullish } from 'jittoku'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { observe } from 'jotai-effect'
 import { loadable } from 'jotai/utils'
-import { getProfile } from './api'
+import { tokenRefresh } from './api'
 
-const oauthAtom = atom<{
+type AccessToken = {
   access_token: string | null
-  expires_in: number | null
-}>({
-  access_token: null,
-  expires_in: null,
-})
-
-const asyncProfileAtom = atom(async (get) => {
-  const oauth = get(oauthAtom)
-  return getProfile(oauth.access_token)
-})
-const profileAtom = loadable(asyncProfileAtom)
-
-export const useProfile = () => {
-  const profile = useAtomValue(profileAtom)
-  console.log(profile)
-  if (profile.state === 'loading' || profile.state === 'hasError') return null
-  return profile.data
+  expires_at: number | null
 }
 
-export const useSetOauth = () => {
-  return useSetAtom(oauthAtom)
+export const asyncAccessTokenAtom = atom<Promise<AccessToken>>(tokenRefresh())
+const accessTokenAtom = loadable(asyncAccessTokenAtom)
+
+let timer: ReturnType<typeof setTimeout> | null = null
+
+observe((get, set) => {
+  const v = get(accessTokenAtom)
+  if (v.state === 'loading' || v.state === 'hasError') return
+  const { expires_at } = v.data
+  if (isNullish(expires_at)) return
+  if (timer) clearTimeout(timer)
+  const refreshTime = Math.max(0, expires_at * 1000 - Date.now() - 60 * 1000) // Refresh 1 minute before expiration
+  console.log('refreshTime:', refreshTime, 'ms')
+  timer = setTimeout(async () => {
+    console.log('refresh!')
+    set(asyncAccessTokenAtom, tokenRefresh())
+  }, refreshTime)
+})
+
+export const useAccessToken = () => {
+  const v = useAtomValue(accessTokenAtom)
+  if (v.state === 'hasData') return v.data
+  return { access_token: null, expires_at: null }
 }
 
-export const useOauth = () => {
-  return useAtomValue(oauthAtom)
+export const useSetAccessToken = () => {
+  const set = useSetAtom(asyncAccessTokenAtom)
+  return (t: AccessToken) => set(Promise.resolve(t))
+}
+
+export const useResetAccessToken = () => {
+  const set = useSetAccessToken()
+  return () => set({ access_token: null, expires_at: null })
 }

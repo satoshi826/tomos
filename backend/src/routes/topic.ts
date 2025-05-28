@@ -26,7 +26,6 @@ export const topicPostRoute = createRoute({
   request: {
     body: _jsonContent(
       TopicSchema.pick({
-        userId: true,
         title: true,
         x: true,
         y: true,
@@ -38,4 +37,9 @@ export const topicPostRoute = createRoute({
     ..._400(),
     ..._404(),
   },
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
 })

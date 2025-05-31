@@ -2,6 +2,7 @@ import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '@prisma/client'
 import type { Context } from 'hono'
 import { decode, verify } from 'hono/jwt'
+import { DEFAULT_COLOR } from 'shared/constants'
 import { ENV } from 'src/env'
 import type { AccessToken } from './auth'
 
@@ -75,14 +76,48 @@ export const remoteAddress = (c: Context) => {
   return c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || c.req.header('X-Forwarded-For') || 'localhost'
 }
 
-export const getUserId = async (c: Context): Promise<string> => {
+export const getUserFromHeader = async (c: Context) => {
   const accessToken = await accessTokenFromHeader(c)
-  return accessToken?.userId ?? (await generateAnonymousId(c))
+  const isAuthUser = !!accessToken?.id
+
+  return isAuthUser
+    ? ({
+        id: accessToken.id,
+        userId: null,
+        guest: false,
+      } as const)
+    : ({
+        id: null,
+        userId: await generateGuestId(c),
+        guest: true,
+      } as const)
+}
+
+export const createGuestUser = async (prisma: Prisma, userId: string) => {
+  const user = await prisma.user.create({ data: { userId, name: 'Guest', color: DEFAULT_COLOR } })
+  return user
+}
+
+export const userIdToPrimaryKey = async (prisma: Prisma, userId: string) => {
+  return (await prisma.user.findUnique({ where: { userId }, select: { id: true } }))?.id ?? null
+}
+
+export const getOrCreateUserId = async (c: Context, prisma: Prisma) => {
+  const user = await getUserFromHeader(c)
+  let id: string | null = null
+  if (user.guest) {
+    const userId = user.userId
+    id = await userIdToPrimaryKey(prisma, userId)
+    id ??= (await createGuestUser(prisma, userId)).id
+  } else {
+    id = user.id
+  }
+  return id
 }
 
 //-----------------------------------------------------------------
 
-export async function generateAnonymousId(c: Context): Promise<string> {
+export async function generateGuestId(c: Context): Promise<string> {
   const ip = remoteAddress(c)
   const dateStr = formatDateToUTCYMD(new Date())
   const input = ip + dateStr + ENV.ID_SALT

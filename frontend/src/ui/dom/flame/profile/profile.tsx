@@ -35,7 +35,7 @@ export const ProfileButton = memo(function _ProfileButton() {
         </div>
         <div className="mt-1 text-sm">{t('user.my_color')}</div>
         <MyColorSlider />
-        {profile.guest === true ? <GoogleLoginButton className="mt-3" /> : <LogoutButton className="mt-3" />}
+        {profile.guest ? <GoogleLoginButton className="mt-3" /> : <LogoutButton className="mt-3" />}
       </div>
     </div>
   )

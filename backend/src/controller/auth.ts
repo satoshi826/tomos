@@ -11,12 +11,12 @@ const refresh_token_expire_in = 60 * 60 * 24 * 7 // 1 week
 
 export type AccessToken = {
   exp: number
-  userId: string
+  id: string
 }
 
 export type RefreshToken = {
   exp: number
-  userId: string
+  id: string
 }
 
 const createUser = async (prisma: Prisma, token: IdToken) => {
@@ -25,9 +25,7 @@ const createUser = async (prisma: Prisma, token: IdToken) => {
     return !!existUser
   }
   const userId = await generateUniqueId(isIdTaken)
-  const user = await prisma.user.create({
-    data: { googleId: token.sub, name: token.name, color: DEFAULT_COLOR, userId },
-  })
+  const user = await prisma.user.create({ data: { googleId: token.sub, name: token.name, color: DEFAULT_COLOR, userId } })
   console.log('User created:', userId)
   return user
 }
@@ -38,8 +36,8 @@ const tokenExpiresAt = (type: 'access' | 'refresh') => {
   return currentUNIX() + (type === 'access' ? access_token_expire_in : refresh_token_expire_in)
 }
 
-const createAccessToken = async (userId: string) => {
-  const access_token_payload: AccessToken = { exp: tokenExpiresAt('access'), userId }
+const createAccessToken = async (id: string) => {
+  const access_token_payload: AccessToken = { exp: tokenExpiresAt('access'), id }
   return sign(access_token_payload, ENV.TOKEN_SECRET)
 }
 
@@ -58,7 +56,7 @@ export const loginController: RouteHandler<typeof loginRoute> = async (c) => {
   const refresh_token_exp = tokenExpiresAt('refresh')
   const refresh_token_payload: RefreshToken = {
     exp: refresh_token_exp,
-    userId: user.id,
+    id: user.id,
   }
   const refresh_token = sign(refresh_token_payload, ENV.TOKEN_SECRET)
 
@@ -95,8 +93,7 @@ export const tokenRefreshController: RouteHandler<typeof tokenRefreshRoute> = as
   const { exp } = await verify(refresh_token_raw, ENV.TOKEN_SECRET)
   if (!exp || exp < Math.floor(Date.now() / 1000)) return c.json({ code: 400 as const, message: 'refresh token expired' }, 400)
   const { payload: refresh_token } = decode(refresh_token_raw)
-  console.log('refresh_token:', refresh_token)
-  const access_token = createAccessToken((refresh_token as RefreshToken).userId)
+  const access_token = createAccessToken((refresh_token as RefreshToken).id)
   return c.json(
     {
       access_token: await access_token,
